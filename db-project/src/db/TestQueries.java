@@ -1,4 +1,4 @@
-package db.queries;
+package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 public class TestQueries {

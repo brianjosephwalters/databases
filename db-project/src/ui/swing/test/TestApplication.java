@@ -1,4 +1,4 @@
-package dbproject.ui.swing.test;
+package ui.swing.test;
 
 import java.awt.EventQueue;
 
