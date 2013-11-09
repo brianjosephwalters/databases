@@ -2,7 +2,7 @@ package db.queries;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 public class TestQueries {
-	
+
 	public ResultSet getCompanyEmployees(String company_id) {
 		PreparedStatement stmt = conn.preparedStatement(
 			"SELECT last_name, first_name " +
@@ -25,7 +25,7 @@ public class TestQueries {
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
-	
+
 	public ResultSet getCompanyTotalLaborCost(String company_code) {
 		PreparedStatement stmt = conn.preparedStatement(
 			"SELECT sum(calculated_wage)" +
