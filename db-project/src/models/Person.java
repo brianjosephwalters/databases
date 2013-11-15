@@ -6,6 +6,15 @@ public class Person {
 	private String firstName;
 	private String gender;
 	private String email;
+	
+	public Person(String personCode, String lastName, String firstName,
+			String gender, String email) {
+		this.personCode = personCode;
+		this.lastName = lastName;
+		this.firstName = firstName;
+		this.gender = gender;
+		this.email = email;
+	}
 	/**
 	 * @return the personCode
 	 */
