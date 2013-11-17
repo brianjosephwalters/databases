@@ -7,14 +7,19 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
+
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
+
 import javax.swing.Action;
 
+import db.DBConnection;
+
 public class DbApplication {
-
 	private JFrame frame;
-	private final Action action = new SwingAction();
-
+	
+	private Connection connection;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -36,8 +41,13 @@ public class DbApplication {
 	 */
 	public DbApplication() {
 		initialize();
+		setUp();
 	}
 
+	public void setUp() {
+
+	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -46,13 +56,5 @@ public class DbApplication {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-
-	private class SwingAction extends AbstractAction {
-		public SwingAction() {
-			putValue(NAME, "SwingAction");
-			putValue(SHORT_DESCRIPTION, "Some short description");
-		}
-		public void actionPerformed(ActionEvent e) {
-		}
-	}
+	
 }
