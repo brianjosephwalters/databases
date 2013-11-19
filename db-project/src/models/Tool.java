@@ -4,6 +4,13 @@ public class Tool {
 	private String toolCode;
 	private String toolName;
 	private String toolDescription;
+	
+	public Tool(String code, String name, String desc) {
+		this.toolCode = code;
+		this.toolName = name;
+		this.toolDescription = desc;
+	}
+	
 	/**
 	 * @return the toolCode
 	 */

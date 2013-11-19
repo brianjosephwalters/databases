@@ -19,7 +19,7 @@ public class AddressQueries {
 	}
 	
 	/**
-	 * All addresses, sorted by address code.
+	 * All addresses.
 	 */
 	public List<Address> getAllAddresses() 
 			throws SQLException {

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import models.Course;
-import models.Person;
 
 public class CourseQueries {
 	// Instance Variables
