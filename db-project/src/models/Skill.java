@@ -5,6 +5,14 @@ public class Skill {
 	private String skillName;
 	private String skillDescription;
 	private String skillLevel;
+	
+	public Skill(String code, String name, String desc, String level) {
+		this.skillCode = code;
+		this.skillName = name;
+		this.skillDescription = desc;
+		this.skillLevel = level;
+	}
+	
 	/**
 	 * @return the skillCode
 	 */
