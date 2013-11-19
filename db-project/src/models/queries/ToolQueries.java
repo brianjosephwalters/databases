@@ -34,14 +34,14 @@ public class ToolQueries {
 	/**
 	 * All tools used by a particular company.
 	 */
-	public List<Tool> getToolsForCompany(String company_code) 
+	public List<Tool> getToolsForCompany(String companyCode) 
 			throws SQLException {
 		List<Tool> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			"SELECT * " +
 			"FROM tool NATURAL JOIN uses" +
 			"WHERE company_code = ?");
-		stmt.setString(1, company_code);
+		stmt.setString(1, companyCode);
 		list = getListOfTools(stmt);
 		
 		return list;

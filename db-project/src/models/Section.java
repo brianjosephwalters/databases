@@ -6,6 +6,16 @@ public class Section {
 	private int year;
 	private String formatCode;
 	private double cost;
+	
+	public Section(String courseCode, String sectionCode, int year,
+				   String formatCode, double cost) {
+		this.courseCode = courseCode;
+		this.sectionCode = sectionCode;
+		this.year = year;
+		this.formatCode = formatCode;
+		this.cost = cost;
+	}
+	
 	/**
 	 * @return the courseCode
 	 */
