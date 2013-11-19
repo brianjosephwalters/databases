@@ -4,6 +4,12 @@ public class PhoneNumber {
 	private String phoneCode;
 	private String phoneType;
 	private String phoneNum;
+	
+	public PhoneNumber(String phoneCode, String phoneType, String phoneNum) {
+		this.phoneCode = phoneCode;
+		this.phoneType = phoneType;
+		this.phoneNum = phoneNum;
+	}
 	/**
 	 * @return the phoneCode
 	 */

@@ -4,6 +4,13 @@ public class Company {
 	private String companyCode;
 	private String companyName;
 	private String website;
+	
+	public Company (String companyCode, String companyName, String website) {
+		this.companyCode = companyCode;
+		this.companyName = companyName;
+		this.website = website;
+	}
+	
 	/**
 	 * @return the companyCode
 	 */

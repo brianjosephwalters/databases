@@ -7,6 +7,17 @@ public class Course {
 	private String courseLevel;
 	private String status;
 	private double retailPrice;
+	
+	public Course(String code, String title, String desc, String level,
+				  String status, double retailPrice) {
+		this.courseCode = code;
+		this.courseTitle = title;
+		this.courseDescription = desc;
+		this.courseLevel = level;
+		this.status = status;
+		this.retailPrice = retailPrice;
+	}
+	
 	/**
 	 * @return the courseCode
 	 */

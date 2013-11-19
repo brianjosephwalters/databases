@@ -8,6 +8,17 @@ public class Certificate {
 	private String companyCode;
 	private int daysValid;
 	
+	public Certificate(String certCode,String certTitle,
+					   String certDescription, String toolCode,
+					   String companyCode, int daysValid) {
+		this.certificateCode = certCode;
+		this.certificateTitle = certTitle;
+		this.certificateDescription = certDescription;
+		this.toolCode = toolCode;
+		this.companyCode = companyCode;
+		this.daysValid = daysValid;
+	}
+	
 	/**
 	 * @return the certificateCode
 	 */
