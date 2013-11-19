@@ -81,7 +81,7 @@ public class PersonQueries {
 		return list;
 	}
 	
-	// People who attended a course
+	// People who took a course
 	public List<Person> getPeopleAttendingCourse(String course_code) 
 			throws SQLException {
 		List<Person> list = null;
@@ -97,7 +97,7 @@ public class PersonQueries {
 		return list;
 	}
 	
-	// People who attended a section
+	// People who attended a section of a course
 	public List<Person> getPeopleAttendingSectionOfCourse(String course_code, String section_code, Integer year)
 			throws SQLException {
 		List<Person> list = null;
