@@ -22,4 +22,14 @@ public class DBConnection {
 		Connection conn = DriverManager.getConnection(url, username, password);
 		return conn;
 	}
+	
+	public static final Connection getConnection(String server, String username, String password) 
+			throws SQLException {
+		String dbLocation = "@" + server +":1521:" + "orcl";
+		String url = "jdbc:oracle:thin" + ':' + dbLocation;
+		DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+		Connection conn = DriverManager.getConnection(url, username, password);
+		return conn;
+	}
+	
 }

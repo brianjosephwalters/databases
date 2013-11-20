@@ -19,6 +19,29 @@ public class DbApplication {
 	private JFrame frame;
 	
 	private Connection connection;
+
+	/**
+	 * Create the application.
+	 */
+	public DbApplication() {
+		initialize();
+		setUp();
+	}
+	
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	public void setUp() {
+
+	}
+	
+	
 	
 	/**
 	 * Launch the application.
@@ -35,26 +58,4 @@ public class DbApplication {
 			}
 		});
 	}
-
-	/**
-	 * Create the application.
-	 */
-	public DbApplication() {
-		initialize();
-		setUp();
-	}
-
-	public void setUp() {
-
-	}
-	
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-	
 }

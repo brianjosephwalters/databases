@@ -9,21 +9,27 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.FormLayout;
+import db.DBConnection;
+
 import java.awt.GridLayout;
-import javax.swing.BoxLayout;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import javax.swing.Box;
 
+@SuppressWarnings("serial")
 public class LoginPanel extends JPanel {
-	private JTextField tfDatabase;
-	private JTextField tfName;
-	private JPasswordField pwdPassword;
+	private Connection connection;
+	
 	private JTextField tfServer;
-	private JTextField textField;
+	private JTextField tfName;
 	private JPasswordField passwordField;
+	
+	private JButton btnConnect;
+	private JButton btnReset;
 
 	/**
 	 * Create the panel.
@@ -33,6 +39,7 @@ public class LoginPanel extends JPanel {
 		
 		JPanel formPanel = new JPanel();
 		formPanel.setLayout(new GridLayout(3,2));
+		
 		JLabel lblDatabaseServer = new JLabel("Database Server:");
 
 		tfServer = new JTextField();
@@ -44,9 +51,9 @@ public class LoginPanel extends JPanel {
 		JLabel lblUserName = new JLabel("User Name:");
 		formPanel.add(lblUserName);
 		
-		textField = new JTextField();
-		formPanel.add(textField);
-		textField.setColumns(10);
+		tfName = new JTextField();
+		tfName.setColumns(10);
+		formPanel.add(tfName);
 		
 		JLabel lblPassword = new JLabel("Password:");
 		formPanel.add(lblPassword);
@@ -66,18 +73,64 @@ public class LoginPanel extends JPanel {
 
 		add(topPanel, BorderLayout.NORTH);
 		
+		
+		
+		btnConnect = new JButton("Connect");
+		btnConnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				createConnection();
+				btnConnect.setEnabled(false);
+				btnReset.setEnabled(true);
+			}
+		});
+		
+		
+		btnReset = new JButton("Reset");
+		btnReset.setEnabled(false);
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				closeConnection();
+				btnReset.setEnabled(false);
+			}
+		});
+		
+		
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.CENTER);
-		
-		JButton btnConnect = new JButton("Connect\r\n");
 		panel.add(btnConnect);
-		
-		JButton btnReset = new JButton("Reset");
 		panel.add(btnReset);
 		
 		JPanel panel_1 = new JPanel();
 		add(panel_1, BorderLayout.SOUTH);
-		
 	}
-
+	
+	private void createConnection() {
+		String server = this.tfServer.getText();
+		String username = this.tfName.getText();
+		String password = new String(this.passwordField.getPassword());
+		
+		try {
+			this.connection = DBConnection.getConnection(server, username, password);
+		} catch (SQLException e) {
+			
+		}
+	}
+	
+	private void closeConnection() {
+		try {
+			this.connection.close();
+		} catch (SQLException e) {
+			
+		} finally {
+			this.connection = null;
+		}
+	}
+	
+	public Connection getConnection() {
+		return this.connection;
+	}
+	
+	public String getUserName() {
+		return this.tfName.getText();
+	}
 }
