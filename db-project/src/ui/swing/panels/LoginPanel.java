@@ -42,7 +42,7 @@ public class LoginPanel extends JPanel {
 		
 		JLabel lblDatabaseServer = new JLabel("Database Server:");
 
-		tfServer = new JTextField();
+		tfServer = new JTextField("dbsvcs.cs.uno.edu");
 		tfServer.setColumns(20);
 		
 		formPanel.add(lblDatabaseServer);
@@ -51,14 +51,14 @@ public class LoginPanel extends JPanel {
 		JLabel lblUserName = new JLabel("User Name:");
 		formPanel.add(lblUserName);
 		
-		tfName = new JTextField();
+		tfName = new JTextField("bwalters");
 		tfName.setColumns(10);
 		formPanel.add(tfName);
 		
 		JLabel lblPassword = new JLabel("Password:");
 		formPanel.add(lblPassword);
 		
-		passwordField = new JPasswordField();
+		passwordField = new JPasswordField("HtoaYUen");
 		formPanel.add(passwordField);
 		
 		JPanel topPanel = new JPanel();

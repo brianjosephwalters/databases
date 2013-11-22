@@ -26,6 +26,8 @@ public class TestPersonFrame extends JFrame {
 	private JMenuItem mntmDisconnect;
 	
 	private MenuController menuController;
+	
+	private TestPersonSimplePanel personPanel;
 
 	/**
 	 * Create the frame.
@@ -66,12 +68,14 @@ public class TestPersonFrame extends JFrame {
 			setConnected(userName);
 		}
 	}
-
 	
 	private void setConnected(String userName) {
 		menuBar.remove(mntmConnect);
 		menuBar.add(mnConnection);
 		mnConnection.setText(userName);
+		// Add SimplePersonPanel
+		personPanel = new TestPersonSimplePanel(connection);
+		add(personPanel);
 	}
 	
 	private void setDisconnected() {
@@ -84,7 +88,9 @@ public class TestPersonFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == mntmConnect) {
 				ConnectionDialog dialog = new ConnectionDialog();
+				dialog.setVisible(true);
 				setConnection(dialog.getConnection(), dialog.getUserName());
+				dialog.dispose();
 			}
 			else if (e.getSource() == mntmDisconnect) {
 				setDisconnected();
@@ -92,6 +98,12 @@ public class TestPersonFrame extends JFrame {
 			else if (e.getSource() == mntmReset) {
 				
 			}
+		}
+	}
+	
+	private class ConnectionController implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			
 		}
 	}
 	

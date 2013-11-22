@@ -284,6 +284,26 @@ public class PersonQueries {
 	}
 	
 	// Updates
+	public int updatePerson(Person person)
+			throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			"UPDATE person" +
+			"  SET last_name = ?" +
+			"      first_name = ?" +
+			"      gender = ?" +
+			"      email = ?" +
+			"  WHERE person_code = ?"
+			);
+		stmt.setString(1, person.getLastName());
+		stmt.setString(2, person.getFirstName());
+		stmt.setString(3, person.getGender());
+		stmt.setString(4, person.getEmail());
+		stmt.setString(5, person.getPersonCode());
+		count = stmt.executeUpdate();
+		return count;
+	}
+	
 	
 	// Helper Functions
 	private List<Person> getListOfPeople(PreparedStatement stmt) 

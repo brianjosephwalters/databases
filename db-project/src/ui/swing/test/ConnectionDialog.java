@@ -39,14 +39,14 @@ public class ConnectionDialog extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setConnection(loginPanel.getConnection());
-				dispose();
+				setVisible(false);
 			}
 		});
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				resetConnection();
-				dispose();
+				setVisible(false);
 			}
 		});
 		
@@ -55,9 +55,7 @@ public class ConnectionDialog extends JDialog {
 		getContentPane().add(closePanel, BorderLayout.SOUTH);
 
 		setBounds(100, 100, 450, 300);
-		setVisible(true);
 		setModal(true);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 	
 	private void setConnection(Connection connection) {
@@ -75,7 +73,6 @@ public class ConnectionDialog extends JDialog {
 	public String getUserName() {
 		return this.loginPanel.getUserName();
 	}
-	
 	
 	/**
 	 * Launch the application.

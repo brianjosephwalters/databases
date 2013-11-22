@@ -62,4 +62,7 @@ public class Skill {
 		this.skillLevel = skillLevel;
 	}
 	
+	public String toString() {
+		return skillCode + ": " + skillName;
+	}
 }
