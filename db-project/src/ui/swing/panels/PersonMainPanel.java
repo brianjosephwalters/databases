@@ -4,35 +4,69 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import models.Person;
-
+import models.queries.PersonQueries;
 import db.DBConnection;
 
 @SuppressWarnings("serial")
 public class PersonMainPanel extends JPanel {
 	Connection connection;
-	
+	private PersonQueries personQueries;
+
+	// Data Instance Variables
+	List<Person> personList;
+	Person currentPerson;
+
+	PropertyChangeSupport pcS;
+
+	// GUI Instance Variables
 	NavigationPanel navPanel;
 	PersonFormPanel personFormPanel;
 	PersonSkillPanel personSkillPanel;
-	
+
 	public PersonMainPanel(Connection connection) {
 		this.connection = connection;
+		personQueries = new PersonQueries(connection);
 		
+		pcS = new PropertyChangeSupport(this);
+		
+		try {
+			personList = personQueries.getAllPeople();
+		} catch (SQLException e) {
+			System.out.println("Unable to get people!");
+		}
+		
+		initializeGUIComponents();
+		setCurrentPerson(getPersonList().get(0));
+	}
+	
+	public void initializeGUIComponents() {
 		// Setup Navigation Panel
-		navPanel = new NavigationPanel();
+		navPanel = new NavigationPanel(personList);
+		navPanel.addPropertyChangeListener(new NavigationListener());
+		this.addPropertyChangeListener(navPanel.new ListListener());
 		
 		// Setup Info Panel
 		personFormPanel = new PersonFormPanel(connection);
-		personSkillPanel = new PersonSkillPanel(connection);
+		this.addPropertyChangeListener(personFormPanel.new PersonListener());
+		personSkillPanel = new PersonSkillPanel(connection);	
+		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
+		
 		
 		JPanel infoPanel = new JPanel();
 		infoPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -50,23 +84,48 @@ public class PersonMainPanel extends JPanel {
 		add(mainPanel);
 	}
 	
-	public void setPerson(Person person) {
-		
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		pcS.addPropertyChangeListener(listener);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		pcS.addPropertyChangeListener(listener);
+	}
+	
+	public List<Person> getPersonList() {
+		return this.personList;
+	}
+	
+	public void setPersonList(List<Person> newPersonList) {
+		List<Person> oldPersonList = this.personList;
+		this.personList = newPersonList;
+		pcS.firePropertyChange("personList", oldPersonList, newPersonList);
+	}
+	
+	public Person getCurrentPerson() {
+		return this.currentPerson;
+	}
+	
+	public void setCurrentPerson(Person newPerson) {
+		Person oldPerson = this.currentPerson;
+		this.currentPerson = newPerson;
+		pcS.firePropertyChange("currentPerson", oldPerson, newPerson);
 	}
 	
 	
-	private class NavigationController implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			
-			
+	public class NavigationListener implements PropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (evt.getPropertyName().equals("currentIndex")) {
+				int index = (Integer)evt.getNewValue();
+				setCurrentPerson(getPersonList().get(index));
+			}
 		}
 	}
-	
+
 	public static void main (String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection();
+			connection = DBConnection.getConnection2();
 		} catch (SQLException e) {}
 		JFrame frame = new JFrame();
 		frame.add(new PersonMainPanel(connection));

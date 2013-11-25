@@ -344,9 +344,9 @@ public class TestPersonSimplePanel extends JPanel {
 	public static void main(String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection();
+			connection = DBConnection.getConnection2();
 		} catch (SQLException e) {
-			
+			System.out.println("FAIL!");
 		}
 		JFrame frame = new JFrame();
 		frame.add(new TestPersonSimplePanel(connection));

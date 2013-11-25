@@ -32,4 +32,13 @@ public class DBConnection {
 		return conn;
 	}
 	
+	public static final Connection getConnection2() 
+			throws SQLException{
+		String dbLocation = "@localhost:1521:" + "orcl";
+		String url = "jdbc:oracle:thin" + ':' + dbLocation;
+		DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+		Connection conn = DriverManager.getConnection(url, "bwalters", "HtoaYUen");
+		return conn;
+	}
+	
 }

@@ -15,15 +15,21 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import db.DBConnection;
-
 import models.Person;
 import models.queries.PersonQueries;
+
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 @SuppressWarnings("serial")
 public class PersonFormPanel extends JPanel{
 	Connection connection;
 	Person person;
+	
+	ButtonController controller;
 	
 	private JTextField tfPersonCode;
 	private JTextField tfLastName;
@@ -35,6 +41,12 @@ public class PersonFormPanel extends JPanel{
 	
 	public PersonFormPanel(Connection connection) {
 		this.connection = connection;
+		this.controller = new ButtonController();
+		
+		initializeGUIComponents();
+	}
+	
+	private void initializeGUIComponents() {
 		setLayout(new BorderLayout());
 		initializeDisplayPanel();
 		initializeButtonPanel();
@@ -72,6 +84,8 @@ public class PersonFormPanel extends JPanel{
 	
 	private void initializeButtonPanel() {
 		editButton = new JButton("Edit");
+		editButton.addActionListener(controller);
+		
 		JPanel buttonPanel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
@@ -79,13 +93,33 @@ public class PersonFormPanel extends JPanel{
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 	
-	public void displayPerson(Person person) {
+	private void displayPerson(Person person) {
 		this.person = person;
 		tfPersonCode.setText(person.getPersonCode());
 		tfLastName.setText(person.getLastName());
 		tfFirstName.setText(person.getFirstName());
 		tfGender.setText(person.getGender());
 		tfEmail.setText(person.getEmail());
+	}
+	
+	public class ButtonController implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			editButton();
+		}
+		
+		public void editButton() {
+			
+		}
+	}
+	
+	public class PersonListener implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (evt.getPropertyName().equals("currentPerson")) {
+				displayPerson((Person)evt.getNewValue());
+			}
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -97,7 +131,7 @@ public class PersonFormPanel extends JPanel{
 			queries = new PersonQueries(connection);
 			list = queries.getAllPeople();
 		} catch (SQLException e){
-			
+			System.out.println("Unable to connect to database");
 		}
 		
 		JFrame frame = new JFrame();
@@ -105,7 +139,6 @@ public class PersonFormPanel extends JPanel{
 		frame.getContentPane().add(personPanel);
 		personPanel.displayPerson(list.get(0));
 		
-		//
 		frame.setBounds(100, 100, 450, 300);
 		frame.setTitle("Test Person Panel");
 		frame.setVisible(true);
