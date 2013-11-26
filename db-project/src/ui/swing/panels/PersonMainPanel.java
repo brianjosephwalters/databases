@@ -2,8 +2,6 @@ package ui.swing.panels;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -13,11 +11,8 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import models.Person;
 import models.queries.PersonQueries;
@@ -37,6 +32,7 @@ public class PersonMainPanel extends JPanel {
 	// GUI Instance Variables
 	NavigationPanel navPanel;
 	PersonFormPanel personFormPanel;
+	PersonAddressPanel personAddressPanel;
 	PersonSkillPanel personSkillPanel;
 
 	public PersonMainPanel(Connection connection) {
@@ -64,6 +60,8 @@ public class PersonMainPanel extends JPanel {
 		// Setup Info Panel
 		personFormPanel = new PersonFormPanel(connection);
 		this.addPropertyChangeListener(personFormPanel.new PersonListener());
+		personAddressPanel = new PersonAddressPanel(connection);
+		this.addPropertyChangeListener(personAddressPanel.new PersonListener());
 		personSkillPanel = new PersonSkillPanel(connection);	
 		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
 		
@@ -72,6 +70,7 @@ public class PersonMainPanel extends JPanel {
 		infoPanel.setBorder(BorderFactory.createEtchedBorder());
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 		infoPanel.add(personFormPanel);
+		infoPanel.add(personAddressPanel);
 		infoPanel.add(personSkillPanel);
 		
 		// Setup Main Panel
@@ -110,8 +109,7 @@ public class PersonMainPanel extends JPanel {
 		Person oldPerson = this.currentPerson;
 		this.currentPerson = newPerson;
 		pcS.firePropertyChange("currentPerson", oldPerson, newPerson);
-	}
-	
+	}	
 	
 	public class NavigationListener implements PropertyChangeListener {
 		public void propertyChange(PropertyChangeEvent evt) {
@@ -125,11 +123,13 @@ public class PersonMainPanel extends JPanel {
 	public static void main (String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection2();
-		} catch (SQLException e) {}
+			connection = DBConnection.getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		JFrame frame = new JFrame();
 		frame.add(new PersonMainPanel(connection));
-		frame.setBounds(100, 100, 550, 400);
+		frame.setBounds(10, 10, 650, 500);
 		frame.setTitle("Person Program");
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

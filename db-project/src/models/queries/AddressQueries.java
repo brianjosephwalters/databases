@@ -35,30 +35,30 @@ public class AddressQueries {
 	/**
 	 * The addresses and types of a particular company.
 	 */
-	public List<Address> getCompanyAddresses(String company_code) 
+	public List<Address> getCompanyAddresses(String companyCode) 
 			throws SQLException {
 		List<Address> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			"SELECT * " +
-			"FROM address NATURAL JOIN company_address" +
+			"FROM address NATURAL JOIN company_address " +
 			"WHERE company_code = ?");
-		stmt.setString(1, company_code);
+		stmt.setString(1, companyCode);
 		
 		list = getListOfAddresses(stmt);
 		return list;
 	}
-	
+		
 	/**
 	 * The addresses and types of a particular person.
 	 */
-	public List<Address> getPersonAddresses(String person_code) 
+	public List<Address> getPersonAddresses(String personCode) 
 			throws SQLException {
 		List<Address> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			"SELECT * " +
-			"FROM address NATURAL JOIN person_address" +
+			"FROM address NATURAL JOIN person_address " +
 			"WHERE person_code = ?");
-		stmt.setString(1, person_code);
+		stmt.setString(1, personCode);
 		
 		list = getListOfAddresses(stmt);
 		return list;
@@ -97,7 +97,7 @@ public class AddressQueries {
 			// and add it to the list.
 			list.add( new Address(
 				results.getString("address_code"),
-				results.getString("addressType"),
+				results.getString("address_type"),
 				results.getString("street_1"),
 				results.getString("street_2"),
 				results.getString("city"),

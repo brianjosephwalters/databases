@@ -3,6 +3,9 @@ package ui.swing.panels;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -15,12 +18,15 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import models.Person;
 import models.Skill;
 import models.queries.SkillQueries;
+import javax.swing.JScrollPane;
 
 @SuppressWarnings("serial")
 public class PersonSkillPanel extends JPanel {
@@ -31,8 +37,9 @@ public class PersonSkillPanel extends JPanel {
 	
 	private ButtonController buttonController;
 	
-	JTextField tfSkills;
+	JTextArea taSkills;
 	JButton editButton;
+	private JScrollPane scrollPane;
 
 	public PersonSkillPanel(Connection connection) {
 		this.connection = connection;
@@ -45,8 +52,6 @@ public class PersonSkillPanel extends JPanel {
 	}
 	
 	public void initializeGUIComponents() {
-		// Setup TextField
-		tfSkills = new JTextField();
 		
 		//Setup Data Panel
 		editButton = new JButton("Edit");
@@ -61,7 +66,16 @@ public class PersonSkillPanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder( 
 			BorderFactory.createEtchedBorder(), "Skills"));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		add(tfSkills);
+		
+		// Setup TextField
+		scrollPane = new JScrollPane();
+		taSkills = new JTextArea();
+		taSkills.setLineWrap(true);
+		taSkills.setWrapStyleWord(true);
+		taSkills.setEditable(false);
+		scrollPane.setViewportView(taSkills);
+		
+		add(scrollPane);
 		add(buttonPanel);
 	}
 
@@ -72,7 +86,6 @@ public class PersonSkillPanel extends JPanel {
 
 	private void setSkillTextField() { 
 		String personCode = person.getPersonCode();
-		System.out.println(personCode);
 		try {
 			this.list = skillQueries.getSkillsOfPerson(personCode);
 		} catch (SQLException e) {
@@ -83,8 +96,7 @@ public class PersonSkillPanel extends JPanel {
 		for (Skill skill: list) {
 			sb.append(skill.getSkillName() + ", ");
 		}
-		tfSkills.setText(sb.toString());
-		System.out.println(list);
+		taSkills.setText(sb.toString());
 	}
 		
 	private class ButtonController implements ActionListener {
@@ -95,9 +107,13 @@ public class PersonSkillPanel extends JPanel {
 		
 		private void editButton() {
 			JDialog dialog = new JDialog();
-			dialog.add(new EditPersonSkillsPanel(connection, person));
+			dialog.getContentPane().add(new EditPersonSkillsPanel(connection, person));
+			dialog.setBounds(100, 100, 550, 400);
+			dialog.setTitle("Change Skills");
+			dialog.setVisible(true);
+			dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			dialog.addWindowListener(new EditWindowListener());
 			dialog.setModal(true);
-			dialog.dispose();
 		}
 	}
 	
@@ -106,6 +122,12 @@ public class PersonSkillPanel extends JPanel {
 		public void propertyChange(PropertyChangeEvent evt) {
 			displayPerson((Person)evt.getNewValue());
 		}
-		
+	}
+	
+	public class EditWindowListener extends WindowAdapter {
+		@Override
+		public void windowClosed(WindowEvent e) {
+			setSkillTextField();
+		}
 	}
 }
