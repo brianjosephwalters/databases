@@ -35,6 +35,7 @@ public class PersonMainPanel extends JPanel {
 	PersonAddressPanel personAddressPanel;
 	PersonPhonePanel personPhonePanel;
 	PersonSkillPanel personSkillPanel;
+	PersonCertificatePanel personCertificatePanel;
 
 	public PersonMainPanel(Connection connection) {
 		this.connection = connection;
@@ -67,6 +68,8 @@ public class PersonMainPanel extends JPanel {
 		this.addPropertyChangeListener(personPhonePanel.new PersonListener());
 		personSkillPanel = new PersonSkillPanel(connection);	
 		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
+		personCertificatePanel = new PersonCertificatePanel(connection);
+		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
 		
 		
 		JPanel infoPanel = new JPanel();
@@ -75,6 +78,7 @@ public class PersonMainPanel extends JPanel {
 		infoPanel.add(personFormPanel);
 		infoPanel.add(personAddressPanel);
 		infoPanel.add(personSkillPanel);
+		infoPanel.add(personCertificatePanel);
 		
 		// Setup Main Panel
 		JPanel mainPanel = new JPanel();

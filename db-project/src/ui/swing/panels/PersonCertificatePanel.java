@@ -54,6 +54,7 @@ public class PersonCertificatePanel extends JPanel {
 		//Setup Data Panel
 		editButton = new JButton("Edit");
 		editButton.addActionListener(buttonController);
+		editButton.setEnabled(false);
 		JPanel buttonPanel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
