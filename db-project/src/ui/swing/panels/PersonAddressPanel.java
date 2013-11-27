@@ -40,6 +40,8 @@ public class PersonAddressPanel extends JPanel {
 	private JTextField tfCity;
 	private JTextField tfZipcode;
 	
+	JButton btnEdit;
+	
 	public PersonAddressPanel(Connection connection) {
 		this.connection = connection;
 		this.addressQueries = new AddressQueries(connection);
@@ -142,7 +144,7 @@ public class PersonAddressPanel extends JPanel {
 		add(tfZipcode, "8, 12, 7, 1, fill, top");
 		tfZipcode.setColumns(10);
 		
-		JButton btnEdit = new JButton("Edit");
+		btnEdit = new JButton("Edit");
 		add(btnEdit, "20, 12");
 	}
 	

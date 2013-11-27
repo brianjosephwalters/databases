@@ -40,7 +40,7 @@ public class PhoneQueries {
 		List<PhoneNumber> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			"SELECT * " +
-			"FROM phone_number NATURAL JOIN company_phone" +
+			"FROM phone_number NATURAL JOIN company_phone " +
 			"WHERE company_code = ?");
 		stmt.setString(1, company_code);
 		
@@ -56,7 +56,7 @@ public class PhoneQueries {
 		List<PhoneNumber> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			"SELECT * " +
-			"FROM phone_number NATURAL JOIN person_phone" +
+			"FROM phone_number NATURAL JOIN person_phone " +
 			"WHERE person_code = ?");
 		stmt.setString(1, person_code);
 		
