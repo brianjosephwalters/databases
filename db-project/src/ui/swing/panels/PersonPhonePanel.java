@@ -25,6 +25,7 @@ import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 
+@SuppressWarnings("serial")
 public class PersonPhonePanel extends JPanel{
 	Connection connection;
 	PhoneQueries phoneQueries;

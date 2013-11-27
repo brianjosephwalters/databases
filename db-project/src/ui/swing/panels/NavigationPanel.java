@@ -170,6 +170,7 @@ public class NavigationPanel extends JPanel {
 	}
 	
 	public class ListListener implements PropertyChangeListener {
+		@SuppressWarnings("unchecked")
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals("personList")) {
