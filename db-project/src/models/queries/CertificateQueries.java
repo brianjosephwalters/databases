@@ -26,8 +26,8 @@ public class CertificateQueries {
 			throws SQLException {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM certificate");
+			" SELECT * " +
+			" FROM certificate");
 		list = getListOfCertificates(stmt);
 		
 		return list;
@@ -40,11 +40,12 @@ public class CertificateQueries {
 			throws SQLException {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM certificate" +
-			"WHERE tool_code = ?");
-		list = getListOfCertificates(stmt);
+			" SELECT * " +
+			" FROM certificate " +
+			" WHERE tool_code = ?");
 		stmt.setString(1, toolCode);
+		
+		list = getListOfCertificates(stmt);
 		return list;
 	}
 	
@@ -55,11 +56,11 @@ public class CertificateQueries {
 			throws SQLException {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM certificate" +
-			"WHERE company_code = ?");
-		list = getListOfCertificates(stmt);
+			" SELECT * " +
+			" FROM certificate " +
+			" WHERE company_code = ?");
 		stmt.setString(1, companyCode);
+		list = getListOfCertificates(stmt);
 		return list;
 	}
 	
@@ -67,62 +68,61 @@ public class CertificateQueries {
 	/**
 	 * All certificates required by a job.
 	 */
-	public List<Certificate> getCertificatesForJob(String job_code) 
+	public List<Certificate> getCertificatesForJob(String jobCode) 
 			throws SQLException {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM certificate NATURAL JOIN job_profile_certificate" +
-			"     NATURAL JOIN job" +
-			"WHERE job_code = ?");
+			" SELECT * " +
+			" FROM certificate NATURAL JOIN job_profile_certificate " +
+			"      NATURAL JOIN job" +
+			" WHERE job_code = ?");
+		stmt.setString(1, jobCode);
 		list = getListOfCertificates(stmt);
-		stmt.setString(1, job_code);
 		return list;
 	}
 	
 	/**
 	 * All certificates required by a job profile.
 	 */
-	public List<Certificate> getCertificatesForJobProfile(String job_profile_code) 
+	public List<Certificate> getCertificatesForJobProfile(String jobProfileCode) 
 			throws SQLException {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM certificate NATURAL JOIN job_profile_certificate" +
-			"WHERE job_code = ?");
+			" SELECT * " +
+			" FROM certificate NATURAL JOIN job_profile_certificate " +
+			" WHERE job_code = ? ");
+		stmt.setString(1, jobProfileCode);
 		list = getListOfCertificates(stmt);
-		stmt.setString(1, job_profile_code);
 		return list;
 	}
 	
 	/**
 	 * All certificates prepared for by a course.
 	 */
-	public List<Certificate> getCertificatesPreparedByCourse(String course_code) 
+	public List<Certificate> getCertificatesPreparedByCourse(String courseCode) 
 			throws SQLException {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM certificate NATURAL JOIN prepares_for" +
-			"WHERE course_code = ?");
+			" SELECT * " +
+			" FROM certificate NATURAL JOIN prepares_for " +
+			" WHERE course_code = ? ");
+		stmt.setString(1, courseCode);
 		list = getListOfCertificates(stmt);
-		stmt.setString(1, course_code);
 		return list;
 	}
 	
 	/**
 	 * All certificates possessed by a person.
 	 */
-	public List<Certificate> getCertificatesForPerson(String person_code) 
+	public List<Certificate> getCertificatesForPerson(String personCode) 
 			throws SQLException {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM certificate NATURAL JOIN exam_type NATURAL JOIN" +
-			"     exam NATURAL JOIN takes" +
-			"WHERE person_code = ?");
+			" SELECT * " +
+			" FROM certificate NATURAL JOIN earns"  +
+			" WHERE person_code = ?");
+		stmt.setString(1, personCode);
 		list = getListOfCertificates(stmt);
-		stmt.setString(1, person_code);
 		return list;
 	}
 	

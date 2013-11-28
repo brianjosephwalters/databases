@@ -18,12 +18,12 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import models.Certificate;
 import models.Person;
+import models.Certificate;
 import models.queries.CertificateQueries;
+import javax.swing.JScrollPane;
 
 @SuppressWarnings("serial")
 public class PersonCertificatePanel extends JPanel {
@@ -34,11 +34,11 @@ public class PersonCertificatePanel extends JPanel {
 	
 	private ButtonController buttonController;
 	
-	private JTextArea taCertificates;
+	private JTextArea taSkills;
 	private JScrollPane scrollPane;
 	
 	private JButton editButton;
-	
+
 	public PersonCertificatePanel(Connection connection) {
 		this.connection = connection;
 		this.certificateQueries = new CertificateQueries(connection);
@@ -54,7 +54,6 @@ public class PersonCertificatePanel extends JPanel {
 		//Setup Data Panel
 		editButton = new JButton("Edit");
 		editButton.addActionListener(buttonController);
-		editButton.setEnabled(false);
 		JPanel buttonPanel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
@@ -68,36 +67,39 @@ public class PersonCertificatePanel extends JPanel {
 		
 		// Setup TextField
 		scrollPane = new JScrollPane();
-		taCertificates = new JTextArea();
-		taCertificates.setLineWrap(true);
-		taCertificates.setWrapStyleWord(true);
-		taCertificates.setEditable(false);
-		scrollPane.setViewportView(taCertificates);
+		taSkills = new JTextArea();
+		taSkills.setLineWrap(true);
+		taSkills.setWrapStyleWord(true);
+		taSkills.setEditable(false);
+		scrollPane.setViewportView(taSkills);
 		
 		add(scrollPane);
 		add(buttonPanel);
 	}
-	
+
 	public void displayPerson(Person person) {
 		this.person = person;
 		setCertificateTextArea();
 	}
 	
-	private void setCertificateTextArea()  {
+	private void generateCertificateList() {
 		String personCode = person.getPersonCode();
 		try {
 			this.list = certificateQueries.getCertificatesForPerson(personCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+	}
+
+	private void setCertificateTextArea() { 
+		generateCertificateList();		
 		StringBuilder sb = new StringBuilder();
 		for (Certificate certificate: list) {
 			sb.append(certificate.getCertificateTitle() + ", ");
 		}
-		taCertificates.setText(sb.toString());
+		taSkills.setText(sb.toString());
 	}
-	
+		
 	private class ButtonController implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -129,5 +131,4 @@ public class PersonCertificatePanel extends JPanel {
 			setCertificateTextArea();
 		}
 	}
-	
 }

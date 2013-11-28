@@ -6,6 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -30,6 +31,7 @@ public class PersonPhonePanel extends JPanel{
 	Connection connection;
 	PhoneQueries phoneQueries;
 	Person person;
+	List<PhoneNumber> list;
 	
 	private ComboBoxController cbController;
 	
@@ -42,10 +44,10 @@ public class PersonPhonePanel extends JPanel{
 	public PersonPhonePanel (Connection connection) {
 		this.connection = connection;
 		this.phoneQueries = new PhoneQueries(connection);
+		this.list = new ArrayList<PhoneNumber>();
 		this.person = null;
 		
 		this.cbController = new ComboBoxController();
-		
 		
 		initializeGUIComponents();
 	}
@@ -110,15 +112,17 @@ public class PersonPhonePanel extends JPanel{
 		tfPhoneNumber.setText(phone.getPhoneNum());
 	}
 	
-	private void displayPersonTypes(Person person) {
-		this.person = person;
-		List<PhoneNumber> list = null;
+	private void generatePhoneList() {
+		String personCode = person.getPersonCode();
 		try {
-			list = phoneQueries.getPersonPhoneNumbers(person.getPersonCode());
+			list = phoneQueries.getPersonPhoneNumbers(personCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+	}
+	
+	private void displayPersonTypes() {
+		generatePhoneList();
 		cbTypeModel = new DefaultComboBoxModel<PhoneNumber>();
 		cbTypeModel.removeAllElements();
 		for (PhoneNumber phone: list) {
@@ -126,6 +130,14 @@ public class PersonPhonePanel extends JPanel{
 		}
 		
 		cbType.setModel(cbTypeModel);
+	}
+	
+	private void displayPerson(Person person) {
+		this.person = person;
+		clearPhone();
+		displayPersonTypes();
+		PhoneNumber phone = (PhoneNumber)cbType.getSelectedItem(); 
+		displayPersonPhone(phone);
 	}
 	
 	private class ComboBoxController implements ActionListener {
@@ -141,10 +153,7 @@ public class PersonPhonePanel extends JPanel{
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals("currentPerson")) {
-				clearPhone();
-				displayPersonTypes((Person)evt.getNewValue());
-				PhoneNumber phone = (PhoneNumber)cbType.getSelectedItem(); 
-				displayPersonPhone(phone);
+				displayPerson((Person)evt.getNewValue());
 			}
 		}
 	}

@@ -9,6 +9,9 @@ import javax.swing.table.AbstractTableModel;
 public class QueryResultsTableModel extends AbstractTableModel {
 	ResultSet results;
 
+	public QueryResultsTableModel() {
+	}
+	
 	public QueryResultsTableModel(ResultSet results) {
 		this.results = results;
 		fireTableStructureChanged();

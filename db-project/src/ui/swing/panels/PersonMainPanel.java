@@ -53,7 +53,7 @@ public class PersonMainPanel extends JPanel {
 		setCurrentPerson(getPersonList().get(0));
 	}
 	
-	public void initializeGUIComponents() {
+	private void initializeGUIComponents() {
 		// Setup Navigation Panel
 		navPanel = new NavigationPanel(personList);
 		navPanel.addPropertyChangeListener(new NavigationListener());
@@ -130,7 +130,7 @@ public class PersonMainPanel extends JPanel {
 	public static void main (String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection();
+			connection = DBConnection.getConnection2();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

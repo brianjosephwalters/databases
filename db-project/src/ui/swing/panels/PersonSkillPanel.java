@@ -81,15 +81,18 @@ public class PersonSkillPanel extends JPanel {
 		this.person = person;
 		setSkillTextArea();
 	}
-
-	private void setSkillTextArea() { 
+	
+	private void generateSkillList() {
 		String personCode = person.getPersonCode();
 		try {
 			this.list = skillQueries.getSkillsOfPerson(personCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+	}
+
+	private void setSkillTextArea() { 
+		generateSkillList();		
 		StringBuilder sb = new StringBuilder();
 		for (Skill skill: list) {
 			sb.append(skill.getSkillName() + ", ");

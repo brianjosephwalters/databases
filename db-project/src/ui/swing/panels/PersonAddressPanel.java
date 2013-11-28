@@ -6,6 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -20,6 +21,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -27,8 +29,10 @@ import javax.swing.JButton;
 @SuppressWarnings("serial")
 public class PersonAddressPanel extends JPanel {
 	Connection connection;
-	AddressQueries addressQueries;
 	Person person;
+	AddressQueries addressQueries;
+	List<Address> list;
+	
 	
 	private ComboBoxController cbController;
 	
@@ -45,6 +49,7 @@ public class PersonAddressPanel extends JPanel {
 	public PersonAddressPanel(Connection connection) {
 		this.connection = connection;
 		this.addressQueries = new AddressQueries(connection);
+		this.list = new ArrayList<Address>();
 		this.person = null;
 		
 		this.cbController = new ComboBoxController();
@@ -162,15 +167,17 @@ public class PersonAddressPanel extends JPanel {
 		tfZipcode.setText(address.getZipcode());
 	}
 	
-	private void displayPersonTypes(Person person) {
-		this.person = person;
-		List<Address> list = null;
-		
+	private void generateAddressList() {
+		String personCode = person.getPersonCode();
 		try {
-			list = addressQueries.getPersonAddresses(person.getPersonCode());
+			this.list = addressQueries.getPersonAddresses(personCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void displayPersonTypes() {
+		generateAddressList();
 		cbTypeModel = new DefaultComboBoxModel<Address>();
 		cbTypeModel.removeAllElements();
 		for (Address address: list) {
@@ -178,6 +185,14 @@ public class PersonAddressPanel extends JPanel {
 		}
 		
 		cbType.setModel(cbTypeModel);
+	}
+	
+	private void displayPerson(Person person) {
+		this.person = person;
+		clearAddress();
+		displayPersonTypes();
+		Address address = (Address)cbType.getSelectedItem();
+		displayPersonAddress(address);
 	}
 	
 	private class ComboBoxController implements ActionListener {
@@ -193,10 +208,7 @@ public class PersonAddressPanel extends JPanel {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals("currentPerson")) {
-				clearAddress();
-				displayPersonTypes((Person)evt.getNewValue());
-				Address address = (Address)cbType.getSelectedItem(); 
-				displayPersonAddress(address);
+				displayPerson((Person)evt.getNewValue());
 			}
 		}
 	}

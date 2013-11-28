@@ -14,9 +14,9 @@ public class TestQueries {
 			"SELECT person_code, last_name, first_name " +
 			"FROM person NATURAL JOIN employment NATURAL JOIN " +
 			"	  job NATURAL JOIN company " +
-			"WHERE company_id = ? AND" +
-			"      start_date < CURRENT_DATE AND" +
-			"      (end_date > CURRENT_DATE OR end_date IS NULL)");
+			"WHERE company_id = ? AND " +
+			"      start_date < CURRENT_DATE AND " +
+			"      (end_date > CURRENT_DATE OR end_date IS NULL) ");
 		stmt.setString(1, company_id);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
@@ -26,13 +26,13 @@ public class TestQueries {
 	public ResultSet getCompanyFullTimeEmployeesBySalaryDesc(String company_code) 
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"SELECT person_code, last_name, first_name, pay_rate" +
+			"SELECT person_code, last_name, first_name, pay_rate " +
 			"FROM person NATURAL JOIN employment NATURAL JOIN " +
 			"	  job NATURAL JOIN company " +
-			"WHERE company_code = ? AND pay_type = 'salary' AND" +
-			"      start_date < CURRENT_DATE AND" +
-			"      (end_date > CURRENT_DATE OR end_date IS NULL)" +
-			"ORDER BY DESC");
+			"WHERE company_code = ? AND pay_type = 'salary' AND " +
+			"      start_date < CURRENT_DATE AND " +
+			"      (end_date > CURRENT_DATE OR end_date IS NULL) " +
+			"ORDER BY DESC ");
 		stmt.setString(1, company_code);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
@@ -43,19 +43,19 @@ public class TestQueries {
 	public ResultSet getCompanyCurrentTotalLaborCost(String company_code) 
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"SELECT sum(calculated_wage)" +
+			"SELECT sum(calculated_wage) " +
 			"FROM person NATURAL JOIN employment NATURAL JOIN " +
 			"	  job NATURAL JOIN company " +
-			"WHERE company_code = ? AND" +
-			"      start_date < CURRENT_DATE AND" +
-			"      (end_date > CURRENT_DATE OR end_date IS NULL)" +
-			"GROUP BY person_code" +
-			"HAVING calculated_wage as" +
-			"     CASE" +
-			"         WHEN pay_rate = 'salary' THEN pay_rate" +
-			"         WHEN pay_rate = 'wage' THEN pay_rate * 1920" +
+			"WHERE company_code = ? AND " +
+			"      start_date < CURRENT_DATE AND " +
+			"      (end_date > CURRENT_DATE OR end_date IS NULL) " +
+			"GROUP BY person_code " +
+			"HAVING calculated_wage as " +
+			"     CASE " +
+			"         WHEN pay_rate = 'salary' THEN pay_rate " +
+			"         WHEN pay_rate = 'wage' THEN pay_rate * 1920 " +
 			"         ELSE NULL" +
-			"     END");
+			"     END ");
 		stmt.setString(1, company_code);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
@@ -65,12 +65,12 @@ public class TestQueries {
 	public ResultSet getCurrentEmployment(String person_code) 
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"SELECT job_code, job_profile_title" +
-			"FROM person NATURAL JOIN employment NATURAL JOIN" +
-			"	  job NATURAL JOIN job_profile" +
-			"WHERE person_code = ? AND" +
-			"      start_date < CURRENT_DATE AND" +
-			"      (end_date > CURRENT_DATE OR end_date IS NULL)"
+			"SELECT job_code, job_profile_title " +
+			"FROM person NATURAL JOIN employment NATURAL JOIN " +
+			"	  job NATURAL JOIN job_profile " +
+			"WHERE person_code = ? AND " +
+			"      start_date < CURRENT_DATE AND " +
+			"      (end_date > CURRENT_DATE OR end_date IS NULL) "
 			);
 		stmt.setString(1, person_code);
 		ResultSet rset = stmt.executeQuery();
@@ -81,12 +81,12 @@ public class TestQueries {
 	public ResultSet getCurrentProjectEmployees(String project_code)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"SELECT person_code, last_name, first_name" +
-			"FROM person NATURAL JOIN employment NATURAL JOIN" +
-			"	  job NATURAL JOIN job_project" +
-			"WHERE project_code = ? AND" +
-			"      start_date < CURRENT_DATE AND" +
-			"      (end_date > CURRENT_DATE OR end_date IS NULL)"
+			"SELECT person_code, last_name, first_name " +
+			"FROM person NATURAL JOIN employment NATURAL JOIN " +
+			"	  job NATURAL JOIN job_project " +
+			"WHERE project_code = ? AND " +
+			"      start_date < CURRENT_DATE AND " +
+			"      (end_date > CURRENT_DATE OR end_date IS NULL) "
 			);
 		stmt.setString(1, project_code);
 		ResultSet rset = stmt.executeQuery();
@@ -97,9 +97,9 @@ public class TestQueries {
 	public ResultSet getPersonSkills(String person_code)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"SELECT skill_name" +
-			"FROM skill NATURAL JOIN person_skill" +
-			"WHERE person_code = ?"
+			"SELECT skill_name " +
+			"FROM skill NATURAL JOIN person_skill " +
+			"WHERE person_code = ? "
 			);
 		stmt.setString(1, person_code);
 		ResultSet rset = stmt.executeQuery();
@@ -111,17 +111,17 @@ public class TestQueries {
 			throws SQLException {
 		// Is this the right direction?
 		PreparedStatement stmt = conn.prepareStatement(
-			"(SELECT DISTINCT skill_code" +
-			" FROM person NATURAL JOIN employment NATURAL JOIN" +
+			"(SELECT DISTINCT skill_code " +
+			" FROM person NATURAL JOIN employment NATURAL JOIN " +
 			"      job NATURAL JOIN job_profile NATURAL JOIN " +
-			"      job_profile_skill" +
+			"      job_profile_skill " +
 			" WHERE person_code = ? AND " +
-			"      start_date < CURRENT_DATE AND" +
-			"      (end_date > CURRENT_DATE OR end_date IS NULL) )" +
-			"EXCEPT" +
-			"(SELECT skill_code" +
-			" FROM person NATURAL JOIN person_skill" +
-			" WHERE person_code = ?)"
+			"      start_date < CURRENT_DATE AND " +
+			"      (end_date > CURRENT_DATE OR end_date IS NULL) ) " +
+			"EXCEPT " +
+			"(SELECT skill_code " +
+			" FROM person NATURAL JOIN person_skill " +
+			" WHERE person_code = ?) "
 			);
 		stmt.setString(1, person_code);
 		ResultSet rset = stmt.executeQuery();
@@ -132,9 +132,9 @@ public class TestQueries {
 	public ResultSet getRequiredSkills(String job_profile_code)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"SELECT skill_name" +
-			"FROM job_profile_skill NATURAL JOIN skill" +
-			"WHERE job_profile_code = ?"
+			"SELECT skill_name " +
+			"FROM job_profile_skill NATURAL JOIN skill " +
+			"WHERE job_profile_code = ? "
 			);
 		stmt.setString(1, job_profile_code);
 		ResultSet rset = stmt.executeQuery();
@@ -147,15 +147,15 @@ public class TestQueries {
 	public ResultSet getSkillGapOfPersonForJob(String person_code, String job_code)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"(SELECT skill_code, skill_name" +
-			" FROM job NATURAL JOIN job_profile NATURAL JOIN" +
-			"      job_profile_skill NATURAL JOIN skill" +
-			" WHERE job_code = ?)" +
-			"EXCEPT" +
-			"(SELECT skill_code, skill_name" +
+			"(SELECT skill_code, skill_name " +
+			" FROM job NATURAL JOIN job_profile NATURAL JOIN " +
+			"      job_profile_skill NATURAL JOIN skill " +
+			" WHERE job_code = ?) " +
+			"EXCEPT " +
+			"(SELECT skill_code, skill_name " +
 			" FROM person NATURAL JOIN " +
-			"      person_skill NATURAL JOIN skill" +
-			" WHERE person_code = ?)"
+			"      person_skill NATURAL JOIN skill " +
+			" WHERE person_code = ?) "
 			);
 		stmt.setString(1, person_code);
 		ResultSet rset = stmt.executeQuery();
