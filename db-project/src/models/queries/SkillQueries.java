@@ -26,8 +26,8 @@ public class SkillQueries {
 			throws SQLException {
 		List<Skill> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM skill");
+			" SELECT * " +
+			" FROM skill ");
 		list = getListOfSkills(stmt);
 		
 		return list;
@@ -40,9 +40,9 @@ public class SkillQueries {
 			throws SQLException {
 		List<Skill> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM skill NATURAL JOIN course_skill " + 
-			"WHERE course_code = ?");
+			" SELECT * " +
+			" FROM skill NATURAL JOIN course_skill " + 
+			" WHERE course_code = ? ");
 		stmt.setString(1, courseCode);
 		list = getListOfSkills(stmt);
 		
@@ -56,9 +56,9 @@ public class SkillQueries {
 			throws SQLException {
 		List<Skill> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM skill NATURAL JOIN person_skill " + 
-			"WHERE person_code = ?");
+			" SELECT * " +
+			" FROM skill NATURAL JOIN person_skill " + 
+			" WHERE person_code = ?");
 		stmt.setString(1, personCode);
 		list = getListOfSkills(stmt);
 		
@@ -72,15 +72,15 @@ public class SkillQueries {
 			throws SQLException {
 		List<Skill> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"WITH  lacked_skills AS" +
-			"  ( (SELECT skill_code" + 
-		    "     FROM skill)" +
-		    "    MINUS " +
-		    "    (SELECT skill_code" +
-		    "     FROM skill NATURAL JOIN person_skill" +
-		    "     WHERE person_code = ?) )" +
-			"SELECT * " +
-			"FROM skill NATURAL JOIN lacked_skills");
+			" WITH  lacked_skills AS" +
+			"   ( (SELECT skill_code" + 
+		    "      FROM skill)" +
+		    "     MINUS " +
+		    "     (SELECT skill_code" +
+		    "      FROM skill NATURAL JOIN person_skill" +
+		    "      WHERE person_code = ?) )" +
+			" SELECT * " +
+			" FROM skill NATURAL JOIN lacked_skills");
 		stmt.setString(1, personCode);
 		list = getListOfSkills(stmt);
 		
@@ -94,17 +94,85 @@ public class SkillQueries {
 			throws SQLException {
 		List<Skill> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM skill NATURAL JOIN job_profile_skill" + 
-			"WHERE job_profile_code = ?");
+			" SELECT * " +
+			" FROM skill NATURAL JOIN job_profile_skill" + 
+			" WHERE job_profile_code = ?");
 		stmt.setString(1, jobProfileCode);
 		list = getListOfSkills(stmt);
 		
 		return list;
 	}
 	
+	public List<Skill> getSkillsForJob(String jobCode) 
+			throws SQLException {
+		List<Skill> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" SELECT * " +
+			" FROM skill NATURAL JOIN job_skill "  + 
+			" WHERE job_code = ? ");
+		stmt.setString(1, jobCode);
+		list = getListOfSkills(stmt);
+		
+		return list;
+	}
+	
+	/**
+WITH skill_codes AS 
+  (SELECT skill_code
+  FROM skill NATURAL JOIN job_skill 
+  WHERE job_code = '100'
+  UNION 
+  SELECT skill_code
+  FROM skill NATURAL JOIN job_profile_skill
+  WHERE job_profile_code = '100' )
+SELECT *
+FROM skill NATURAL JOIN skill_codes
+	 */
+	public List<Skill> getSkillsForJobAndJobProfile(String jobCode,
+													String jobProfileCode) 
+			throws SQLException {
+		List<Skill> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH skill_codes AS" +
+			" 	(SELECT skill_code " +
+			" 	FROM skill NATURAL JOIN job_skill "  + 
+			" 	WHERE job_code = ? " +
+			" 	UNION " +
+			" 	SELECT skill_code " +
+			" 	FROM skill NATURAL JOIN job_profile_skill " +
+			" 	WHERE job_profile_code = ?)" +
+			" SELECT *" +
+			" FROM skill NATURAL JOIN skill_codes");
+		stmt.setString(1, jobCode);
+		stmt.setString(2, jobProfileCode);
+		list = getListOfSkills(stmt);
+		
+		return list;
+	}
+	
+	
+	
 	/**
 	 * All skills missing from Person to fulfill a job / Job Profile
+	 * 
+		WITH 
+		  skills_job as 
+		    (SELECT skill_code
+		    FROM job_skill
+		    WHERE job_code = '10147'), 
+		  skills_job_profile as 
+		    (SELECT skill_code 
+		    FROM job_profile_skill NATURAL JOIN job 
+		    WHERE job_code = '10147'),
+		  skills_person as 
+		    (SELECT skill_code 
+		    FROM person_skill
+		    WHERE person_code = '10147'),
+		  missing_skills as (SELECT * FROM skills_person MINUS 
+		                     SELECT * FROM skills_job MINUS 
+		                     SELECT * FROM skills_job_profile)
+		SELECT *
+		FROM skill NATURAL JOIN missing_skills
 	 */
 	public List<Skill> getSkillsMissingFromPersonForJob(String personCode, 
 														String jobCode,
@@ -124,11 +192,12 @@ public class SkillQueries {
 			"   skills_person as " +
 			"     (SELECT skill_code " +
 			"      FROM person_skill " +
-			"      WHERE person_code = ?) " +
+			"      WHERE person_code = ?), " +
+			"	missing_skills as (SELECT * FROM skills_person MINUS " +
+            "       			   SELECT * FROM skills_job MINUS " +
+            "        			   SELECT * FROM skills_job_profile) " +
 			" SELECT * " +
-			" FROM skills NATURAL JOIN (skills_person MINUS " +
-			"					        skills_job MINUS " + 
-			"                           skills_job_profile) "
+			" FROM skill NATURAL JOIN missing_skills "
 		);
 		stmt.setString(1, jobCode);
 		stmt.setString(2, jobProfileCode);
@@ -230,7 +299,7 @@ public class SkillQueries {
 			list.add( new Skill(
 				results.getString("skill_code"),
 				results.getString("skill_name"),
-				results.getString("skill_description"),
+				results.getClob("skill_description").toString(),
 				results.getString("skill_level"))
 			);
 		}

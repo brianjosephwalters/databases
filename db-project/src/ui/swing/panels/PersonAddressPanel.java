@@ -163,7 +163,7 @@ public class PersonAddressPanel extends JPanel {
 	private void displayPersonTypes() {
 		generateAddressList();
 		cbTypeModel = new DefaultComboBoxModel<Address>();
-		cbTypeModel.removeAllElements();
+		cbTypeModel.removeAllElements(); // Redundant?
 		for (Address address: list) {
 			cbTypeModel.addElement(address);
 		}

@@ -20,22 +20,22 @@ import db.DBConnection;
 
 @SuppressWarnings("serial")
 public class PersonMainPanel extends JPanel {
-	Connection connection;
+	private Connection connection;
 	private PersonQueries personQueries;
 
 	// Data Instance Variables
-	List<Person> personList;
-	Person currentPerson;
+	private List<Person> personList;
+	private Person currentPerson;
 
-	PropertyChangeSupport pcS;
+	private PropertyChangeSupport pcS;
 
 	// GUI Instance Variables
-	NavigationPanel navPanel;
-	PersonFormPanel personFormPanel;
-	PersonAddressPanel personAddressPanel;
-	PersonPhonePanel personPhonePanel;
-	PersonSkillPanel personSkillPanel;
-	PersonCertificatePanel personCertificatePanel;
+	private PersonNavigationPanel navPanel;
+	private PersonFormPanel personFormPanel;
+	private PersonAddressPanel personAddressPanel;
+	private PersonPhonePanel personPhonePanel;
+	private PersonSkillPanel personSkillPanel;
+	private PersonCertificatePanel personCertificatePanel;
 
 	public PersonMainPanel(Connection connection) {
 		this.connection = connection;
@@ -55,7 +55,7 @@ public class PersonMainPanel extends JPanel {
 	
 	private void initializeGUIComponents() {
 		// Setup Navigation Panel
-		navPanel = new NavigationPanel(personList);
+		navPanel = new PersonNavigationPanel(personList);
 		navPanel.addPropertyChangeListener(new NavigationListener());
 		this.addPropertyChangeListener(navPanel.new ListListener());
 		
@@ -77,6 +77,7 @@ public class PersonMainPanel extends JPanel {
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 		infoPanel.add(personFormPanel);
 		infoPanel.add(personAddressPanel);
+		infoPanel.add(personPhonePanel);
 		infoPanel.add(personSkillPanel);
 		infoPanel.add(personCertificatePanel);
 		

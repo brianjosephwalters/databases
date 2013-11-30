@@ -75,19 +75,19 @@ public class PersonFormPanel extends JPanel{
 		tfEmail = new JTextField(15);
 		tfEmail.setEditable(false);
 		
-				JPanel displayPanel = new JPanel();
-				panel.add(displayPanel);
-				displayPanel.setLayout(new GridLayout(5, 2));
-				displayPanel.add(new JLabel("Person Code:"));
-				displayPanel.add(tfPersonCode);
-				displayPanel.add(new JLabel("Last Name:"));
-				displayPanel.add(tfLastName);
-				displayPanel.add(new JLabel("First Name:"));
-				displayPanel.add(tfFirstName);
-				displayPanel.add(new JLabel("Gender:"));
-				displayPanel.add(tfGender);
-				displayPanel.add(new JLabel("Email:"));
-				displayPanel.add(tfEmail);
+		JPanel displayPanel = new JPanel();
+		panel.add(displayPanel);
+		displayPanel.setLayout(new GridLayout(5, 2));
+		displayPanel.add(new JLabel("Person Code:"));
+		displayPanel.add(tfPersonCode);
+		displayPanel.add(new JLabel("Last Name:"));
+		displayPanel.add(tfLastName);
+		displayPanel.add(new JLabel("First Name:"));
+		displayPanel.add(tfFirstName);
+		displayPanel.add(new JLabel("Gender:"));
+		displayPanel.add(tfGender);
+		displayPanel.add(new JLabel("Email:"));
+		displayPanel.add(tfEmail);
 		
 		horizontalStrut_1 = Box.createHorizontalStrut(5);
 		panel.add(horizontalStrut_1);

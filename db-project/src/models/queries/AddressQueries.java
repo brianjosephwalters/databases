@@ -25,8 +25,8 @@ public class AddressQueries {
 			throws SQLException {
 		List<Address> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM address");
+			" SELECT * " +
+			" FROM address");
 		list = getListOfAddresses(stmt);
 		
 		return list;
@@ -39,9 +39,9 @@ public class AddressQueries {
 			throws SQLException {
 		List<Address> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM address NATURAL JOIN company_address " +
-			"WHERE company_code = ?");
+			" SELECT * " +
+			" FROM address NATURAL JOIN company_address " +
+			" WHERE company_code = ?");
 		stmt.setString(1, companyCode);
 		
 		list = getListOfAddresses(stmt);
@@ -55,9 +55,9 @@ public class AddressQueries {
 			throws SQLException {
 		List<Address> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM address NATURAL JOIN person_address " +
-			"WHERE person_code = ?");
+			" SELECT * " +
+			" FROM address NATURAL JOIN person_address " +
+			" WHERE person_code = ?");
 		stmt.setString(1, personCode);
 		
 		list = getListOfAddresses(stmt);
@@ -69,8 +69,8 @@ public class AddressQueries {
 			throws SQLException {
 		int count = 0;
 		PreparedStatement stmt = connection.prepareStatement(
-			"INSERT INTO address " +
-			"VALUES (?, ?, ?, ?, ?, ?)"
+			" INSERT INTO address " +
+			" VALUES (?, ?, ?, ?, ?, ?)"
 			);
 		stmt.setString(1, address.getAddressCode());
 		stmt.setString(2, address.getAddressType());

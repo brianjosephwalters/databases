@@ -33,7 +33,7 @@ public class JobHuntingMainPanel extends JPanel {
 	
 	// GUI Instance Variables
 	JPanel mainPanel;
-	NavigationPanel navPanel;
+	PersonNavigationPanel navPanel;
 	PersonFormPanel personFormPanel;
 	PersonAddressPanel personAddressPanel;
 	PersonPhonePanel personPhonePanel;
@@ -42,6 +42,7 @@ public class JobHuntingMainPanel extends JPanel {
 	
 	PersonCurrentJobPanel personCurrentJobPanel;
 	PersonQualifiedJobsPanel personQualifiedJobsPanel;
+	PersonCloselyQualifiedPanel personCloselyQualifiedPanel;
 	
 	/**
 	 * Create the panel.
@@ -76,7 +77,7 @@ public class JobHuntingMainPanel extends JPanel {
 	}
 	
 	private void initializeNavigationPanel() {
-		navPanel = new NavigationPanel(personList);
+		navPanel = new PersonNavigationPanel(personList);
 		navPanel.addPropertyChangeListener(new NavigationListener());
 		this.addPropertyChangeListener(navPanel.new ListListener());
 	}
@@ -123,6 +124,10 @@ public class JobHuntingMainPanel extends JPanel {
 		jobNearlyQualifiedPanel.setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), "Jobs Closely Qualified", TitledBorder.RIGHT, TitledBorder.TOP, null, null));
 		mainPanel.add(jobNearlyQualifiedPanel);
 		jobNearlyQualifiedPanel.setLayout(new BoxLayout(jobNearlyQualifiedPanel, BoxLayout.Y_AXIS));
+		
+		personCloselyQualifiedPanel = new PersonCloselyQualifiedPanel(connection);
+		this.addPropertyChangeListener(personCloselyQualifiedPanel.new PersonListener());
+		jobNearlyQualifiedPanel.add(personCloselyQualifiedPanel);
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {

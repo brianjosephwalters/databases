@@ -73,10 +73,45 @@ public class CertificateQueries {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			" SELECT * " +
-			" FROM certificate NATURAL JOIN job_profile_certificate " +
-			"      NATURAL JOIN job" +
+			" FROM certificate NATURAL job_certificate" +
 			" WHERE job_code = ?");
 		stmt.setString(1, jobCode);
+		list = getListOfCertificates(stmt);
+		return list;
+	}
+	
+	/**
+	 * All certificates required by a job profile.
+	 */
+	public List<Certificate> getCertificatesForJobProfile(String jobProfileCode) 
+			throws SQLException {
+		List<Certificate> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" SELECT * " +
+			" FROM certificate NATURAL JOIN job_profile_certificate " +
+			" WHERE job_code = ? ");
+		stmt.setString(1, jobProfileCode);
+		list = getListOfCertificates(stmt);
+		return list;
+	}
+	
+	public List<Certificate> getCertificatesForJobAndJobProfile(String jobCode,
+																String jobProfileCode)
+			throws SQLException {
+		List<Certificate> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH certificate_codes AS" +
+			" 	(SELECT certificate_code " +
+			" 	FROM certificate NATURAL JOIN job_certificate "  + 
+			" 	WHERE job_code = ? " +
+			" 	UNION " +
+			" 	SELECT certificate_code " +
+			" 	FROM certificate NATURAL JOIN job_profile_certificate " +
+			" 	WHERE job_profile_code = ?)" +
+			" SELECT *" +
+			" FROM certificate NATURAL JOIN certificate_codes");
+		stmt.setString(1, jobProfileCode);
+		stmt.setString(2, jobProfileCode);
 		list = getListOfCertificates(stmt);
 		return list;
 	}
@@ -112,20 +147,7 @@ public class CertificateQueries {
 		return list;
 	}
 	
-	/**
-	 * All certificates required by a job profile.
-	 */
-	public List<Certificate> getCertificatesForJobProfile(String jobProfileCode) 
-			throws SQLException {
-		List<Certificate> list = null;
-		PreparedStatement stmt = connection.prepareStatement(
-			" SELECT * " +
-			" FROM certificate NATURAL JOIN job_profile_certificate " +
-			" WHERE job_code = ? ");
-		stmt.setString(1, jobProfileCode);
-		list = getListOfCertificates(stmt);
-		return list;
-	}
+
 	
 	/**
 	 * All certificates prepared for by a course.

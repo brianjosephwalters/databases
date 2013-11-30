@@ -22,17 +22,6 @@ public class JobQueries {
 	}
 
 	// Queries
-	public List<Job> getAllJobs() 
-			throws SQLException {
-		List<Job> list = null;
-		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM job");
-		list = getListOfJobs(stmt);
-		
-		return list;
-	}
-	
 	public List<Job> getJob(String jobCode) 
 			throws SQLException {
 		List<Job> list = null;
@@ -45,16 +34,83 @@ public class JobQueries {
 		return list;
 	}
 	
+	public List<JobReadable> getJobReadable(String jobCode) 
+			throws SQLException {
+		List<JobReadable> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" SELECT * " +
+			" FROM job NATURAL JOIN job_profile NATURAL JOIN company" +
+			" WHERE job_code = ?");
+		stmt.setString(1, jobCode);
+		list = getListOfJobsReadable(stmt);
+		return list;
+	}
+	
+	public List<Job> getAllJobs() 
+			throws SQLException {
+		List<Job> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" SELECT * " +
+			" FROM job ");
+		list = getListOfJobs(stmt);
+		
+		return list;
+	}
+	
 	public List<JobReadable> getAllJobsReadable() 
 			throws SQLException {
 		List<JobReadable> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM job NATURAL JOIN job_profile NATURAL JOIN company");
+			" SELECT * " +
+			" FROM job NATURAL JOIN job_profile NATURAL JOIN company ");
 		list = getListOfJobsReadable(stmt);
 		
 		return list;
 	}
+	
+	public List<Job> getAvailableJobs() 
+			throws SQLException {
+		List<Job> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" SELECT job_code, job_profile_code, company_code " +
+			" FROM job " +
+		    " WHERE opening_date < current_date AND" +
+			"       (closing_date > current_date OR " +
+		    "        closing_date = null) " +
+			" MINUS " +
+			" SELECT job_code, job_profile_code, company_code " +
+			" FROM employment NATURAL JOIN job" +
+			" WHERE end_date is null OR " +
+            "       end_date > current_date) "
+			);
+		list = getListOfJobs(stmt);
+		
+		return list;
+	}
+	
+	public List<JobReadable> getAvailableJobsReadable() 
+			throws SQLException {
+		List<JobReadable> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH available_jobs as " +
+		    "   (SELECT job_code, job_profile_code, company_code " +
+			"    FROM job " +
+		    "    WHERE opening_date < current_date AND" +
+			"          (closing_date > current_date OR " +
+		    "           closing_date = null) " +
+			"   MINUS " +
+			"    SELECT job_code, job_profile_code, company_code " +
+			"	 FROM employment NATURAL JOIN job" +
+			"    WHERE end_date is null OR " +
+            "          end_date > current_date) " +
+			" SELECT * " +
+            " FROM available_jobs NATURAL JOIN job_profile NATURAL JOIN company "
+			);
+		list = getListOfJobsReadable(stmt);
+		
+		return list;
+	}
+	
 	
 	public List<Job> getJobsOfPerson(String personCode)
 			throws SQLException {

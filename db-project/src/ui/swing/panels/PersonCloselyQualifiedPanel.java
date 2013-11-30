@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -26,6 +27,8 @@ import models.queries.CourseQueries;
 import models.queries.ExamTypeQueries;
 import models.queries.JobQueries;
 import models.queries.SkillQueries;
+import javax.swing.border.TitledBorder;
+import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
 public class PersonCloselyQualifiedPanel extends JPanel {
@@ -54,6 +57,11 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private JTextArea taMissingCertificates;
 	private JTextArea taCoursesForCertificates;
 	private JTextArea taExamsForCertificates;
+	private JPanel panel;
+	private JPanel panel_1;
+	private JPanel panel_2;
+	private JPanel panel_3;
+	private JPanel panel_4;
 	
 	PersonCloselyQualifiedPanel(Connection connection) {
 		this.connection = connection;
@@ -81,18 +89,51 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		cbJobs.addActionListener(cbController);
 		cbJobsModel = new DefaultComboBoxModel<JobReadable>();
 		
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		add(cbJobs);
+		
+		panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "Missing Skills", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		
 		taMissingSkills = new JTextArea();
-		taCoursesForSkills = new JTextArea();
-		taMissingCertificates = new JTextArea();
-		taCoursesForCertificates = new JTextArea();
-		taExamsForCertificates = new JTextArea();
+		panel.add(taMissingSkills);
 		
 		taMissingSkills.setEditable(false);
-		taCoursesForSkills.setEditable(false);
-		taMissingCertificates.setEditable(false);
-		taCoursesForCertificates.setEditable(false);
-		taExamsForCertificates.setEditable(false);
 		
+		panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(null, "Courses To Gain Skills", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel_1);
+		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+		taCoursesForSkills = new JTextArea();
+		panel_1.add(taCoursesForSkills);
+		taCoursesForSkills.setEditable(false);
+		
+		panel_4 = new JPanel();
+		panel_4.setBorder(new TitledBorder(null, "Missing Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel_4);
+		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
+		
+		taMissingCertificates = new JTextArea();
+		panel_4.add(taMissingCertificates);
+		taMissingCertificates.setEditable(false);
+		
+		panel_2 = new JPanel();
+		panel_2.setBorder(new TitledBorder(null, "Courses for Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel_2);
+		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
+		taCoursesForCertificates = new JTextArea();
+		panel_2.add(taCoursesForCertificates);
+		taCoursesForCertificates.setEditable(false);
+		
+		panel_3 = new JPanel();
+		panel_3.setBorder(new TitledBorder(null, "Exams for Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel_3);
+		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
+		taExamsForCertificates = new JTextArea();
+		panel_3.add(taExamsForCertificates);
+		taExamsForCertificates.setEditable(false);
 	}
 	
 	private void clearJobs() {
@@ -100,19 +141,20 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	}
 	
 	private void displayPersonJob(JobReadable jobReadable) {
-		try {
-			this.job = jobQueries.getJob(jobReadable.getJobCode()).get(0);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
+		if (jobReadable != null) {
+			try {
+				this.job = jobQueries.getJob(jobReadable.getJobCode()).get(0);	
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (ArrayIndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
 		}
-		
 		displayMissingSkills();
 		displayCoursesForSkills();
 		displayMissingCertificates();
-		generateMissingCoursesForCertificatesList();
-		generateMissingExamsForCertificatesList();
+		displayMissingCoursesForCertificates();
+		displayMissingExamsForCertificates();
 	}
 	
 	private void generateMissingSkillsList() {
@@ -121,18 +163,20 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		String jobProfileCode = job.getJobProfileCode();
 		
 		try {
+			
 			this.listMissingSkills = skillQueries.getSkillsMissingFromPersonForJob(personCode, jobCode, jobProfileCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private void displayMissingSkills() {
-		generateMissingSkillsList();
+		if (this.job != null && this.person != null) {
+			generateMissingSkillsList();
+		}
 		StringBuilder sb = new StringBuilder();
 		for (Skill skill : listMissingSkills) {
-			sb.append(skill.getSkillName() + ", ");
+			sb.append(skill.getSkillName() + "\n");
 		}
 		taMissingSkills.setText(sb.toString());
 	}
@@ -145,7 +189,9 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	}
 	
 	private void displayCoursesForSkills() {
-		generateCoursesForSkillsList();
+		if (this.job != null && this.person != null) {
+			generateCoursesForSkillsList();
+		}
 	}
 	
 	private void generateMissingCertificatesList() {
@@ -155,7 +201,9 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	}
 	
 	private void displayMissingCertificates() {
-		generateMissingCertificatesList();
+		if (this.job != null && this.person != null) {
+			generateMissingCertificatesList();
+		}
 	}
 	
 	private void generateMissingCoursesForCertificatesList() {
@@ -165,7 +213,9 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	}
 
 	private void displayMissingCoursesForCertificates() {
-		generateMissingCoursesForCertificatesList();
+		if (this.job != null && this.person != null) {
+			generateMissingCoursesForCertificatesList();
+		}
 	}
 	
 	private void generateMissingExamsForCertificatesList() {
@@ -175,20 +225,26 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	}
 	
 	private void displayMissingExamsForCertificates() {
-		generateMissingExamsForCertificatesList();
+		if (this.job != null && this.person != null) {
+			generateMissingExamsForCertificatesList();
+		}
 	}
 	
 	private void generateJobList() {
 		String personCode = person.getPersonCode();
 		try {
-			listJobs = jobQueries.getJobsNotQualifiedForByPersonReadable(personCode);
+			// CHANGED
+			//listJobs = jobQueries.getJobsNotQualifiedForByPersonReadable(personCode);
+			listJobs = jobQueries.getAllJobsReadable();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void displayJobs() {
-		generateJobList();
+		if (this.person != null) {
+			generateJobList();
+		}
 		cbJobsModel = new DefaultComboBoxModel<JobReadable>();
 		cbJobsModel.removeAllElements();
 		for (JobReadable job: listJobs) {
