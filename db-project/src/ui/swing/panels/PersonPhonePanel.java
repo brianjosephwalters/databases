@@ -28,10 +28,10 @@ import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class PersonPhonePanel extends JPanel{
-	Connection connection;
-	PhoneQueries phoneQueries;
-	Person person;
-	List<PhoneNumber> list;
+	private Connection connection;
+	private PhoneQueries phoneQueries;
+	private Person person;
+	private List<PhoneNumber> list;
 	
 	private ComboBoxController cbController;
 	
@@ -65,13 +65,7 @@ public class PersonPhonePanel extends JPanel{
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,},
+				ColumnSpec.decode("default:grow"),},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,

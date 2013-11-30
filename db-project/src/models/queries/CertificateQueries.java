@@ -81,6 +81,37 @@ public class CertificateQueries {
 		return list;
 	}
 	
+	public List<Certificate> getCertificatesMissingFromPersonForJob(String personCode,
+																	String jobCode,
+																	String jobProfileCode)
+			throws SQLException {
+		List<Certificate> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH " + 
+			"   job_certificates as " +
+			"     (SELECT certificate_code " +
+			"      FROM job_certificate " +
+			"      WHERE job_code = ?), " +
+			"   job_profile_certificates as " +
+			"     (SELECT certificate_code " +
+			"      FROM job_profile_certificate " +
+			"      WHERE job_profile_code = ?)" +
+			"   person_certificates as " +
+			"     (SELECT certificate_code " +
+			"      FROM person_certificate " +
+			"      WHERE person_code = ? " +
+			" SELECT *" + 
+			" FROM certificate NATURAL JOIN (person_certificates MINUS " +
+			"                                job_certificate MINUS " +
+			"                                job_profile_certificate)"
+			);
+		stmt.setString(1, jobCode);
+		stmt.setString(2, jobProfileCode);
+		stmt.setString(3, personCode);
+		list = getListOfCertificates(stmt);
+		return list;
+	}
+	
 	/**
 	 * All certificates required by a job profile.
 	 */

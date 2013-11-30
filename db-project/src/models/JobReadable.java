@@ -2,109 +2,126 @@ package models;
 
 import java.util.Date;
 
-public class Job {
+public class JobReadable {
 	private String jobCode;
-	private String jobProfileCode;
-	private String companyCode;
+	private String jobProfileTitle;
+	private String companyName;
 	private String jobType;
 	private double payRate;
 	private Date openingDate;
 	private Date closingDate;
 	
-	public Job (String jobCode, String jobProfileCode, 
-				String companyCode, String jobType, 
-				double payRate, Date openingDate, Date closingDate) {
+	public JobReadable (String jobCode, String jobProfileTitle, 
+						String companyName, String jobType, 
+						double payRate, Date openingDate, Date closingDate) {
 		this.jobCode = jobCode;
-		this.jobProfileCode = jobProfileCode;
-		this.companyCode = companyCode;
+		this.jobProfileTitle = jobProfileTitle;
+		this.companyName = companyName;
 		this.jobType = jobType;
 		this.payRate = payRate;
 		this.openingDate = openingDate;
 		this.closingDate = closingDate;		
 	}
-	
+
 	/**
 	 * @return the jobCode
 	 */
 	public String getJobCode() {
 		return jobCode;
 	}
+
 	/**
-	 * @return the jobProfileCode
+	 * @return the jobProfileTitle
 	 */
-	public String getJobProfileCode() {
-		return jobProfileCode;
+	public String getJobProfileTitle() {
+		return jobProfileTitle;
 	}
+
 	/**
-	 * @return the companyCode
+	 * @return the companyName
 	 */
-	public String getCompanyCode() {
-		return companyCode;
+	public String getCompanyName() {
+		return companyName;
 	}
+
 	/**
 	 * @return the jobType
 	 */
 	public String getJobType() {
 		return jobType;
 	}
+
 	/**
 	 * @return the payRate
 	 */
 	public double getPayRate() {
 		return payRate;
 	}
+
 	/**
 	 * @return the openingDate
 	 */
 	public Date getOpeningDate() {
 		return openingDate;
 	}
+
 	/**
 	 * @return the closingDate
 	 */
 	public Date getClosingDate() {
 		return closingDate;
 	}
+
 	/**
 	 * @param jobCode the jobCode to set
 	 */
 	public void setJobCode(String jobCode) {
 		this.jobCode = jobCode;
 	}
+
 	/**
-	 * @param jobProfileCode the jobProfileCode to set
+	 * @param jobProfileTitle the jobProfileTitle to set
 	 */
-	public void setJobProfileCode(String jobProfileCode) {
-		this.jobProfileCode = jobProfileCode;
+	public void setJobProfileTitle(String jobProfileTitle) {
+		this.jobProfileTitle = jobProfileTitle;
 	}
+
 	/**
-	 * @param companyCode the companyCode to set
+	 * @param companyName the companyName to set
 	 */
-	public void setCompanyCode(String companyCode) {
-		this.companyCode = companyCode;
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
+
 	/**
 	 * @param jobType the jobType to set
 	 */
 	public void setJobType(String jobType) {
 		this.jobType = jobType;
 	}
+
 	/**
 	 * @param payRate the payRate to set
 	 */
 	public void setPayRate(double payRate) {
 		this.payRate = payRate;
 	}
+
 	/**
 	 * @param openingDate the openingDate to set
 	 */
 	public void setOpeningDate(Date openingDate) {
 		this.openingDate = openingDate;
 	}
+
 	/**
 	 * @param closingDate the closingDate to set
 	 */
 	public void setClosingDate(Date closingDate) {
 		this.closingDate = closingDate;
+	}
+	
+	public String toString() {
+		return getJobCode() + ": " + getJobProfileTitle();
 	}
 }

@@ -6,18 +6,27 @@ public class Exam {
 	private String examCode;
 	private String examTypeCode;
 	private Date examDate;
+	
+	public Exam (String examCode, String examTypeCode, Date examDate) {
+		this.examCode = examCode;
+		this.examTypeCode = examTypeCode;
+		this.examDate = examDate;
+	}
+	
 	/**
 	 * @return the examCode
 	 */
 	public String getExamCode() {
 		return examCode;
 	}
+	
 	/**
 	 * @return the examTypeCode
 	 */
 	public String getExamTypeCode() {
 		return examTypeCode;
 	}
+	
 	/**
 	 * @return the examDate
 	 */
@@ -30,12 +39,14 @@ public class Exam {
 	public void setExamCode(String examCode) {
 		this.examCode = examCode;
 	}
+	
 	/**
 	 * @param examTypeCode the examTypeCode to set
 	 */
 	public void setExamTypeCode(String examTypeCode) {
 		this.examTypeCode = examTypeCode;
 	}
+	
 	/**
 	 * @param examDate the examDate to set
 	 */

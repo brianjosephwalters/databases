@@ -67,7 +67,7 @@ public class EditPersonSkillsPanel extends JPanel {
 		updateModels();
 	}
 	
-	public void initializeGUIComponents() {
+	private void initializeGUIComponents() {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),

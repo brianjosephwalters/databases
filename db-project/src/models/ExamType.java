@@ -4,6 +4,12 @@ public class ExamType {
 	private String examTypeCode;
 	private String certificateCode;
 	private String examTitle;
+	
+	public ExamType(String examTypeCode, String certificateCode, String examTitle) {
+		this.examTypeCode = examTypeCode;
+		this.certificateCode = certificateCode;
+		this.examTitle = examTitle;
+	}
 	/**
 	 * @return the examTypeCode
 	 */

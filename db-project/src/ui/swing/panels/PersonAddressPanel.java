@@ -64,33 +64,17 @@ public class PersonAddressPanel extends JPanel {
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(37dlu;default):grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
+				ColumnSpec.decode("max(37dlu;default)"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("max(15dlu;default)"),
 				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(0dlu;default):grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,},
+				ColumnSpec.decode("default:grow"),},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
@@ -115,14 +99,14 @@ public class PersonAddressPanel extends JPanel {
 		cbType = new JComboBox<Address>();
 		cbType.addActionListener(cbController);
 		cbTypeModel = new DefaultComboBoxModel<Address>();
-		add(cbType, "6, 4, 7, 1, fill, default");
+		add(cbType, "6, 4, 9, 1, fill, default");
 		
 		JLabel lblStreet = new JLabel("Street 1:");
 		add(lblStreet, "6, 6, right, default");
 		
 		tfStreet1 = new JTextField();
 		tfStreet1.setEditable(false);
-		add(tfStreet1, "8, 6, 13, 1, fill, default");
+		add(tfStreet1, "8, 6, 7, 1, fill, default");
 		tfStreet1.setColumns(10);
 		
 		JLabel lblStreet_1 = new JLabel("Street 2:");
@@ -130,7 +114,7 @@ public class PersonAddressPanel extends JPanel {
 		
 		tfStreet2 = new JTextField();
 		tfStreet2.setEditable(false);
-		add(tfStreet2, "8, 8, 13, 1, fill, default");
+		add(tfStreet2, "8, 8, 7, 1, fill, default");
 		tfStreet2.setColumns(10);
 		
 		JLabel lblCity = new JLabel("City:");
@@ -138,7 +122,7 @@ public class PersonAddressPanel extends JPanel {
 		
 		tfCity = new JTextField();
 		tfCity.setEditable(false);
-		add(tfCity, "8, 10, 13, 1, fill, top");
+		add(tfCity, "8, 10, 7, 1, fill, top");
 		tfCity.setColumns(10);
 		
 		JLabel lblZipcode = new JLabel("Zipcode:");
@@ -146,11 +130,11 @@ public class PersonAddressPanel extends JPanel {
 		
 		tfZipcode = new JTextField();
 		tfZipcode.setEditable(false);
-		add(tfZipcode, "8, 12, 7, 1, fill, top");
+		add(tfZipcode, "8, 12, 3, 1, fill, top");
 		tfZipcode.setColumns(10);
 		
 		btnEdit = new JButton("Edit");
-		add(btnEdit, "20, 12");
+		add(btnEdit, "14, 12");
 	}
 	
 	private void clearAddress() {

@@ -22,6 +22,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.BoxLayout;
+import java.awt.Component;
 
 @SuppressWarnings("serial")
 public class PersonFormPanel extends JPanel{
@@ -37,6 +39,9 @@ public class PersonFormPanel extends JPanel{
 	private JTextField tfEmail;
 	
 	private JButton editButton;
+	private JPanel panel;
+	private Component horizontalStrut;
+	private Component horizontalStrut_1;
 	
 	public PersonFormPanel(Connection connection) {
 		this.connection = connection;
@@ -46,15 +51,19 @@ public class PersonFormPanel extends JPanel{
 	}
 	
 	private void initializeGUIComponents() {
-		setLayout(new BorderLayout());
 		initializeDisplayPanel();
 		initializeButtonPanel();
-		add(Box.createVerticalStrut(10), BorderLayout.NORTH);
-		add(Box.createHorizontalStrut(10), BorderLayout.EAST);
-		add(Box.createHorizontalStrut(10), BorderLayout.WEST);
 	}
 	
 	private void initializeDisplayPanel() {
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		panel = new JPanel();
+		add(panel);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		
+		horizontalStrut = Box.createHorizontalStrut(5);
+		panel.add(horizontalStrut);
 		tfPersonCode = new JTextField(10);
 		tfPersonCode.setEditable(false);
 		tfLastName = new JTextField(15);
@@ -65,20 +74,23 @@ public class PersonFormPanel extends JPanel{
 		tfGender.setEditable(false);
 		tfEmail = new JTextField(15);
 		tfEmail.setEditable(false);
-
-		JPanel displayPanel = new JPanel();
-		displayPanel.setLayout(new GridLayout(5, 2));
-		displayPanel.add(new JLabel("Person Code:"));
-		displayPanel.add(tfPersonCode);
-		displayPanel.add(new JLabel("Last Name:"));
-		displayPanel.add(tfLastName);
-		displayPanel.add(new JLabel("First Name:"));
-		displayPanel.add(tfFirstName);
-		displayPanel.add(new JLabel("Gender:"));
-		displayPanel.add(tfGender);
-		displayPanel.add(new JLabel("Email:"));
-		displayPanel.add(tfEmail);
-		add(displayPanel, BorderLayout.CENTER);
+		
+				JPanel displayPanel = new JPanel();
+				panel.add(displayPanel);
+				displayPanel.setLayout(new GridLayout(5, 2));
+				displayPanel.add(new JLabel("Person Code:"));
+				displayPanel.add(tfPersonCode);
+				displayPanel.add(new JLabel("Last Name:"));
+				displayPanel.add(tfLastName);
+				displayPanel.add(new JLabel("First Name:"));
+				displayPanel.add(tfFirstName);
+				displayPanel.add(new JLabel("Gender:"));
+				displayPanel.add(tfGender);
+				displayPanel.add(new JLabel("Email:"));
+				displayPanel.add(tfEmail);
+		
+		horizontalStrut_1 = Box.createHorizontalStrut(5);
+		panel.add(horizontalStrut_1);
 	}
 	
 	private void initializeButtonPanel() {
@@ -89,7 +101,7 @@ public class PersonFormPanel extends JPanel{
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		buttonPanel.add(editButton);
-		add(buttonPanel, BorderLayout.SOUTH);
+		add(buttonPanel);
 	}
 	
 	private void displayPerson(Person person) {

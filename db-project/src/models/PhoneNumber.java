@@ -46,4 +46,7 @@ public class PhoneNumber {
 	public void setPhoneNum(String phoneNum) {
 		this.phoneNum = phoneNum;
 	}
+	public String toString() {
+		return this.phoneType;
+	}
 }

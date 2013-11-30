@@ -161,6 +161,7 @@ public class TestQueries {
 		ResultSet rset = stmt.executeQuery();
 		return rset;	
 	}
+	
 	//***************
 	//10. Find the course set(s) with the minimum number of courses 
 	//    that can cover a given skill set. 

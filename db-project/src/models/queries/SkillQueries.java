@@ -103,6 +103,41 @@ public class SkillQueries {
 		return list;
 	}
 	
+	/**
+	 * All skills missing from Person to fulfill a job / Job Profile
+	 */
+	public List<Skill> getSkillsMissingFromPersonForJob(String personCode, 
+														String jobCode,
+														String jobProfileCode) 
+			throws SQLException {
+		List<Skill> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH " +
+		    "   skills_job as " + 
+			"     (SELECT skill_code " +
+			"      FROM job_skill " +
+			"      WHERE job_code = ?), " +
+			"   skills_job_profile as " +
+			"     (SELECT skill_code " +
+			"      FROM job_profile_skill NATURAL JOIN job " +
+			"      WHERE job_code = ?), " +
+			"   skills_person as " +
+			"     (SELECT skill_code " +
+			"      FROM person_skill " +
+			"      WHERE person_code = ?) " +
+			" SELECT * " +
+			" FROM skills NATURAL JOIN (skills_person MINUS " +
+			"					        skills_job MINUS " + 
+			"                           skills_job_profile) "
+		);
+		stmt.setString(1, jobCode);
+		stmt.setString(2, jobProfileCode);
+		stmt.setString(3, personCode);
+		list = getListOfSkills(stmt);
+		
+		return list;
+	}
+	
 	// Inserts
 	public int addSkillToPerson(Person person, Skill skill)
 			throws SQLException {
