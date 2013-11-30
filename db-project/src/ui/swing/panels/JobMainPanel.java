@@ -34,6 +34,8 @@ public class JobMainPanel extends JPanel {
 	private JobFormPanel jobFormPanel;
 	private JobSkillPanel jobSkillPanel;
 	private JobCertificatePanel jobCertificatePanel;
+	private JobEmployedPanel jobEmployedPanel;
+	private JPanel jobHolderPanel;
 	
 	public JobMainPanel(Connection connection) {
 		this.connection = connection;
@@ -60,11 +62,10 @@ public class JobMainPanel extends JPanel {
 		
 		// Setup Info Panel
 		jobFormPanel = new JobFormPanel(connection);
-		this.addPropertyChangeListener(jobFormPanel.new JobListener());
-		
 		jobSkillPanel = new JobSkillPanel(connection);
-		this.addPropertyChangeListener(jobSkillPanel.new JobListener());
 		jobCertificatePanel = new JobCertificatePanel(connection);
+		this.addPropertyChangeListener(jobFormPanel.new JobListener());
+		this.addPropertyChangeListener(jobSkillPanel.new JobListener());
 		this.addPropertyChangeListener(jobCertificatePanel.new JobListener());
 		
 		JPanel infoPanel = new JPanel();
@@ -74,14 +75,27 @@ public class JobMainPanel extends JPanel {
 		infoPanel.add(jobSkillPanel);
 		infoPanel.add(jobCertificatePanel);
 		
+		// Setup Job Holder Panel
+		jobEmployedPanel = new JobEmployedPanel(connection);
+		this.addPropertyChangeListener(jobEmployedPanel.new JobListener());
+		
+		jobHolderPanel = new JPanel();
+		jobHolderPanel.setLayout(new BoxLayout(jobHolderPanel, BoxLayout.Y_AXIS));
+		jobHolderPanel.add(jobEmployedPanel);
+		
+		
 		// Setup Main Panel
 		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BorderLayout(10,10));
-		mainPanel.add(navPanel, BorderLayout.NORTH);
-		mainPanel.add(infoPanel, BorderLayout.CENTER);
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+		mainPanel.add(infoPanel);
+		mainPanel.add(jobHolderPanel);		
 
-		setLayout(new FlowLayout(10,10,10));
-		add(mainPanel);
+		setLayout(new BorderLayout(0, 0));
+		
+		
+		
+		add(navPanel, BorderLayout.NORTH);
+		add(mainPanel, BorderLayout.CENTER);
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -129,7 +143,7 @@ public class JobMainPanel extends JPanel {
 			e.printStackTrace();
 		}
 		JFrame frame = new JFrame();
-		frame.add(new JobMainPanel(connection));
+		frame.getContentPane().add(new JobMainPanel(connection));
 		frame.setBounds(10, 10, 650, 500);
 		frame.setTitle("Job Program");
 		frame.setVisible(true);

@@ -81,6 +81,34 @@ public class PersonQueries {
 		return list;
 	}
 	
+	public List<Person> getPeopleEmployedAtJob(String jobCode) 
+			throws SQLException {
+		List<Person> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" SELECT * " +
+			" FROM person NATURAL JOIN employment " +
+			" WHERE job_code = ? ");
+		stmt.setString(1, jobCode);
+		list = getListOfPeople(stmt);
+		
+		return list;
+	}
+	
+	public List<Person> getCurrentPersonEmployedAtJob(String jobCode) 
+			throws SQLException {
+		List<Person> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" SELECT * " +
+			" FROM person NATURAL JOIN employment " +
+			" WHERE job_code = ? AND " +
+			"  	    start_date < CURRENT_DATE AND " +
+			"       (end_date > CURRENT_DATE OR end_date IS NULL) ");
+		stmt.setString(1, jobCode);
+		list = getListOfPeople(stmt);
+		
+		return list;
+	}
+	
 	// People who took a course
 	public List<Person> getPeopleAttendingCourse(String course_code) 
 			throws SQLException {

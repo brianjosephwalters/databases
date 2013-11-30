@@ -12,24 +12,23 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import models.JobReadable;
+import models.Job;
 import models.Person;
-import models.queries.JobQueries;
-
-import javax.swing.BoxLayout;
-import javax.swing.JScrollPane;
+import models.queries.PersonQueries;
 
 @SuppressWarnings("serial")
-public class PersonCurrentJobPanel extends JPanel {
+public class JobEmployedPanel extends JPanel {
 	private Connection connection;
-	private Person person;
-	private JobQueries jobQueries;
-	private List<JobReadable> list;
+	private PersonQueries personQueries;
+	private Job job;
+	private List<Person> list;
 	
 	private ButtonController buttonController;
 	private CheckBoxController checkBoxController;
@@ -39,18 +38,18 @@ public class PersonCurrentJobPanel extends JPanel {
 	private JButton editButton;
 	private JCheckBox chckbxShowAll;
 	
-	public PersonCurrentJobPanel (Connection connection) {
+	public JobEmployedPanel(Connection connection){
 		this.connection = connection;
-		this.jobQueries = new JobQueries(connection);
-		this.list = new ArrayList<JobReadable>();
+		this.personQueries = new PersonQueries(connection);
+		this.list = new ArrayList<Person>();
 		
 		this.buttonController = new ButtonController();
 		this.checkBoxController = new CheckBoxController();
 		
 		initializeGUIComponents();
 	}
-
-	private void initializeGUIComponents() {
+	
+	private void initializeGUIComponents () {
 		//Setup Data Panel
 		editButton = new JButton("Edit");
 		editButton.addActionListener(buttonController);
@@ -67,7 +66,7 @@ public class PersonCurrentJobPanel extends JPanel {
 		
 		// Setup the Main Panel.
 		setBorder(BorderFactory.createTitledBorder( 
-			BorderFactory.createEtchedBorder(), "Job Held By"));
+			BorderFactory.createEtchedBorder(), "Current Employment"));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		scrollPane = new JScrollPane();
@@ -81,36 +80,37 @@ public class PersonCurrentJobPanel extends JPanel {
 		add(buttonPanel);
 	}
 	
-	private void displayPerson(Person person) {
-		this.person = person;
-		setJobsTextArea();
+	private void displayJob(Job job) {
+		this.job = job;
+		setEmployedTextArea();
 	}
 	
-	private void generateJobList() {
-		String personCode = person.getPersonCode();
+	private void generateEmployeeList() {
+		String jobCode = job.getJobCode();
 		if (!chckbxShowAll.isSelected()) {
 			try {
-				this.list = jobQueries.getCurrentJobsOfPersonReadable(personCode);
+				this.list = personQueries.getCurrentPersonEmployedAtJob(jobCode);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} 
 		} else {
 			try {
-				this.list = jobQueries.getJobsOfPersonReadable(personCode);
+				this.list = personQueries.getPeopleEmployedAtJob(jobCode);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	private void setJobsTextArea() {
-		generateJobList();
+
+	private void setEmployedTextArea() {
+		generateEmployeeList();
 		StringBuilder sb = new StringBuilder();
-		for (JobReadable job : list) {
-			sb.append(job.getJobProfileTitle() + " at " + job.getCompanyName() + "\n");
+		for (Person person : list) {
+			sb.append(person.getLastName() + ", " + person.getFirstName() + "\n");
 		}
 		taJobs.setText(sb.toString());
 	}
+	
 	
 	private class ButtonController implements ActionListener {
 		@Override
@@ -125,17 +125,15 @@ public class PersonCurrentJobPanel extends JPanel {
 	private class CheckBoxController implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			setJobsTextArea();
+			setEmployedTextArea();
 		}
 		
 	}
 	
-	public class PersonListener implements PropertyChangeListener {
+	public class JobListener implements PropertyChangeListener {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
-			if (evt.getPropertyName().equals("currentPerson")) {
-				displayPerson((Person)evt.getNewValue());
-			}
+			displayJob((Job)evt.getNewValue());
 		}
 	}
 }

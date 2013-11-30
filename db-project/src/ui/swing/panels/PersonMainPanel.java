@@ -131,7 +131,7 @@ public class PersonMainPanel extends JPanel {
 	public static void main (String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection2();
+			connection = DBConnection.getConnection();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
