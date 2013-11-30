@@ -1,7 +1,6 @@
 package ui.swing.panels;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -35,6 +34,7 @@ public class JobMainPanel extends JPanel {
 	private JobSkillPanel jobSkillPanel;
 	private JobCertificatePanel jobCertificatePanel;
 	private JobEmployedPanel jobEmployedPanel;
+	private JobEligiblePeoplePanel jobEligiblePeoplePanel;
 	private JPanel jobHolderPanel;
 	
 	public JobMainPanel(Connection connection) {
@@ -78,10 +78,13 @@ public class JobMainPanel extends JPanel {
 		// Setup Job Holder Panel
 		jobEmployedPanel = new JobEmployedPanel(connection);
 		this.addPropertyChangeListener(jobEmployedPanel.new JobListener());
+		jobEligiblePeoplePanel = new JobEligiblePeoplePanel(connection);
+		this.addPropertyChangeListener(jobEligiblePeoplePanel.new JobListener());
 		
 		jobHolderPanel = new JPanel();
 		jobHolderPanel.setLayout(new BoxLayout(jobHolderPanel, BoxLayout.Y_AXIS));
 		jobHolderPanel.add(jobEmployedPanel);
+		jobHolderPanel.add(jobEligiblePeoplePanel);
 		
 		
 		// Setup Main Panel
