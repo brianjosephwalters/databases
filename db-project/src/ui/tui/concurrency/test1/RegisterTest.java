@@ -15,7 +15,6 @@ import db.DBConnection;
  */
 public class RegisterTest {
 	Connection connection;
-	Scanner scanner;
 	
 	/**
 	 * Setup the RegisterTest class.
@@ -26,8 +25,6 @@ public class RegisterTest {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		scanner = new Scanner(System.in);
-		
 	}
 	
 	/**
