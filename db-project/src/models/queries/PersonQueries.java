@@ -249,23 +249,34 @@ public class PersonQueries {
 	}
 	
 	// People qualified for a job_profile
-	public List<Person> getPeopleQualifiedForJobProfile(String job_profile_code) 
+	/**
+		SELECT * 
+		FROM person P
+		WHERE NOT EXISTS 
+		     (SELECT skill_code 
+					FROM job_profile_skill 
+					WHERE job_profile_code = '100' 
+					MINUS 
+					SELECT skill_code
+					FROM person_skill 
+					WHERE person_code = P.person_code ) 
+	 */
+	public List<Person> getPeopleQualifiedForJobProfile(String jobProfileCode) 
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM person as P" +
-			"WHERE " +
-			"( (SELECT skill_code" +
-			"   FROM job_profile_skill" +
-			"   WHERE job_profile_code = ?)" +
-			"  EXCEPT" +
-			"  (SELECT skill_code" +
-			"   FROM person_skill" +
-			"   WHERE P.person_code = person_code) )" +
-			"  IS NULL"
+			" SELECT * " +
+			" FROM person P " +
+			" WHERE NOT EXISTS " +
+			"   (SELECT skill_code " +
+			"    FROM job_profile_skill " +
+			"    WHERE job_profile_code = ? " + 
+			"   MINUS  " +
+			"    SELECT skill_code " +
+			"    FROM person_skill " +
+			"    WHERE person_code = P.person_code )"
 		);
-		stmt.setString(1, job_profile_code);
+		stmt.setString(1, jobProfileCode);
 		list = getListOfPeople(stmt);
 		return list;
 	}
@@ -274,26 +285,77 @@ public class PersonQueries {
 	// People qualified for a job.
 	// Still need to implement job_skill relation for additional
 	// skills required by job.
-	public List<Person> getPeopleQualifiedForJob(String job_code) 
+	public List<Person> getPeopleQualifiedForJob(String jobCode) 
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM person as P" +
-			"WHERE " +
-			"( (SELECT skill_code" +
-			"   FROM XXX" +
-			"   WHERE job_code = ?)" +
-			"  EXCEPT" +
-			"  (SELECT skill_code" +
-			"   FROM person_skill" +
-			"   WHERE P.person_code = person_code) )" +
-			"  IS NULL"
+			" SELECT * " +
+			" FROM person P " +
+			" WHERE NOT EXISTS " +
+			"   (SELECT skill_code " +
+			"    FROM job_skill " +
+			"    WHERE job_code = ? " + 
+			"   MINUS  " +
+			"    SELECT skill_code " +
+			"    FROM person_skill " +
+			"    WHERE person_code = P.person_code )"
 		);
-		stmt.setString(1, job_code);
+		stmt.setString(1, jobCode);
 		list = getListOfPeople(stmt);
 		return list;
 	}
+	/**
+
+WITH skills as 
+        (SELECT skill_code 
+		     FROM job_skill 
+		     WHERE job_code = '100'
+		     UNION
+		    SELECT skill_code 
+         FROM job_profile_skill 
+         WHERE job_profile_code = '101')
+SELECT * 
+	FROM person P 
+	WHERE NOT EXISTS 
+       (SELECT skill_code FROM skills
+			  MINUS  
+			    SELECT skill_code 
+			    FROM person_skill 
+			    WHERE person_code = P.person_code )
+    
+
+	 */
+	
+	
+	public List<Person> getPeopleFullyQualifiedForJob(String jobCode,
+													  String jobProfileCode) 
+			throws SQLException {
+		List<Person> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH skills as " + 
+		    "	(SELECT skill_code  " + 
+			"    FROM job_skill  " + 
+			"    WHERE job_code = ? " + 
+			"   UNION " + 
+			"    SELECT skill_code  " + 
+		    "    FROM job_profile_skill  " + 
+		    "    WHERE job_profile_code = ?) " + 
+		    " SELECT *  " + 
+			" FROM person P  " + 
+			" WHERE NOT EXISTS  " + 
+		    "  (SELECT skill_code " +
+		    "   FROM skills " + 
+		    "   MINUS   " + 
+			"	SELECT skill_code  " + 
+			"	FROM person_skill  " + 
+			"	WHERE person_code = P.person_code )"
+		);
+		stmt.setString(1, jobCode);
+		stmt.setString(2, jobProfileCode);
+		list = getListOfPeople(stmt);
+		return list;
+	}
+	
 	// Insertions
 	public int addPerson(Person person) 
 			throws SQLException {
