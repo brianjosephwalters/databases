@@ -17,6 +17,9 @@ import javax.swing.JPanel;
 import models.Person;
 import models.queries.PersonQueries;
 import db.DBConnection;
+import java.awt.GridLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
 @SuppressWarnings("serial")
 public class PersonMainPanel extends JPanel {
@@ -37,8 +40,12 @@ public class PersonMainPanel extends JPanel {
 	private PersonSkillPanel personSkillPanel;
 	private PersonCertificatePanel personCertificatePanel;
 	private PersonCoursePanel personCoursePanel;
+	private PersonEmploymentPanel personEmploymentPanel;
+	
 	private JPanel leftPanel;
-	private JPanel rightPanel;
+	private JPanel centerPanel;
+	private JPanel panel;
+	private JTabbedPane tabbedPane;
 
 	public PersonMainPanel(Connection connection) {
 		this.connection = connection;
@@ -64,42 +71,53 @@ public class PersonMainPanel extends JPanel {
 		
 		JPanel infoPanel = new JPanel();
 		infoPanel.setBorder(BorderFactory.createEtchedBorder());
-		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.X_AXIS));
-		
-		leftPanel = new JPanel();
-		infoPanel.add(leftPanel);
-		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+		infoPanel.setLayout(new BorderLayout(0, 0));
 		
 		// Setup Info Panel
 		personFormPanel = new PersonFormPanel(connection);
-		this.addPropertyChangeListener(personFormPanel.new PersonListener());
-		leftPanel.add(personFormPanel);
-		personAddressPanel = new PersonAddressPanel(connection);
-		this.addPropertyChangeListener(personAddressPanel.new PersonListener());
-		leftPanel.add(personAddressPanel);
+		infoPanel.add(personFormPanel, BorderLayout.NORTH);
+		
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		infoPanel.add(tabbedPane);
+		
+		leftPanel = new JPanel();
+		tabbedPane.addTab("Person Info", null, leftPanel, null);
+		leftPanel.setLayout(new BorderLayout(0, 0));
+		
+		panel = new JPanel();
+		leftPanel.add(panel, BorderLayout.NORTH);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		personPhonePanel = new PersonPhonePanel(connection);
-		this.addPropertyChangeListener(personPhonePanel.new PersonListener());
-		leftPanel.add(personPhonePanel);
+		panel.add(personPhonePanel);
+		personAddressPanel = new PersonAddressPanel(connection);
+		panel.add(personAddressPanel);
+		
+		centerPanel = new JPanel();
+		tabbedPane.addTab("Qualifications", null, centerPanel, null);
+		centerPanel.setLayout(new GridLayout(5, 1, 0, 0));
 		personSkillPanel = new PersonSkillPanel(connection);	
-		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
-		leftPanel.add(personSkillPanel);
+		centerPanel.add(personSkillPanel);
 		personCertificatePanel = new PersonCertificatePanel(connection);
-		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
-		leftPanel.add(personCertificatePanel);
+		centerPanel.add(personCertificatePanel);
+		
+		personEmploymentPanel = new PersonEmploymentPanel(connection);
+		tabbedPane.addTab("Employment History", null, personEmploymentPanel, null);
+		
+		personCoursePanel = new PersonCoursePanel(connection);
+		tabbedPane.addTab("Course History", null, personCoursePanel, null);
+		this.addPropertyChangeListener(personFormPanel.new PersonListener());
+		this.addPropertyChangeListener(personAddressPanel.new PersonListener());
+		this.addPropertyChangeListener(personPhonePanel.new PersonListener());
 		
 		// Setup Main Panel
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout(10,10));
 		mainPanel.add(navPanel, BorderLayout.NORTH);
 		mainPanel.add(infoPanel, BorderLayout.CENTER);
-		
-		rightPanel = new JPanel();
-		infoPanel.add(rightPanel);
-		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-		
-		personCoursePanel = new PersonCoursePanel(connection);
+		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
+		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
 		this.addPropertyChangeListener(personCoursePanel.new PersonListener());
-		rightPanel.add(personCoursePanel);
+		this.addPropertyChangeListener(personEmploymentPanel.new PersonListener());
 
 		setLayout(new FlowLayout(10,10,10));
 		add(mainPanel);
@@ -151,7 +169,7 @@ public class PersonMainPanel extends JPanel {
 		}
 		JFrame frame = new JFrame();
 		frame.getContentPane().add(new PersonMainPanel(connection));
-		frame.setBounds(10, 10, 850, 700);
+		frame.setBounds(60, 0, 600, 700);
 		frame.setTitle("Person Program");
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

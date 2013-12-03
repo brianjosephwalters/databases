@@ -19,13 +19,13 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
-public class PersonCoursePanel extends JPanel {
+public class PersonEmploymentPanel extends JPanel {
 	Connection connection;
 	Person person;
 	
 	QueryResultsPanel queryResultsPanel;
 
-	public PersonCoursePanel(Connection connection) {
+	public PersonEmploymentPanel(Connection connection) {
 		this.connection = connection;
 		this.person = null;
 		
@@ -40,7 +40,7 @@ public class PersonCoursePanel extends JPanel {
 		JPanel panel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
-		add(panel, BorderLayout.SOUTH);
+		add(panel, BorderLayout.CENTER);
 		
 		JButton btnEdit = new JButton("Edit");
 		panel.add(btnEdit);
@@ -50,9 +50,9 @@ public class PersonCoursePanel extends JPanel {
 		ResultSet results = null;
 		try {
 			PreparedStatement stmt = connection.prepareStatement(
-				" SELECT course_title, completed_date, score " +
-				" FROM person NATURAL JOIN attended NATURAL JOIN " +
-				"      section NATURAL JOIN course " +
+				" SELECT job_code, job_profile_title, company_name, start_date, end_date " +
+				" FROM employment NATURAL JOIN job NATURAL JOIN " +
+				"      job_profile NATURAL JOIN company " +
 				" WHERE person_code = ?",
 				ResultSet.TYPE_SCROLL_SENSITIVE,
                 ResultSet.CONCUR_UPDATABLE
@@ -62,7 +62,7 @@ public class PersonCoursePanel extends JPanel {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		queryResultsPanel.setLabel("Courses");
+		queryResultsPanel.setLabel("Employment History");
 		queryResultsPanel.setResultsSet(results);
 
 	}

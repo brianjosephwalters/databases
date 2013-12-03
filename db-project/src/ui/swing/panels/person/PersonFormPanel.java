@@ -56,10 +56,10 @@ public class PersonFormPanel extends JPanel{
 	}
 	
 	private void initializeDisplayPanel() {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setLayout(new BorderLayout(0, 0));
 		
 		panel = new JPanel();
-		add(panel);
+		add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		
 		horizontalStrut = Box.createHorizontalStrut(5);
@@ -101,7 +101,7 @@ public class PersonFormPanel extends JPanel{
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		buttonPanel.add(editButton);
-		add(buttonPanel);
+		add(buttonPanel, BorderLayout.SOUTH);
 	}
 	
 	private void displayPerson(Person person) {

@@ -15,20 +15,22 @@ import javax.swing.JTable;
 import db.DBConnection;
 
 import models.queries.QueryResultsTableModel;
+import javax.swing.BoxLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import javax.swing.border.TitledBorder;
 
 @SuppressWarnings("serial")
 public class QueryResultsPanel extends JPanel{
 	QueryResultsTableModel tableModel;
 	JTable table;
-	JLabel lTitle;
 	
-	public QueryResultsPanel(String label) {		
-		setLayout(new BorderLayout());
-		this.lTitle = new JLabel(label);
-		add(lTitle, BorderLayout.NORTH);
+	public QueryResultsPanel(String label) {
+		setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		table = new JTable();
-		add(new JScrollPane(table), BorderLayout.CENTER);
+		add(new JScrollPane(table));
 	}
 	
 	public void setResultsSet(ResultSet results) {
@@ -37,7 +39,7 @@ public class QueryResultsPanel extends JPanel{
 	}
 	
 	public void setLabel(String label) {
-		this.lTitle.setText(label);
+		this.setBorder(new TitledBorder(null, label, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 	}
 	
 	public static void main (String[] args) {
@@ -57,7 +59,7 @@ public class QueryResultsPanel extends JPanel{
 		JFrame frame = new JFrame();
 		QueryResultsPanel panel = new QueryResultsPanel("Person at Comany 100");
 		panel.setResultsSet(results);
-		frame.add(panel);
+		frame.getContentPane().add(panel);
 		
 		frame.setTitle("PersonTable");
 		frame.setSize(600, 400);

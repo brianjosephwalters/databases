@@ -63,7 +63,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private JPanel panel_3;
 	private JPanel panel_4;
 	
-	PersonCloselyQualifiedPanel(Connection connection) {
+	public PersonCloselyQualifiedPanel(Connection connection) {
 		this.connection = connection;
 		this.jobQueries = new JobQueries(connection);
 		this.skillQueries = new SkillQueries(connection);
