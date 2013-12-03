@@ -27,32 +27,38 @@ public class PersonCoursePanel extends JPanel {
 	Connection connection;
 	Person person;
 	
-	QueryResultsTableModel tableModel;
-	JTable table;
+	QueryResultsPanel queryResultsPanel;
 
 	public PersonCoursePanel(Connection connection) {
 		this.connection = connection;
 		this.person = null;
+		
+		this.queryResultsPanel = new QueryResultsPanel("Nothing Yet");
+		initializeGUIComponents();
 	}
 	
 	private void initializeGUIComponents() {
+		add(queryResultsPanel);
 	}
 	
 	private void generateCourseList() {
 		ResultSet results = null;
 		try {
 			PreparedStatement stmt = connection.prepareStatement(
-				" SELECT course_title, completion_date, score " +
+				" SELECT course_title, completed_date, score " +
 				" FROM person NATURAL JOIN attended NATURAL JOIN " +
-				"      section_course NATURAL JOIN course " +
-				" WHERE person_code = ?"
+				"      section NATURAL JOIN course " +
+				" WHERE person_code = ?",
+				ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE
 				);
 			stmt.setString(1, person.getPersonCode());
 			results = stmt.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		add(new QueryResultsPanel(results, "Courses"));
+		queryResultsPanel.setLabel("Courses");
+		queryResultsPanel.setResultsSet(results);
 
 	}
 	

@@ -47,4 +47,8 @@ public class JobProfile {
 	public void setJobProfileDescription(String jobProfileDescription) {
 		this.jobProfileDescription = jobProfileDescription;
 	}
+	
+	public String toString() {
+		return this.getJobProfileCode() + ": " + this.getJobProfileTitle();
+	}
 }

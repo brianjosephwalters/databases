@@ -36,6 +36,9 @@ public class PersonMainPanel extends JPanel {
 	private PersonPhonePanel personPhonePanel;
 	private PersonSkillPanel personSkillPanel;
 	private PersonCertificatePanel personCertificatePanel;
+	private PersonCoursePanel personCoursePanel;
+	private JPanel leftPanel;
+	private JPanel rightPanel;
 
 	public PersonMainPanel(Connection connection) {
 		this.connection = connection;
@@ -59,33 +62,44 @@ public class PersonMainPanel extends JPanel {
 		navPanel.addPropertyChangeListener(new NavigationListener());
 		this.addPropertyChangeListener(navPanel.new ListListener());
 		
+		JPanel infoPanel = new JPanel();
+		infoPanel.setBorder(BorderFactory.createEtchedBorder());
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.X_AXIS));
+		
+		leftPanel = new JPanel();
+		infoPanel.add(leftPanel);
+		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+		
 		// Setup Info Panel
 		personFormPanel = new PersonFormPanel(connection);
 		this.addPropertyChangeListener(personFormPanel.new PersonListener());
+		leftPanel.add(personFormPanel);
 		personAddressPanel = new PersonAddressPanel(connection);
 		this.addPropertyChangeListener(personAddressPanel.new PersonListener());
+		leftPanel.add(personAddressPanel);
 		personPhonePanel = new PersonPhonePanel(connection);
 		this.addPropertyChangeListener(personPhonePanel.new PersonListener());
+		leftPanel.add(personPhonePanel);
 		personSkillPanel = new PersonSkillPanel(connection);	
 		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
+		leftPanel.add(personSkillPanel);
 		personCertificatePanel = new PersonCertificatePanel(connection);
 		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
-		
-		
-		JPanel infoPanel = new JPanel();
-		infoPanel.setBorder(BorderFactory.createEtchedBorder());
-		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-		infoPanel.add(personFormPanel);
-		infoPanel.add(personAddressPanel);
-		infoPanel.add(personPhonePanel);
-		infoPanel.add(personSkillPanel);
-		infoPanel.add(personCertificatePanel);
+		leftPanel.add(personCertificatePanel);
 		
 		// Setup Main Panel
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout(10,10));
 		mainPanel.add(navPanel, BorderLayout.NORTH);
 		mainPanel.add(infoPanel, BorderLayout.CENTER);
+		
+		rightPanel = new JPanel();
+		infoPanel.add(rightPanel);
+		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		
+		personCoursePanel = new PersonCoursePanel(connection);
+		this.addPropertyChangeListener(personCoursePanel.new PersonListener());
+		rightPanel.add(personCoursePanel);
 
 		setLayout(new FlowLayout(10,10,10));
 		add(mainPanel);
@@ -131,13 +145,13 @@ public class PersonMainPanel extends JPanel {
 	public static void main (String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection();
+			connection = DBConnection.getConnection2();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		JFrame frame = new JFrame();
-		frame.add(new PersonMainPanel(connection));
-		frame.setBounds(10, 10, 650, 500);
+		frame.getContentPane().add(new PersonMainPanel(connection));
+		frame.setBounds(10, 10, 850, 700);
 		frame.setTitle("Person Program");
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

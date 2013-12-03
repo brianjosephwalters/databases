@@ -34,6 +34,9 @@ import models.queries.PersonQueries;
 import models.queries.ProjectQueries;
 import models.queries.RequiredQueries;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Component;
+import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
 public class QueriesMainPanel extends JPanel {
@@ -75,25 +78,32 @@ public class QueriesMainPanel extends JPanel {
 	private JButton btnCurrentEmployees;
 	private JButton btnJobsCurrentlyHeld;
 	private JButton btnSkills;
-	private JButton btnSkillGapForJobs;
+	private JButton btnSkillGapForCurrentJobs;
 	private JButton btnJobProfilesQualified;
 	private JButton btnHighestPayingJob;
 	private JButton btnMissingSkills;
 	private JButton btnCoursesForMissingSkills;
-	private JButton btnMinimumCoursesForMissingSkills;
+	private JButton btnMinimumCoursesForSkillSet;
 	private JButton btnCheapestCoursesForMissingSkills;
 	private JButton btnQuickestCoursesForMissingSkill;
-	private JButton btnMissingK;
-	private JButton btnSkillsMissed;
+	private JButton btnPeopleMissingK;
+	private JButton btnSkillsMissedOne;
 	private JButton btnSkillsMissedForK;
 	private JButton btnRequiredSkills;
 	private JButton btnQualifiedPeople;
 	private JButton btnClosestQualified;
-	private JButton btnMissing;
+	private JButton btnMissingOne;
 	
 	
 	
 	private JPanel tablePanel;
+	private JPanel panel_6;
+	private JPanel panel_7;
+	private JPanel panel_8;
+	private JPanel panel_9;
+	private JPanel panel_10;
+	private JButton btnJobProfilesWithMostOpeningsPerQualifiedPerson;
+	private JButton btnCoursesTrainingUnqualified;
 	
 	public QueriesMainPanel(Connection connection) {
 		this.connection = connection;
@@ -126,80 +136,85 @@ public class QueriesMainPanel extends JPanel {
 		JPanel companyPanel = new JPanel();
 		companyPanel.setBorder(new TitledBorder(null, "Company", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		queryPanel.add(companyPanel);
-		companyPanel.setLayout(new BorderLayout(0, 0));
 		
 		cbCompany = new JComboBox<Company>();
 		cbCompanyModel = new DefaultComboBoxModel<Company>();
-		companyPanel.add(cbCompany, BorderLayout.NORTH);
+		companyPanel.setLayout(new BoxLayout(companyPanel, BoxLayout.Y_AXIS));
+		companyPanel.add(cbCompany);
 		
 		JPanel panel = new JPanel();
-		companyPanel.add(panel, BorderLayout.CENTER);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		companyPanel.add(panel);
 		
-		btnStaffBySalary = new JButton("Staff By Salary");
+		btnStaffBySalary = new JButton("2. Staff By Salary");
 		btnStaffBySalary.addActionListener(buttonController);
-		panel.add(btnStaffBySalary);
+		panel.setLayout(new GridLayout(2, 2, 0, 0));
 		
-		btnWorkersByName = new JButton("Workers By Name");
+		btnWorkersByName = new JButton("1. Workers By Name");
 		btnWorkersByName.addActionListener(buttonController);
 		panel.add(btnWorkersByName);
+		panel.add(btnStaffBySalary);
 		
-		btnLaborCostsForAll = new JButton("Labor Costs For All");
+		btnLaborCostsForAll = new JButton("3. Labor Costs For All");
 		btnLaborCostsForAll.addActionListener(buttonController);
 		panel.add(btnLaborCostsForAll);
 		
 		JPanel projectPanel = new JPanel();
 		projectPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Project", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		queryPanel.add(projectPanel);
-		projectPanel.setLayout(new BorderLayout(0, 0));
 		
 		cbProject = new JComboBox<Project>();
 		cbProjectModel = new DefaultComboBoxModel<Project>();
-		projectPanel.add(cbProject, BorderLayout.NORTH);
+		projectPanel.setLayout(new BoxLayout(projectPanel, BoxLayout.Y_AXIS));
+		projectPanel.add(cbProject);
 		
 		JPanel panel_5 = new JPanel();
-		projectPanel.add(panel_5, BorderLayout.CENTER);
-		panel_5.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		projectPanel.add(panel_5);
 		
-		btnCurrentEmployees = new JButton("Current Employees");
+		btnCurrentEmployees = new JButton("5. Current Employees");
+		btnCurrentEmployees.setHorizontalAlignment(SwingConstants.LEFT);
 		btnCurrentEmployees.addActionListener(buttonController);
+		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.Y_AXIS));
 		panel_5.add(btnCurrentEmployees);
 		
 		JPanel personPanel = new JPanel();
 		personPanel.setBorder(new TitledBorder(null, "Person", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		queryPanel.add(personPanel);
-		personPanel.setLayout(new BorderLayout(0, 0));
 		
 		cbPerson = new JComboBox<Person>();
 		cbPersonModel = new DefaultComboBoxModel<Person>();
-		personPanel.add(cbPerson, BorderLayout.NORTH);
+		personPanel.setLayout(new BoxLayout(personPanel, BoxLayout.Y_AXIS));
+		personPanel.add(cbPerson);
 		
 		JPanel panel_1 = new JPanel();
-		personPanel.add(panel_1, BorderLayout.CENTER);
+		personPanel.add(panel_1);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
 		
-		btnJobsCurrentlyHeld = new JButton("Jobs Currently Held");
-		btnJobsCurrentlyHeld.addActionListener(buttonController);
-		panel_1.add(btnJobsCurrentlyHeld);
+		panel_6 = new JPanel();
+		panel_1.add(panel_6);
+		panel_6.setLayout(new GridLayout(3, 2, 0, 0));
 		
-		btnSkills = new JButton("Skills");
-		btnSkills.addActionListener(buttonController);
-		panel_1.add(btnSkills);
+		btnJobsCurrentlyHeld = new JButton("4. Jobs Currently Held");
+		panel_6.add(btnJobsCurrentlyHeld);
 		
-		btnSkillGapForJobs = new JButton("Skill Gap For Jobs");
-		btnSkillGapForJobs.addActionListener(buttonController);
-		panel_1.add(btnSkillGapForJobs);
+		btnSkills = new JButton("6. Skills");
+		panel_6.add(btnSkills);
 		
-		btnJobProfilesQualified = new JButton("Job Profiles Qualified");
-		btnJobProfilesQualified.addActionListener(buttonController);
-		panel_1.add(btnJobProfilesQualified);
+		btnSkillGapForCurrentJobs = new JButton("7. Skill Gap For Current Jobs");
+		panel_6.add(btnSkillGapForCurrentJobs);
 		
-		btnHighestPayingJob = new JButton("Highest Paying Job");
+		btnJobProfilesQualified = new JButton("14. Job Profiles Qualified");
+		panel_6.add(btnJobProfilesQualified);
+		
+		btnHighestPayingJob = new JButton("15. Highest Paying Job Qualified");
+		panel_6.add(btnHighestPayingJob);
 		btnHighestPayingJob.addActionListener(buttonController);
-		panel_1.add(btnHighestPayingJob);
+		btnJobProfilesQualified.addActionListener(buttonController);
+		btnSkillGapForCurrentJobs.addActionListener(buttonController);
+		btnSkills.addActionListener(buttonController);
+		btnJobsCurrentlyHeld.addActionListener(buttonController);
 		
 		JPanel panel_4 = new JPanel();
-		panel_4.setBorder(new TitledBorder(null, "Job", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_4.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Job", TitledBorder.TRAILING, TitledBorder.TOP, null, null));
 		panel_1.add(panel_4);
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.Y_AXIS));
 		
@@ -207,77 +222,104 @@ public class QueriesMainPanel extends JPanel {
 		cbJobModel = new DefaultComboBoxModel<JobReadable>();
 		panel_4.add(cbJob);
 		
-		btnMissingSkills = new JButton("Missing Skills");
+		panel_7 = new JPanel();
+		panel_4.add(panel_7);
+		panel_7.setLayout(new GridLayout(3, 2, 0, 0));
+		
+		btnMissingSkills = new JButton("9. Person's Missing Skills");
+		panel_7.add(btnMissingSkills);
 		btnMissingSkills.addActionListener(buttonController);
-		panel_4.add(btnMissingSkills);
 		
-		btnCoursesForMissingSkills = new JButton("Courses For Missing Skills");
+		btnMinimumCoursesForSkillSet = new JButton("10. Minimum Courses For Skill Set");
+		panel_7.add(btnMinimumCoursesForSkillSet);
+		btnMinimumCoursesForSkillSet.addActionListener(buttonController);
+		btnMinimumCoursesForSkillSet.setEnabled(false);
+		
+		btnCoursesForMissingSkills = new JButton("11. Courses For Person's Missing Skills");
+		panel_7.add(btnCoursesForMissingSkills);
 		btnCoursesForMissingSkills.addActionListener(buttonController);
-		panel_4.add(btnCoursesForMissingSkills);
+		btnCoursesForMissingSkills.setEnabled(false);
 		
-		btnMinimumCoursesForMissingSkills = new JButton("Minimum Courses For Missing Skill");
-		btnMinimumCoursesForMissingSkills.addActionListener(buttonController);
-		panel_4.add(btnMinimumCoursesForMissingSkills);
-		
-		btnCheapestCoursesForMissingSkills = new JButton("Cheapest Courses For Missing Skill");
+		btnCheapestCoursesForMissingSkills = new JButton("12. Cheapest Courses For Missing Skill");
+		panel_7.add(btnCheapestCoursesForMissingSkills);
 		btnCheapestCoursesForMissingSkills.addActionListener(buttonController);
-		panel_4.add(btnCheapestCoursesForMissingSkills);
+		btnCheapestCoursesForMissingSkills.setEnabled(false);
 		
-		btnQuickestCoursesForMissingSkill = new JButton("Quickest Courses For Missing Skills");
+		btnQuickestCoursesForMissingSkill = new JButton("13. Quickest Courses For Missing Skills");
+		panel_7.add(btnQuickestCoursesForMissingSkill);
 		btnQuickestCoursesForMissingSkill.addActionListener(buttonController);
-		panel_4.add(btnQuickestCoursesForMissingSkill);
+		btnQuickestCoursesForMissingSkill.setEnabled(false);
 		
 		JPanel jobProfilePanel = new JPanel();
 		jobProfilePanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Job Profile", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		queryPanel.add(jobProfilePanel);
-		jobProfilePanel.setLayout(new BorderLayout(0, 0));
 		
 		cbJobProfile = new JComboBox<JobProfile>();
 		cbJobProfileModel = new DefaultComboBoxModel<JobProfile>();
-		jobProfilePanel.add(cbJobProfile, BorderLayout.NORTH);
+		jobProfilePanel.setLayout(new BoxLayout(jobProfilePanel, BoxLayout.Y_AXIS));
+		jobProfilePanel.add(cbJobProfile);
 		
 		JPanel panel_2 = new JPanel();
-		jobProfilePanel.add(panel_2, BorderLayout.CENTER);
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
+		jobProfilePanel.add(panel_2);
 		
-		btnRequiredSkills = new JButton("Required Skills");
+		btnRequiredSkills = new JButton("8. Required Skills");
 		btnRequiredSkills.addActionListener(buttonController);
+		panel_2.setLayout(new GridLayout(3, 2, 0, 0));
 		panel_2.add(btnRequiredSkills);
 		
-		btnQualifiedPeople = new JButton("Qualified People");
+		btnQualifiedPeople = new JButton("16. Qualified People");
 		btnQualifiedPeople.addActionListener(buttonController);
 		panel_2.add(btnQualifiedPeople);
 		
-		btnClosestQualified = new JButton("Closest Qualified");
+		btnClosestQualified = new JButton("17. Closest Qualified");
 		btnClosestQualified.addActionListener(buttonController);
 		panel_2.add(btnClosestQualified);
 		
-		btnMissing = new JButton("Missing 1");
-		btnMissing.addActionListener(buttonController);
-		panel_2.add(btnMissing);
+		btnMissingOne = new JButton("18. Missing One");
+		btnMissingOne.addActionListener(buttonController);
+		panel_2.add(btnMissingOne);
 		
-		btnSkillsMissed = new JButton("Skills Missed");
-		btnSkillsMissed.addActionListener(buttonController);
-		panel_2.add(btnSkillsMissed);
+		btnSkillsMissedOne = new JButton("19. Skills Missed One");
+		btnSkillsMissedOne.addActionListener(buttonController);
+		panel_2.add(btnSkillsMissedOne);
 		
 		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(null, "Missing-K", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_2.add(panel_3);
+		jobProfilePanel.add(panel_3);
+		panel_3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Missing-K", TitledBorder.TRAILING, TitledBorder.TOP, null, null));
+		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
+		
+		panel_8 = new JPanel();
+		panel_3.add(panel_8);
 		
 		JLabel lblK = new JLabel("K");
-		panel_3.add(lblK);
+		panel_8.add(lblK);
 		
 		tfMissingK = new JTextField();
-		panel_3.add(tfMissingK);
+		panel_8.add(tfMissingK);
 		tfMissingK.setColumns(10);
 		
-		btnMissingK = new JButton("Missing K");
-		btnMissingK.addActionListener(buttonController);
-		panel_3.add(btnMissingK);
+		panel_9 = new JPanel();
+		panel_3.add(panel_9);
 		
-		btnSkillsMissedForK = new JButton("Skills Missed For K");
+		btnPeopleMissingK = new JButton("20. People Missing K");
+		panel_9.add(btnPeopleMissingK);
+		
+		btnSkillsMissedForK = new JButton("21. Skills Missed For K");
+		panel_9.add(btnSkillsMissedForK);
+		
+		panel_10 = new JPanel();
+		queryPanel.add(panel_10);
+		panel_10.setLayout(new GridLayout(2, 1, 0, 0));
+		
+		btnJobProfilesWithMostOpeningsPerQualifiedPerson = new JButton("22. Job Profiles With Most Openings Per Qualified People");
+		btnJobProfilesWithMostOpeningsPerQualifiedPerson.setEnabled(false);
+		panel_10.add(btnJobProfilesWithMostOpeningsPerQualifiedPerson);
+		
+		btnCoursesTrainingUnqualified = new JButton("23. Courses Training Unqualified People For Job Profiles \r\nWith The Most Openings");
+		btnCoursesTrainingUnqualified.setEnabled(false);
+		panel_10.add(btnCoursesTrainingUnqualified);
 		btnSkillsMissedForK.addActionListener(buttonController);
-		panel_3.add(btnSkillsMissedForK);
+		btnPeopleMissingK.addActionListener(buttonController);
 		
 		tablePanel = new JPanel();
 		tablePanel.setLayout(new BorderLayout(0, 0));
@@ -437,7 +479,7 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnSkillGapForJobs) {
+			} else if (event.getSource() == btnSkillGapForCurrentJobs) {
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -479,18 +521,90 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+			} else if (event.getSource() == btnRequiredSkills) {
+				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getRequiredSkills(jobProfile.getJobProfileCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Skills Required for a Job Profile");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else if (event.getSource() == btnQualifiedPeople) {
+				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getAllQualifiedForJobProfile(jobProfile.getJobProfileCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("People Qualified for a Job Profile");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else if (event.getSource() == btnClosestQualified) {
+				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getNearestQualifiedForJobProfile(jobProfile.getJobProfileCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Nearest Qualified for a Job Profile");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else if (event.getSource() == btnMissingOne) {
+				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getPeopleMissingOneSkillForJobProfile(jobProfile.getJobProfileCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("People Missing One Skill for a Job Profile");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else if (event.getSource() == btnSkillsMissedOne) {
+				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getSkillsMissedByPeople(jobProfile.getJobProfileCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Skills People Missed by One for a Job Profile");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			} else if (event.getSource() == btnCoursesForMissingSkills) {
-				
-			} else if (event.getSource() == btnMinimumCoursesForMissingSkills) {
-				
+				//11. Not Yet Implemented
+			} else if (event.getSource() == btnMinimumCoursesForSkillSet) {
+				//10. Not Yet Implemented
 			} else if (event.getSource() == btnCheapestCoursesForMissingSkills) {
-				
+				//12. Not Yet Implemented
 			} else if (event.getSource() == btnQuickestCoursesForMissingSkill) {
-				
-			} else if (event.getSource() == btnMissingK) {
-				
+				//13. Not Yet Implemented
+			} else if (event.getSource() == btnPeopleMissingK) {
+				Integer K = Integer.parseInt(tfMissingK.getText());
+				JobReadable job = (JobReadable)cbJob.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getPeopleMissingUpToKSkills(job.getJobCode(), K);
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("People Missing up to K Skills For Job");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			} else if (event.getSource() == btnSkillsMissedForK) {
-				
+				Integer K = Integer.parseInt(tfMissingK.getText());
+				JobReadable job = (JobReadable)cbJob.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getUpToKSkillsMissedByPeople(job.getJobCode(), K);
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("K Skills Missed By People For Job");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else if (event.getSource() == btnJobProfilesWithMostOpeningsPerQualifiedPerson) {
+				// 22.  Not Yet Implemented
+			} else if (event.getSource() == btnCoursesTrainingUnqualified) {
+				// 23.  Not Yet Implemented.
 			}
 		}
 	}
@@ -498,7 +612,7 @@ public class QueriesMainPanel extends JPanel {
 	public static void main (String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection();
+			connection = DBConnection.getConnection2();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -507,7 +621,7 @@ public class QueriesMainPanel extends JPanel {
 		frame.getContentPane().add(panel);
 		
 		frame.setTitle("Queries Panel");
-		frame.setSize(800, 600);
+		frame.setSize(900, 900);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		

@@ -99,19 +99,19 @@ public class RequiredQueries {
 	}
 	
 	//5. List all the workers who are working for a specific project. 
-	public ResultSet getCurrentProjectEmployees(String project_code)
+	public ResultSet getCurrentProjectEmployees(String projectCode)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
 			"SELECT person_code, last_name, first_name " +
 			"FROM person NATURAL JOIN employment NATURAL JOIN " +
 			"     job NATURAL JOIN job_project " +
-			"WHERE project_code = 'p64' AND  " +
+			"WHERE project_code = ? AND  " +
 			"      start_date < CURRENT_DATE AND " +
 			"      (end_date > CURRENT_DATE OR end_date IS NULL) ",
 			ResultSet.TYPE_SCROLL_SENSITIVE,
             ResultSet.CONCUR_UPDATABLE
 		);
-		stmt.setString(1, project_code);
+		stmt.setString(1, projectCode);
 		ResultSet rset = stmt.executeQuery();
 		return rset;	
 	}
@@ -209,7 +209,7 @@ public class RequiredQueries {
 	//    that can cover a given skill set. 
 	
 	// First part of #10
-	public ResultSet getAllCourseCombinationsSatisfyingJobRequirements(String job_code) 
+	public ResultSet getAllCourseCombinationsSatisfyingJobRequirements(String jobCode) 
 			throws SQLException {
 		// Does anything need to be made DISTINCT?
 		// Doesn't quite work.  Basically needs a base case.
@@ -235,32 +235,32 @@ public class RequiredQueries {
 			"FROM course_set" +
 			"GROUP BY set_id"
 			);
-		stmt.setString(1, job_code);
+		stmt.setString(1, jobCode);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
 
 	// Actual #10.
-	public ResultSet getLeastCoursesForJob(String job_code)
+	public ResultSet getLeastCoursesForJob(String jobCode)
 			throws SQLException {
 		// See above, just count and min on the course_code
 		PreparedStatement stmt = conn.prepareStatement(""
 			);
-		stmt.setString(1, job_code);
+		stmt.setString(1, jobCode);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
 	
 	//11. List the courses that can make up the missing knowledge/skills 
 	//    for a person to pursue a specific job. 
-	public ResultSet getCoursesForPersonToGetJob(String person_code, String job_code) 
+	public ResultSet getCoursesForPersonToGetJob(String person_code, String jobCode) 
 			throws SQLException {
 		// See above
 		// and subtract Person's skills from the original skill set.
 		// List all of the courses.
 		PreparedStatement stmt = conn.prepareStatement(""
 			);
-		stmt.setString(1, job_code);
+		stmt.setString(1, jobCode);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
@@ -437,7 +437,7 @@ public class RequiredQueries {
 			"	WHERE J.skill_code IN ( " +
 			"	   SELECT skill_code " +
 			"	   FROM job_profile_skill " +
-			"	   WHERE job_profile_code = '200' " +
+			"	   WHERE job_profile_code = ? " +
 			"	  MINUS " +
 			"	   SELECT skill_code " +
 			"	   FROM person_skill " +
@@ -542,7 +542,7 @@ public class RequiredQueries {
 	//      make a 'missing-k' list that lists the people's IDS and the 
 	//      number of missing skills for the people who miss only up to k skills 
 	//      in the descending order of missing skills.
-	public ResultSet getPeopleMissingUpToKSkills(String jobProfileCode, String K)
+	public ResultSet getPeopleMissingUpToKSkills(String jobProfileCode, Integer K)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
 			" WITH missing_skills (person_code, num_missing) as ( " +
@@ -568,7 +568,7 @@ public class RequiredQueries {
 		);
 		stmt.setString(1, jobProfileCode);
 		stmt.setString(2, jobProfileCode);
-		stmt.setString(3, K);
+		stmt.setInt(3, K);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
@@ -576,7 +576,7 @@ public class RequiredQueries {
 	//		Find every skill that is needed by at least one person in the given 
 	//		missing-k list.  List each skill_code and the number of people who need 
 	//		it in the descending order of the people counts.
-	public ResultSet getUpToKSkillsMissedByPeople(String jobProfileCode, String K)
+	public ResultSet getUpToKSkillsMissedByPeople(String jobProfileCode, Integer K)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
 			" WITH missing_skills (person_code, num_missing) as ( " +
@@ -615,7 +615,7 @@ public class RequiredQueries {
 		);
 		stmt.setString(1, jobProfileCode);
 		stmt.setString(2, jobProfileCode);
-		stmt.setString(3, K);
+		stmt.setInt(3, K);
 		stmt.setString(4, jobProfileCode);
 		stmt.setString(5, jobProfileCode);
 		ResultSet rset = stmt.executeQuery();
