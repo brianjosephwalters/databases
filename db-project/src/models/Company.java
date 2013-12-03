@@ -47,4 +47,7 @@ public class Company {
 	public void setWebsite(String website) {
 		this.website = website;
 	}
+	public String toString() {
+		return this.companyCode + ": " + this.companyName;
+	}
 }

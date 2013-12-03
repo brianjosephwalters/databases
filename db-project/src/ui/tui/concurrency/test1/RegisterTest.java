@@ -3,7 +3,6 @@ package ui.tui.concurrency.test1;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 import db.DBConnection;
 

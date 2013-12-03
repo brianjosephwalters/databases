@@ -10,6 +10,17 @@ public class Project {
 	private Date startDate;
 	private Date endDate;
 	
+	public Project(String projectCode, String companyCode,
+				   String projectTitle, String budgetCode,
+				   Date startDate, Date endDate) {
+		this.projectCode = projectCode;
+		this.companyCode = companyCode;
+		this.projectTitle = projectTitle;
+		this.budgetCode = budgetCode;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+	
 	/**
 	 * @return the projectCode
 	 */
@@ -81,6 +92,10 @@ public class Project {
 	 */
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+	
+	public String toString() {
+		return this.projectCode + ": " + this.projectTitle;
 	}
 	
 }

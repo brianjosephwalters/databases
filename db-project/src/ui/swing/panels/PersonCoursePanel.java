@@ -16,7 +16,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import ui.swing.test.QueryResultsPanel;
 import models.Exam;
 import models.ExamTaken;
 import models.Person;

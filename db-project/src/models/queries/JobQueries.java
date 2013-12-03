@@ -5,12 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import models.Job;
 import models.JobReadable;
-import models.Person;
 
 public class JobQueries {
 	// Instance Variables

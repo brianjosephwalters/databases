@@ -4,6 +4,13 @@ public class JobProfile {
 	private String jobProfileCode;
 	private String jobProfileTitle;
 	private String jobProfileDescription;
+	
+	public JobProfile(String jobProfileCode, String jobProfileTitle,
+					  String jobProfileDescription) {
+		this.jobProfileCode = jobProfileCode;
+		this.jobProfileTitle = jobProfileTitle;
+		this.jobProfileDescription = jobProfileDescription;
+	}
 	/**
 	 * @return the jobProfileCode
 	 */

@@ -41,38 +41,10 @@ public class EmployTest {
 		} else {
 			System.out.println("###Failed to insert.  Try again.");
 		}
-		
-		pause("Hit enter when other transaction has rolled back.");
-	}
-	
-	public void cleanUp() {
-		try {
-			PreparedStatement stmt = connection.prepareStatement(
-					" DELETE FROM employment " +
-					"	 WHERE job_code = '8000' AND " +
-					"          person_code = '10467' "
-				);
-		
-			System.out.println("Adding Employment...");
-			System.out.println(stmt.executeUpdate() + " lines removed");
-			
-		} catch (SQLException e) {
-			System.out.println("Unable to remove employment: " + e);
-		}
-	}
-	
-	/**
-	 * Pause the running of a transaction.
-	 * @param string A prompt to be displayed
-	 */
-	private void pause(String string) {
-		System.out.println(string);
-		String s = scanner.nextLine();
 	}
 	
 	public static void main(String[] args) {
 		EmployTest test = new EmployTest();
 		test.employ();
-		test.cleanUp();
 	}
 }

@@ -197,7 +197,6 @@ public class AddPersonJobPanel extends JPanel {
 			else if (e.getSource() == btnCancel) {
 				
 			}
-			
 		}
 	}
 	

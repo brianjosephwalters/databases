@@ -1,4 +1,4 @@
-package ui.swing.test;
+package ui.swing.panels;
 
 import java.awt.BorderLayout;
 import java.sql.Connection;
@@ -20,14 +20,24 @@ import models.queries.QueryResultsTableModel;
 public class QueryResultsPanel extends JPanel{
 	QueryResultsTableModel tableModel;
 	JTable table;
+	JLabel lTitle;
 	
-	public QueryResultsPanel(ResultSet results, String label) {		
+	public QueryResultsPanel(String label) {		
 		setLayout(new BorderLayout());
-		add( new JLabel(label), BorderLayout.NORTH);
+		this.lTitle = new JLabel(label);
+		add(lTitle, BorderLayout.NORTH);
 		
-		tableModel = new QueryResultsTableModel(results);
-		table = new JTable(tableModel);
+		table = new JTable();
 		add(new JScrollPane(table), BorderLayout.CENTER);
+	}
+	
+	public void setResultsSet(ResultSet results) {
+		tableModel = new QueryResultsTableModel(results);
+		table.setModel(tableModel);
+	}
+	
+	public void setLabel(String label) {
+		this.lTitle.setText(label);
 	}
 	
 	public static void main (String[] args) {
@@ -45,8 +55,10 @@ public class QueryResultsPanel extends JPanel{
 		}
 
 		JFrame frame = new JFrame();
-		frame.add(new QueryResultsPanel(results, "Persons at Company 100"));
-
+		QueryResultsPanel panel = new QueryResultsPanel("Person at Comany 100");
+		panel.setResultsSet(results);
+		frame.add(panel);
+		
 		frame.setTitle("PersonTable");
 		frame.setSize(600, 400);
 		frame.setVisible(true);

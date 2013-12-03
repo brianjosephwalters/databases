@@ -107,4 +107,8 @@ public class Job {
 	public void setClosingDate(Date closingDate) {
 		this.closingDate = closingDate;
 	}
+	
+	public String toString() {
+		return this.jobCode;
+	}
 }

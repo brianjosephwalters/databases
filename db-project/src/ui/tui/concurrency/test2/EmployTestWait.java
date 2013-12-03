@@ -114,6 +114,7 @@ public class EmployTestWait {
 	}
 	
 	public void cleanUp() {
+		System.out.println("Clean up after experiment:");
 		try {
 			PreparedStatement stmt2 = connection.prepareStatement(
 					" DELETE FROM employment " +
@@ -121,9 +122,23 @@ public class EmployTestWait {
 					"          person_code = '10182' "
 				);
 		
-			System.out.println("Adding Employment...");
+			System.out.println("Deleting Employment...");
 			System.out.println(stmt2.executeUpdate() + " lines removed" +
 					"");
+			
+		} catch (SQLException e) {
+			System.out.println("Unable to remove employment: " + e);
+		}
+		
+		try {
+			PreparedStatement stmt = connection.prepareStatement(
+					" DELETE FROM employment " +
+					"	 WHERE job_code = '8000' AND " +
+					"          person_code = '10467' "
+				);
+		
+			System.out.println("Deleting...");
+			System.out.println(stmt.executeUpdate() + " lines removed");
 			
 		} catch (SQLException e) {
 			System.out.println("Unable to remove employment: " + e);
