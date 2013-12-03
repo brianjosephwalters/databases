@@ -6,6 +6,15 @@ import javax.swing.BoxLayout;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
 
+import ui.swing.panels.person.PersonAddressPanel;
+import ui.swing.panels.person.PersonCertificatePanel;
+import ui.swing.panels.person.PersonCloselyQualifiedPanel;
+import ui.swing.panels.person.PersonCurrentJobPanel;
+import ui.swing.panels.person.PersonFormPanel;
+import ui.swing.panels.person.PersonNavigationPanel;
+import ui.swing.panels.person.PersonPhonePanel;
+import ui.swing.panels.person.PersonQualifiedJobsPanel;
+import ui.swing.panels.person.PersonSkillPanel;
 import models.Person;
 import models.queries.PersonQueries;
 import db.DBConnection;

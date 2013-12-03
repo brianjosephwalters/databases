@@ -19,12 +19,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
-import ui.swing.panels.PersonFormPanel.PersonListener;
+import ui.swing.panels.person.PersonFormPanel;
+import ui.swing.panels.person.PersonFormPanel.PersonListener;
 import models.Job;
 import models.JobReadable;
 import models.Person;
 import models.queries.JobQueries;
 import models.queries.PersonQueries;
+
 import javax.swing.JScrollPane;
 
 
