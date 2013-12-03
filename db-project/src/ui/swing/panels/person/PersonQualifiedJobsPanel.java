@@ -3,6 +3,8 @@ package ui.swing.panels.person;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -14,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -21,7 +24,13 @@ import javax.swing.JTextArea;
 import models.JobReadable;
 import models.Person;
 import models.queries.JobQueries;
+
 import javax.swing.JCheckBox;
+
+import ui.swing.panels.EditPersonEmployment;
+import ui.swing.panels.EditPersonSkillsPanel;
+import ui.swing.panels.person.PersonSkillPanel.EditWindowListener;
+
 import java.awt.Component;
 
 @SuppressWarnings("serial")
@@ -32,16 +41,19 @@ public class PersonQualifiedJobsPanel extends JPanel{
 	private List<JobReadable> list;
 	
 	private CheckBoxController checkBoxController;
+	private ButtonController buttonController;
 	
 	private JTextArea taJobs;
 	private JScrollPane scrollPane;
 	private JCheckBox chckbxShowAll;
+	private JButton btnHire;
 	
 	public PersonQualifiedJobsPanel (Connection connection) {
 		this.connection = connection;
 		this.jobQueries = new JobQueries(connection);
 		this.list = new ArrayList<JobReadable>();
 		this.checkBoxController = new CheckBoxController();
+		this.buttonController = new ButtonController();
 		
 		initializeGUIComponents();
 	}
@@ -51,10 +63,14 @@ public class PersonQualifiedJobsPanel extends JPanel{
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		
-		chckbxShowAll = new JCheckBox("Show All");
+		chckbxShowAll = new JCheckBox("Include Not Available");
 		chckbxShowAll.addActionListener(checkBoxController);
 		
 		buttonPanel.add(chckbxShowAll);
+		
+		btnHire = new JButton("Hire!");
+		btnHire.addActionListener(buttonController);
+		buttonPanel.add(btnHire);
 		buttonPanel.add(Box.createHorizontalStrut(10));
 		
 		// Setup the Main Panel.
@@ -104,9 +120,28 @@ public class PersonQualifiedJobsPanel extends JPanel{
 		taJobs.setText(sb.toString());
 	}
 	
-	private class CheckBoxController implements ActionListener {
+	private class ButtonController implements ActionListener {
+
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
+			hirePerson();
+		}
+		
+		public void hirePerson() {
+			JDialog dialog = new JDialog();
+			dialog.getContentPane().add(new EditPersonEmployment(connection, person));
+			dialog.setBounds(100, 100, 550, 400);
+			dialog.setTitle("Hire!");
+			dialog.setVisible(true);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.addWindowListener(new EditWindowListener());
+			dialog.setModal(true);
+		}	
+	}
+	
+	private class CheckBoxController implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
 			setJobsTextArea();
 		}
 		
@@ -118,6 +153,13 @@ public class PersonQualifiedJobsPanel extends JPanel{
 			if (evt.getPropertyName().equals("currentPerson")) {
 				displayPerson((Person)evt.getNewValue());
 			}
+		}
+	}
+	
+	public class EditWindowListener extends WindowAdapter {
+		@Override
+		public void windowClosed(WindowEvent e) {
+			setJobsTextArea();
 		}
 	}
 

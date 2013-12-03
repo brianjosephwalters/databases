@@ -74,7 +74,7 @@ public class JobQueries {
 			" FROM job " +
 		    " WHERE opening_date < current_date AND" +
 			"       (closing_date > current_date OR " +
-		    "        closing_date = null) " +
+		    "        closing_date is null) " +
 			" MINUS " +
 			" SELECT job_code, job_profile_code, company_code " +
 			" FROM employment NATURAL JOIN job" +
@@ -91,13 +91,13 @@ public class JobQueries {
 		List<JobReadable> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			" WITH available_jobs as " +
-		    "   (SELECT job_code, job_profile_code, company_code " +
+		    "   (SELECT job_code, job_profile_code, company_code, job_type, pay_rate, opening_date, closing_date " +
 			"    FROM job " +
 		    "    WHERE opening_date < current_date AND" +
 			"          (closing_date > current_date OR " +
-		    "           closing_date = null) " +
+		    "           closing_date is null) " +
 			"   MINUS " +
-			"    SELECT job_code, job_profile_code, company_code " +
+			"    SELECT job_code, job_profile_code, company_code, job_type, pay_rate, opening_date, closing_date " +
 			"	 FROM employment NATURAL JOIN job" +
 			"    WHERE end_date is null OR " +
             "          end_date > current_date) " +
@@ -225,13 +225,13 @@ public class JobQueries {
 		List<JobReadable> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			" WITH available_jobs as " +
-		    "   (SELECT job_code, job_profile_code, company_code, pay_rate, opening_date, closing_date  " +
+		    "   (SELECT job_code, job_profile_code, company_code, job_type, pay_rate, opening_date, closing_date  " +
 			"    FROM job " +
 		    "    WHERE opening_date < current_date AND" +
 			"          (closing_date > current_date OR " +
-		    "           closing_date = null) " +
+		    "           closing_date is null) " +
 			"   MINUS " +
-			"    SELECT job_code, job_profile_code, company_code, pay_rate, opening_date, closing_date  " +
+			"    SELECT job_code, job_profile_code, company_code, job_type, pay_rate, opening_date, closing_date  " +
 			"	 FROM employment NATURAL JOIN job" +
 			"    WHERE end_date is null OR " +
             "          end_date > current_date), " +
@@ -400,6 +400,36 @@ public class JobQueries {
 		stmt.setString(2, personCode);
 		list = getListOfJobs(stmt);
 		return list;
+	}
+	
+	public void hirePerson(String jobCode, String personCode)
+		throws SQLException {
+		
+		PreparedStatement stmt1 = connection.prepareStatement(
+				" UPDATE job " +
+				" SET closing_date = CURRENT_DATE " +
+				" WHERE job_code = ? "
+		);
+		PreparedStatement stmt2 = connection.prepareStatement(
+				"INSERT INTO employment VALUES " +
+				"	(?, ?, CURRENT_DATE, null)"
+		);
+		try {
+			connection.setAutoCommit(false);
+			stmt1.setString(1, jobCode);
+			stmt2.setString(1, personCode);
+			stmt2.setString(2, jobCode);
+			
+			stmt1.executeUpdate();
+			stmt2.executeUpdate();
+			connection.commit();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			connection.rollback();
+		} finally {
+			connection.setAutoCommit(false);
+		}
 	}
 	
 	// Helper Functions

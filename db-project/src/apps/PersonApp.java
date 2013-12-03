@@ -13,11 +13,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import ui.swing.panels.QueriesMainPanel;
+import ui.swing.panels.person.PersonMainPanel;
 import ui.swing.test.ConnectionDialog;
 
 @SuppressWarnings("serial")
-public class QueryApp extends JFrame {
+public class PersonApp extends JFrame {
 	private Connection connection;
 	private JPanel contentPane;
 	private JMenuBar menuBar;
@@ -31,7 +31,7 @@ public class QueryApp extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public QueryApp() {
+	public PersonApp() {
 		this.connection = null;
 		this.menuController = new MenuController();
 		
@@ -56,8 +56,8 @@ public class QueryApp extends JFrame {
 		setContentPane(contentPane);
 		
 		
-		setBounds(100, 100, 450, 300);
-		setTitle("Required Queries Program");
+		setBounds(100, 100, 650, 600);
+		setTitle("Person Program");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
@@ -74,8 +74,8 @@ public class QueryApp extends JFrame {
 		menuBar.add(mnConnection);
 		mnConnection.setText(userName);
 		// Add Panels
-		setSize(900, 900);
-		contentPane.add(new QueriesMainPanel(connection));
+		setSize(600, 700);
+		contentPane.add(new PersonMainPanel(connection));
 	}
 	
 	private void setDisconnected() {
@@ -108,7 +108,7 @@ public class QueryApp extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					QueryApp frame = new QueryApp();
+					PersonApp frame = new PersonApp();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

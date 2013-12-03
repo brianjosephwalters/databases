@@ -67,7 +67,7 @@ public class PersonCurrentJobPanel extends JPanel {
 		
 		// Setup the Main Panel.
 		setBorder(BorderFactory.createTitledBorder( 
-			BorderFactory.createEtchedBorder(), "Job Held By"));
+			BorderFactory.createEtchedBorder(), "Job Held"));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		scrollPane = new JScrollPane();
@@ -119,6 +119,7 @@ public class PersonCurrentJobPanel extends JPanel {
 		}
 		
 		private void editButton() {
+			
 		}
 	}
 	
