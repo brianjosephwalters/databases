@@ -572,9 +572,18 @@ public class QueriesMainPanel extends JPanel {
 					e.printStackTrace();
 				}
 			} else if (event.getSource() == btnCoursesForMissingSkills) {
-				//11. Not Yet Implemented
+				// 10. Not Yet implemented
 			} else if (event.getSource() == btnMinimumCoursesForSkillSet) {
-				//10. Not Yet Implemented
+				JobReadable job = (JobReadable)cbJob.getSelectedItem();
+				Person person = (Person)cbPerson.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getLeastCoursesForPersonToGetJob(job.getJobCode(), person.getPersonCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Least Courses for Person to get Job");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			} else if (event.getSource() == btnCheapestCoursesForMissingSkills) {
 				//12. Not Yet Implemented
 			} else if (event.getSource() == btnQuickestCoursesForMissingSkill) {

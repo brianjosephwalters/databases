@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.Job;
 import models.Person;
 import models.Skill;
 
@@ -116,18 +117,6 @@ public class SkillQueries {
 		return list;
 	}
 	
-	/**
-WITH skill_codes AS 
-  (SELECT skill_code
-  FROM skill NATURAL JOIN job_skill 
-  WHERE job_code = '100'
-  UNION 
-  SELECT skill_code
-  FROM skill NATURAL JOIN job_profile_skill
-  WHERE job_profile_code = '100' )
-SELECT *
-FROM skill NATURAL JOIN skill_codes
-	 */
 	public List<Skill> getSkillsForJobAndJobProfile(String jobCode,
 													String jobProfileCode) 
 			throws SQLException {
@@ -150,30 +139,28 @@ FROM skill NATURAL JOIN skill_codes
 		return list;
 	}
 	
-	
-	
 	/**
-	 * All skills missing from Person to fulfill a job / Job Profile
-	 * 
-		WITH 
-		  skills_job as 
-		    (SELECT skill_code
-		    FROM job_skill
-		    WHERE job_code = '10147'), 
-		  skills_job_profile as 
-		    (SELECT skill_code 
-		    FROM job_profile_skill NATURAL JOIN job 
-		    WHERE job_code = '10147'),
-		  skills_person as 
-		    (SELECT skill_code 
-		    FROM person_skill
-		    WHERE person_code = '10147'),
-		  missing_skills as (SELECT * FROM skills_person MINUS 
-		                     SELECT * FROM skills_job MINUS 
-		                     SELECT * FROM skills_job_profile)
-		SELECT *
-		FROM skill NATURAL JOIN missing_skills
+	 * All skills not required by a job.
 	 */
+	public List<Skill> getSkillsNotRequiredByJob(String jobCode) 
+			throws SQLException {
+		List<Skill> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH  lacked_skills AS" +
+			"   ( (SELECT skill_code" + 
+		    "      FROM skill)" +
+		    "     MINUS " +
+		    "     (SELECT skill_code" +
+		    "      FROM skill NATURAL JOIN job_skill" +
+		    "      WHERE job_code = ?) )" +
+			" SELECT * " +
+			" FROM skill NATURAL JOIN lacked_skills");
+		stmt.setString(1, jobCode);
+		list = getListOfSkills(stmt);
+		
+		return list;
+	}	
+	
 	public List<Skill> getSkillsMissingFromPersonForJob(String personCode, 
 														String jobCode,
 														String jobProfileCode) 
@@ -218,6 +205,16 @@ FROM skill NATURAL JOIN skill_codes
 		return stmt.executeUpdate();
 	}
 	
+	public int addSkillToJob(Job job, Skill skill)
+			throws SQLException {
+		PreparedStatement stmt = connection.prepareStatement(
+			"INSERT INTO job_skill" +
+			"  value(?, ?)");
+		stmt.setString(1, job.getJobCode());
+		stmt.setString(2, skill.getSkillCode());
+		return stmt.executeUpdate();
+	}
+	
 	public int addSkillsToPerson(Person person, List<Skill> list)
 			throws SQLException {
 		int count = 0;
@@ -225,9 +222,36 @@ FROM skill NATURAL JOIN skill_codes
 		try {
 			for (Skill skill : list) {
 				PreparedStatement stmt = connection.prepareStatement(
-					"INSERT INTO person_skill (person_code, skill_code)" +
+					" INSERT INTO person_skill (person_code, skill_code) " +
 					"  VALUES(?, ?)");
 				stmt.setString(1, person.getPersonCode());
+				stmt.setString(2, skill.getSkillCode());
+				count += stmt.executeUpdate();
+			}
+			if (count != list.size()) {
+				connection.rollback();
+			} else {
+				connection.commit();
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			connection.setAutoCommit(true);
+		}
+		
+		return count;
+	}
+	
+	public int addSkillsToJob(Job job, List<Skill> list)
+			throws SQLException {
+		int count = 0;
+		connection.setAutoCommit(false);
+		try {
+			for (Skill skill : list) {
+				PreparedStatement stmt = connection.prepareStatement(
+					" INSERT INTO job_skill (job_code, skill_code) " +
+					"  VALUES(?, ?)");
+				stmt.setString(1, job.getJobCode());
 				stmt.setString(2, skill.getSkillCode());
 				count += stmt.executeUpdate();
 			}
@@ -257,6 +281,17 @@ FROM skill NATURAL JOIN skill_codes
 		return stmt.executeUpdate();
 	}
 	
+	public int removeSkillFromJob(Job job, Skill skill) 
+			throws SQLException {
+		PreparedStatement stmt = connection.prepareStatement(
+			"DELETE FROM job_skill" +
+			"WHERE job_code = ? AND" +
+			"      skill_code = ?");
+		stmt.setString(1, job.getJobCode());
+		stmt.setString(2, skill.getSkillCode());
+		return stmt.executeUpdate();
+	}
+	
 	public int removeSkillsFromPerson(Person person, List<Skill> list)
 			throws SQLException {
 		int count = 0;
@@ -268,6 +303,34 @@ FROM skill NATURAL JOIN skill_codes
 					"WHERE person_code = ? AND " +
 					"      skill_code = ?");
 				stmt.setString(1, person.getPersonCode());
+				stmt.setString(2, skill.getSkillCode());
+				count += stmt.executeUpdate();
+			}
+			if (count != list.size()) {
+				connection.rollback();
+			} else {
+				connection.commit();
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			connection.setAutoCommit(true);
+		}
+		
+		return count;
+	}
+	
+	public int removeSkillsFromJob(Job job, List<Skill> list)
+			throws SQLException {
+		int count = 0;
+		connection.setAutoCommit(false);
+		try {
+			for (Skill skill : list) {
+				PreparedStatement stmt = connection.prepareStatement(
+					"DELETE FROM job_skill " +
+					"WHERE job_code = ? AND " +
+					"      skill_code = ?");
+				stmt.setString(1, job.getJobCode());
 				stmt.setString(2, skill.getSkillCode());
 				count += stmt.executeUpdate();
 			}

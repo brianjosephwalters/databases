@@ -32,33 +32,20 @@ public class JobEligiblePeoplePanel extends JPanel {
 	private PersonQueries personQueries;
 	private List<Person> list;
 	
-	private ButtonController buttonController;
+	//private ButtonController buttonController;
 	
 	private JTextArea taSkills;
 	private JScrollPane scrollPane;
-	
-	private JButton editButton;
 
 	public JobEligiblePeoplePanel(Connection connection) {
 		this.connection = connection;
 		this.personQueries = new PersonQueries(connection);
 		this.list = new ArrayList<Person>();
 		
-		this.buttonController = new ButtonController();
-		
 		initializeGUIComponents();
 	}
 	
 	public void initializeGUIComponents() {
-		
-		//Setup Data Panel
-		editButton = new JButton("Edit");
-		editButton.addActionListener(buttonController);
-		JPanel buttonPanel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		buttonPanel.add(editButton);
-		buttonPanel.add(Box.createHorizontalStrut(10));
 			
 		// Setup the Main Panel.
 		setBorder(BorderFactory.createTitledBorder( 
@@ -74,7 +61,6 @@ public class JobEligiblePeoplePanel extends JPanel {
 		scrollPane.setViewportView(taSkills);
 		
 		add(scrollPane);
-		add(buttonPanel);
 	}
 
 	public void displayJob(Job job) {
@@ -99,17 +85,6 @@ public class JobEligiblePeoplePanel extends JPanel {
 			sb.append(person.getLastName() + ", " + person.getFirstName() + "\n");
 		}
 		taSkills.setText(sb.toString());
-	}
-		
-	private class ButtonController implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			editButton();
-		}
-		
-		private void editButton() {
-			
-		}
 	}
 	
 	public class JobListener implements PropertyChangeListener {

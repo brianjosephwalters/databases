@@ -52,6 +52,7 @@ public class JobHuntingMainPanel extends JPanel {
 	PersonCurrentJobPanel personCurrentJobPanel;
 	PersonQualifiedJobsPanel personQualifiedJobsPanel;
 	PersonCloselyQualifiedPanel personCloselyQualifiedPanel;
+	private JPanel panel;
 	
 	/**
 	 * Create the panel.
@@ -93,22 +94,28 @@ public class JobHuntingMainPanel extends JPanel {
 	
 	private void initializePersonPanel() {
 		JPanel personPanel = new JPanel();
-		personPanel.setLayout(new BoxLayout(personPanel, BoxLayout.Y_AXIS));
 		personPanel.setAlignmentX(TOP_ALIGNMENT);
 		personPanel.setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), "Person Summary", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		personFormPanel = new PersonFormPanel(connection);
 		this.addPropertyChangeListener(personFormPanel.new PersonListener());
-		personSkillPanel = new PersonSkillPanel(connection);	
-		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
-		personCertificatePanel = new PersonCertificatePanel(connection);
-		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
+		personPanel.setLayout(new BorderLayout(0, 0));
 		
-		personPanel.add(personFormPanel);
-		personPanel.add(personSkillPanel);
-		personPanel.add(personCertificatePanel);
+		personPanel.add(personFormPanel, BorderLayout.NORTH);
 		
 		mainPanel.add(personPanel);
+		
+		panel = new JPanel();
+		personPanel.add(panel, BorderLayout.CENTER);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		personSkillPanel = new PersonSkillPanel(connection);	
+		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
+
+		panel.add(personSkillPanel);
+		personCertificatePanel = new PersonCertificatePanel(connection);
+		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
+
+		panel.add(personCertificatePanel);
 	}
 	
 	private void initializeQualifiedPanel() {
@@ -179,7 +186,7 @@ public class JobHuntingMainPanel extends JPanel {
 	public static void main (String[] args) {
 		Connection connection = null;
 		try {
-			connection = DBConnection.getConnection();
+			connection = DBConnection.getConnection2();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

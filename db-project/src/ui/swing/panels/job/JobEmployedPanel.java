@@ -57,7 +57,7 @@ public class JobEmployedPanel extends JPanel {
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		
-		chckbxShowAll = new JCheckBox("Show Alls");
+		chckbxShowAll = new JCheckBox("Show History");
 		chckbxShowAll.addActionListener(checkBoxController);
 		
 		buttonPanel.add(chckbxShowAll);

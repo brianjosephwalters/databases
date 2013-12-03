@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -24,6 +25,10 @@ import models.Skill;
 import models.queries.SkillQueries;
 
 import javax.swing.JScrollPane;
+
+import ui.swing.panels.EditJobSkillsPanel;
+import ui.swing.panels.EditPersonSkillsPanel;
+import ui.swing.panels.person.PersonSkillPanel.EditWindowListener;
 
 @SuppressWarnings("serial")
 public class JobSkillPanel extends JPanel {
@@ -108,7 +113,14 @@ public class JobSkillPanel extends JPanel {
 		}
 		
 		private void editButton() {
-			
+			JDialog dialog = new JDialog();
+			dialog.getContentPane().add(new EditJobSkillsPanel(connection, job));
+			dialog.setBounds(100, 100, 550, 400);
+			dialog.setTitle("Change Skills");
+			dialog.setVisible(true);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.addWindowListener(new EditWindowListener());
+			dialog.setModal(true);
 		}
 	}
 	

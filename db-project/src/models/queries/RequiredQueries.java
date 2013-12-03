@@ -208,35 +208,127 @@ public class RequiredQueries {
 	//10. Find the course set(s) with the minimum number of courses 
 	//    that can cover a given skill set. 
 	
-	// First part of #10
-	public ResultSet getAllCourseCombinationsSatisfyingJobRequirements(String jobCode) 
+	public ResultSet getLeastCoursesForPersonToGetJob( String jobCode, 
+													   String personCode) 
 			throws SQLException {
-		// Does anything need to be made DISTINCT?
-		// Doesn't quite work.  Basically needs a base case.
-		PreparedStatement stmt = conn.prepareStatement(
-			"WITH recursive course_set(set_id, course_code) as " +
-			"	(SELECT course_code as set_id, course_code" +	// Add the set_id and course_code from 
-			"    FROM course_set as CS1 JOIN course as C" +		// the join-produced rows of the accumulating set and course
-			"    WHERE ( " +									// WHERE
-			"            (SELECT DISTINCT skill_code" +			// 	Get the skill_codes provided by the course (outer)
-			"    	      FROM course_skill" +
-			"			  WHERE skill_code.course_code = C.course_code)" +
-			"            INTERSECT" +							
-			"            ( (SELECT skill_code" +				//  Get the skill_codes required by the job_profile
-			"               FROM job NATURAL JOIN job_profile_code NATURAL JOIN" +
-			"                    job_profile_skill" +
-			"               WHERE job_code = ?)" +
-			"              EXCEPT" +							// Remove from the skill codes provided by job_profile
-			"              (SELECT DISTINCT skill_code" +		// the skill codes contained in the current course set (outer)
-			"               FROM course_set as CS2 NATURAL JOIN course_skill" + 
-			"               WHERE CS1.set_id = CS2.set_id) ) )" +  //
-			"          IS NOT NULL)" +
-			"SELECT set_id, course_code" +
-			"FROM course_set" +
-			"GROUP BY set_id"
+		ResultSet rset = null;
+		try {
+			conn.setAutoCommit(false);
+			PreparedStatement stmt1 = conn.prepareStatement(
+				" CREATE SEQUENCE CourseSet_seq " + 
+				" START WITH 1  " +
+				" INCREMENT BY 1  " +
+				" MAXVALUE 999999  " +
+				" NOCYCLE"	
+				);
+			PreparedStatement stmt2 = conn.prepareStatement(
+				" CREATE GLOBAL TEMPORARY TABLE CourseSet ( " +
+				"  csetID NUMBER(8, 0) PRIMARY KEY,  " +
+				"  course_code_1 varchar(10),  " +
+				"  course_code_2 varchar(10),  " +
+				"  course_code_3 varchar(10),  " +
+				"  set_size NUMBER(2, 0)  " +
+				" ) ON COMMIT DELETE ROWS  "
 			);
-		stmt.setString(1, jobCode);
-		ResultSet rset = stmt.executeQuery();
+			
+			PreparedStatement stmt3 = conn.prepareStatement(
+				" INSERT INTO CourseSet  " +
+				"   SELECT CourseSet_seq.NEXTVAL, course_code, null, null, 1  " +
+				"   FROM course  "
+			);
+			
+			PreparedStatement stmt4 = conn.prepareStatement(
+				" INSERT INTO CourseSet  " +
+				"   SELECT CourseSet_seq.NEXTVAL, C1.course_code, C2.course_code, null, 2  " +
+				"   FROM course C1, course C2  " +
+				"   WHERE C1.course_code < C2.course_code  " 
+			);
+			
+			PreparedStatement stmt5 = conn.prepareStatement(
+				" INSERT INTO CourseSet  " +
+				"   SELECT CourseSet_seq.NEXTVAL, C1.course_code, C2.course_code, null, 2  " +
+				"   FROM course C1, course C2  " +
+				"   WHERE C1.course_code < C2.course_code  " 
+			);
+			
+			PreparedStatement stmt6 = conn.prepareStatement(
+				" INSERT INTO CourseSet  " +
+				"   SELECT CourseSet_seq.NEXTVAL, C1.course_code, C2.course_code, C3.course_code, 3  " +
+				"   FROM Course C1, Course C2, Course C3  " +
+				"   WHERE C1.course_code < C2.course_code AND C2.course_code < C3.course_code " 
+			);
+			PreparedStatement stmt7 = conn.prepareStatement(
+				" WITH CourseSet_Skill(csetID, skill_code) AS (  " +
+				"   SELECT csetID, skill_code  " +
+				"   FROM CourseSet CSet, course_skill CS  " +
+				"   WHERE CSet.course_code_1 = CS.course_code  " +
+				"   UNION  " +
+				"   SELECT csetID, skill_code  " +
+				"   FROM CourseSet CSet, course_skill CS  " +
+				"   WHERE CSet.course_code_2 = CS.course_code  " +
+				"   UNION  " +
+				"   SELECT csetID, skill_code  " +
+				"   FROM CourseSet CSet, course_skill CS  " +
+				"   WHERE CSet.course_code_3 = CS.course_code), " +
+				" missing_skill (skill_code) as ( " +
+				"    SELECT skill_code " +
+				"    FROM skill NATURAL JOIN " +
+				"      (  (SELECT skill_code " +
+				"          FROM job_skill " +
+				"          WHERE job_code = ? " +
+				"         UNION " +
+				"          SELECT skill_code " +
+				"          FROM job_profile_skill NATURAL JOIN job " +
+				"          WHERE job_code = ? ) " +
+				"          MINUS " +
+				"          SELECT skill_code " +
+				"          FROM person_skill " +
+				"          WHERE person_code = ? ) ), " +
+				" Cover_CSet(csetID, set_size) AS (  " +
+				"   SELECT csetID, set_size " +
+				"   FROM CourseSet CSet  " +
+				"   WHERE NOT EXISTS (  " +
+				"     SELECT skill_code  " +
+				"     FROM missing_skill  " +
+				"     MINUS  " +
+				"     SELECT skill_code  " +
+				"     FROM CourseSet_Skill CSSk  " +
+				"     WHERE CSSk.csetID = Cset.csetID )  " +
+				" ) " +
+				" SELECT course_code_1, course_code_2, course_code_3, set_size " +
+				" FROM Cover_CSet NATURAL JOIN CourseSet " +
+				" WHERE set_size = (SELECT min(set_size) FROM Cover_Cset)  "
+			);
+			PreparedStatement stmt8 = conn.prepareStatement(
+				"DROP SEQUENCE CourseSet_seq"
+			);
+			
+			System.out.println("Started");
+			stmt1.executeUpdate();
+			try {
+				stmt2.executeUpdate();
+			} catch (SQLException e) {
+				
+			}
+			stmt3.executeUpdate();
+			stmt4.executeUpdate();
+			stmt5.executeUpdate();
+			stmt6.executeUpdate();
+			stmt7.setString(1, jobCode);
+			stmt7.setString(2, jobCode);
+			stmt7.setString(3, personCode);
+			rset = stmt7.executeQuery();
+			stmt8.executeUpdate();
+			System.out.println("Finished");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				throw e;
+			}
+		}
 		return rset;
 	}
 

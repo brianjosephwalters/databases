@@ -130,15 +130,15 @@ public class CertificateQueries {
 			"   job_profile_certificates as " +
 			"     (SELECT certificate_code " +
 			"      FROM job_profile_certificate " +
-			"      WHERE job_profile_code = ?)" +
+			"      WHERE job_profile_code = ?)," +
 			"   person_certificates as " +
 			"     (SELECT certificate_code " +
-			"      FROM person_certificate " +
-			"      WHERE person_code = ? " +
-			" SELECT *" + 
-			" FROM certificate NATURAL JOIN (person_certificates MINUS " +
-			"                                job_certificate MINUS " +
-			"                                job_profile_certificate)"
+			"      FROM earns " +
+			"      WHERE person_code = ?) " +
+			" SELECT * " + 
+			" FROM certificate NATURAL JOIN (SELECT * FROM person_certificates MINUS " +
+			"                                SELECT * FROM job_certificates MINUS " +
+			"                                SELECT * FROM job_profile_certificates)"
 			);
 		stmt.setString(1, jobCode);
 		stmt.setString(2, jobProfileCode);

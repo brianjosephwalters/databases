@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.Certificate;
 import models.Course;
 
 public class CourseQueries {
@@ -148,6 +149,38 @@ public class CourseQueries {
 		list = getListOfCourses(stmt);
 		
 		return list;
+	}
+	
+	public List<Course> getCoursesRequiredForCertificateForJob(String personCode,
+															   String jobCode,
+															   String jobProfileCode)
+			throws SQLException {
+		List<Course> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH " + 
+			"   job_certificates as " +
+			"     (SELECT certificate_code " +
+			"      FROM job_certificate " +
+			"      WHERE job_code = ?), " +
+			"   job_profile_certificates as " +
+			"     (SELECT certificate_code " +
+			"      FROM job_profile_certificate " +
+			"      WHERE job_profile_code = ?)," +
+			"   person_certificates as " +
+			"     (SELECT certificate_code " +
+			"      FROM earns " +
+			"      WHERE person_code = ?) " +
+			" SELECT * " + 
+			" FROM certificate NATURAL JOIN (SELECT * FROM person_certificates MINUS " +
+			"                                SELECT * FROM job_certificates MINUS " +
+			"                                SELECT * FROM job_profile_certificates) " +
+			"      NATURAL JOIN prepares_for NATURAL JOIN course"
+		);
+	stmt.setString(1, jobCode);
+	stmt.setString(2, jobProfileCode);
+	stmt.setString(3, personCode);
+	list = getListOfCourses(stmt);
+	return list;
 	}
 	
 	// Helper Functions

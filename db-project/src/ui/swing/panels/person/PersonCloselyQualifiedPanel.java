@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import models.Certificate;
 import models.Course;
 import models.Exam;
+import models.ExamType;
 import models.Job;
 import models.JobReadable;
 import models.Person;
@@ -27,7 +28,9 @@ import models.queries.CourseQueries;
 import models.queries.ExamTypeQueries;
 import models.queries.JobQueries;
 import models.queries.SkillQueries;
+
 import javax.swing.border.TitledBorder;
+
 import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
@@ -45,7 +48,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private List<Course> listCoursesForSkills;
 	private List<Certificate> listMissingCertificates;
 	private List<Course> listCoursesForCertificates;
-	private List<Exam> listExamsForCertificates;
+	private List<ExamType> listExamsForCertificates;
 	
 	private ComboBoxController cbController;
 	
@@ -77,7 +80,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		this.listCoursesForSkills = new ArrayList<Course>();
 		this.listMissingCertificates = new ArrayList<Certificate>();
 		this.listCoursesForCertificates = new ArrayList<Course>();
-		this.listExamsForCertificates = new ArrayList<Exam>();
+		this.listExamsForCertificates = new ArrayList<ExamType>();
 		
 		this.cbController = new ComboBoxController();
 	
@@ -107,6 +110,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		add(panel_1);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 		taCoursesForSkills = new JTextArea();
+		taCoursesForSkills.setEnabled(false);
 		panel_1.add(taCoursesForSkills);
 		taCoursesForSkills.setEditable(false);
 		
@@ -198,44 +202,75 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		String personCode = person.getPersonCode();
 		String jobCode = job.getJobCode();
 		String jobProfileCode = job.getJobProfileCode();
+		try {
+			this.listMissingCertificates = certificateQueries.getCertificatesMissingFromPersonForJob(
+					personCode, jobCode, jobProfileCode);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void displayMissingCertificates() {
 		if (this.job != null && this.person != null) {
 			generateMissingCertificatesList();
 		}
+		StringBuilder sb = new StringBuilder();
+		for (Certificate certificate : listMissingCertificates) {
+			sb.append(certificate.getCertificateTitle() + "\n");
+		}
+		taMissingCertificates.setText(sb.toString());
 	}
 	
 	private void generateMissingCoursesForCertificatesList() {
 		String personCode = person.getPersonCode();
 		String jobCode = job.getJobCode();
 		String jobProfileCode = job.getJobProfileCode();
+		try {
+			this.listCoursesForCertificates = courseQueries.getCoursesRequiredForCertificateForJob(
+					personCode, jobCode, jobProfileCode);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void displayMissingCoursesForCertificates() {
 		if (this.job != null && this.person != null) {
 			generateMissingCoursesForCertificatesList();
 		}
+		StringBuilder sb = new StringBuilder();
+		for (Course course : listCoursesForCertificates) {
+			sb.append(course.getCourseTitle() + "\n");
+		}
+		taCoursesForCertificates.setText(sb.toString());
 	}
 	
 	private void generateMissingExamsForCertificatesList() {
 		String personCode = person.getPersonCode();
 		String jobCode = job.getJobCode();
 		String jobProfileCode = job.getJobProfileCode();
+		try {
+			this.listExamsForCertificates = examTypeQueries.getExamTypesForCertificatesPeopleAreMissingForJob(
+					personCode, jobCode, jobProfileCode);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void displayMissingExamsForCertificates() {
 		if (this.job != null && this.person != null) {
 			generateMissingExamsForCertificatesList();
 		}
+		StringBuilder sb = new StringBuilder();
+		for (ExamType exam : listExamsForCertificates) {
+			sb.append(exam.getExamTitle() + "\n");
+		}
+		taMissingCertificates.setText(sb.toString());
 	}
 	
 	private void generateJobList() {
 		String personCode = person.getPersonCode();
 		try {
-			// CHANGED
-			//listJobs = jobQueries.getJobsNotQualifiedForByPersonReadable(personCode);
-			listJobs = jobQueries.getAllJobsReadable();
+			listJobs = jobQueries.getJobsNotQualifiedForByPersonReadable(personCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

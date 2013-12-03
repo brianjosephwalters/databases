@@ -46,4 +46,8 @@ public class ExamType {
 	public void setExamTitle(String examTitle) {
 		this.examTitle = examTitle;
 	}
+	
+	public String toString() {
+		return this.getExamTypeCode() + ": " + this.getExamTitle();
+	}
 }

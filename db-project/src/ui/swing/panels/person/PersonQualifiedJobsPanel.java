@@ -31,29 +31,22 @@ public class PersonQualifiedJobsPanel extends JPanel{
 	private JobQueries jobQueries;
 	private List<JobReadable> list;
 	
-	private ButtonController buttonController;
 	private CheckBoxController checkBoxController;
 	
 	private JTextArea taJobs;
 	private JScrollPane scrollPane;
-	private JButton editButton;
 	private JCheckBox chckbxShowAll;
 	
 	public PersonQualifiedJobsPanel (Connection connection) {
 		this.connection = connection;
 		this.jobQueries = new JobQueries(connection);
 		this.list = new ArrayList<JobReadable>();
-		
-		this.buttonController = new ButtonController();
 		this.checkBoxController = new CheckBoxController();
 		
 		initializeGUIComponents();
 	}
 
 	private void initializeGUIComponents() {
-		//Setup Data Panel
-		editButton = new JButton("Edit");
-		editButton.addActionListener(buttonController);
 		JPanel buttonPanel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
@@ -62,7 +55,6 @@ public class PersonQualifiedJobsPanel extends JPanel{
 		chckbxShowAll.addActionListener(checkBoxController);
 		
 		buttonPanel.add(chckbxShowAll);
-		buttonPanel.add(editButton);
 		buttonPanel.add(Box.createHorizontalStrut(10));
 		
 		// Setup the Main Panel.
@@ -110,16 +102,6 @@ public class PersonQualifiedJobsPanel extends JPanel{
 			sb.append(job.getJobProfileTitle() + " at " + job.getCompanyName() + "\n");
 		}
 		taJobs.setText(sb.toString());
-	}
-	
-	private class ButtonController implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			editButton();
-		}
-		
-		private void editButton() {
-		}
 	}
 	
 	private class CheckBoxController implements ActionListener {
