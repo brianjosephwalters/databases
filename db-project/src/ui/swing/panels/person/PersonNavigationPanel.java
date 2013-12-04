@@ -2,25 +2,34 @@ package ui.swing.panels.person;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.sql.Connection;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import ui.swing.panels.EditPersonDialog;
+
 import models.Person;
+import java.awt.Component;
 
 @SuppressWarnings("serial")
 public class PersonNavigationPanel extends JPanel {
+	Connection connection;
 	NavigationController controller;
 	
 	List<Person> list;
+	Person currentPerson;
 	int currentIndex;
 	
 	PropertyChangeSupport pcS;
@@ -31,11 +40,14 @@ public class PersonNavigationPanel extends JPanel {
 	JButton btnNew;
 	JTextField tfIndex;
 	JTextField tfMax;
+	private JButton btnEdit;
+	private Component horizontalStrut;
 
 	/**
 	 * Create the panel.
 	 */
-	public PersonNavigationPanel(List<Person> list) {
+	public PersonNavigationPanel(Connection connection, List<Person> list) {
+		this.connection = connection;
 		pcS = new PropertyChangeSupport(this);
 		this.currentIndex = 0;
 		this.list = list;
@@ -89,6 +101,13 @@ public class PersonNavigationPanel extends JPanel {
 		add(btnNext);
 		add(Box.createHorizontalStrut(10));
 		add(btnNew);
+		
+		horizontalStrut = Box.createHorizontalStrut(20);
+		add(horizontalStrut);
+		
+		btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(controller);
+		add(btnEdit);
 		add(Box.createHorizontalGlue());
 	}
 	
@@ -129,9 +148,24 @@ public class PersonNavigationPanel extends JPanel {
 				nextButton();
 			} else if (e.getSource() == btnNew) {
 				newButton();
-			} else if (e.getSource() == tfIndex) {
-				indexUpdate();
+			} else if (e.getSource() == btnEdit) {
+				editButton();
 			}
+			else if (e.getSource() == tfIndex) {
+				indexUpdate();
+			} 
+		}
+		
+		private void editButton() {
+			JDialog dialog = new JDialog();
+			Person person = list.get(getCurrentIndex());
+			dialog.getContentPane().add(new EditPersonDialog(connection, person));
+			dialog.setBounds(100, 100, 400, 400);
+			dialog.setTitle("Edit Person");
+			dialog.setVisible(true);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.addWindowListener(new EditWindowListener());
+			dialog.setModal(true);
 		}
 		
 		private void deleteButton() {
@@ -174,8 +208,17 @@ public class PersonNavigationPanel extends JPanel {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals("personList")) {
-				updateList( (List<Person>)evt.getNewValue() );
+				updateList((List<Person>)evt.getNewValue());
 			}
+		}
+	}
+	
+	public class EditWindowListener extends WindowAdapter {
+		@Override
+		public void windowClosed(WindowEvent e) {
+			setCurrentIndex(currentIndex);
+			pcS.firePropertyChange("currentIndex", 0, currentIndex);
+			System.out.println("HERE");
 		}
 	}
 }

@@ -37,6 +37,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Component;
 import javax.swing.SwingConstants;
+import javax.swing.JTabbedPane;
 
 @SuppressWarnings("serial")
 public class QueriesMainPanel extends JPanel {
@@ -102,6 +103,12 @@ public class QueriesMainPanel extends JPanel {
 	private JPanel panel_10;
 	private JButton btnJobProfilesWithMostOpeningsPerQualifiedPerson;
 	private JButton btnCoursesTrainingUnqualified;
+	private JTabbedPane tabbedPane;
+	private JPanel companyTab;
+	private JPanel projectTab;
+	private JPanel personJobTab;
+	private JPanel jobprofileTab;
+	private JPanel hardonesTab;
 	
 	public QueriesMainPanel(Connection connection) {
 		this.connection = connection;
@@ -130,13 +137,23 @@ public class QueriesMainPanel extends JPanel {
 		JPanel queryPanel = new JPanel();
 		add(queryPanel, BorderLayout.WEST);
 		queryPanel.setLayout(new BoxLayout(queryPanel, BoxLayout.Y_AXIS));
+		cbCompanyModel = new DefaultComboBoxModel<Company>();
+		cbProjectModel = new DefaultComboBoxModel<Project>();
+		cbPersonModel = new DefaultComboBoxModel<Person>();
+		cbJobModel = new DefaultComboBoxModel<Job>();
+		cbJobProfileModel = new DefaultComboBoxModel<JobProfile>();
+		
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		queryPanel.add(tabbedPane);
+		
+		companyTab = new JPanel();
+		tabbedPane.addTab("Company Queries", null, companyTab, null);
 		
 		JPanel companyPanel = new JPanel();
+		companyTab.add(companyPanel);
 		companyPanel.setBorder(new TitledBorder(null, "Company", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		queryPanel.add(companyPanel);
 		
 		cbCompany = new JComboBox<Company>();
-		cbCompanyModel = new DefaultComboBoxModel<Company>();
 		companyPanel.setLayout(new BoxLayout(companyPanel, BoxLayout.Y_AXIS));
 		companyPanel.add(cbCompany);
 		
@@ -156,12 +173,14 @@ public class QueriesMainPanel extends JPanel {
 		btnLaborCostsForAll.addActionListener(buttonController);
 		panel.add(btnLaborCostsForAll);
 		
+		projectTab = new JPanel();
+		tabbedPane.addTab("Project Queries", null, projectTab, null);
+		
 		JPanel projectPanel = new JPanel();
+		projectTab.add(projectPanel);
 		projectPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Project", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		queryPanel.add(projectPanel);
 		
 		cbProject = new JComboBox<Project>();
-		cbProjectModel = new DefaultComboBoxModel<Project>();
 		projectPanel.setLayout(new BoxLayout(projectPanel, BoxLayout.Y_AXIS));
 		projectPanel.add(cbProject);
 		
@@ -174,12 +193,14 @@ public class QueriesMainPanel extends JPanel {
 		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.Y_AXIS));
 		panel_5.add(btnCurrentEmployees);
 		
+		personJobTab = new JPanel();
+		tabbedPane.addTab("Person and Job Queries", null, personJobTab, null);
+		
 		JPanel personPanel = new JPanel();
+		personJobTab.add(personPanel);
 		personPanel.setBorder(new TitledBorder(null, "Person", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		queryPanel.add(personPanel);
 		
 		cbPerson = new JComboBox<Person>();
-		cbPersonModel = new DefaultComboBoxModel<Person>();
 		personPanel.setLayout(new BoxLayout(personPanel, BoxLayout.Y_AXIS));
 		personPanel.add(cbPerson);
 		
@@ -217,7 +238,6 @@ public class QueriesMainPanel extends JPanel {
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.Y_AXIS));
 		
 		cbJob = new JComboBox<Job>();
-		cbJobModel = new DefaultComboBoxModel<Job>();
 		panel_4.add(cbJob);
 		
 		panel_7 = new JPanel();
@@ -248,12 +268,14 @@ public class QueriesMainPanel extends JPanel {
 		btnQuickestCoursesForMissingSkill.addActionListener(buttonController);
 		btnQuickestCoursesForMissingSkill.setEnabled(false);
 		
+		jobprofileTab = new JPanel();
+		tabbedPane.addTab("Job Profile Queries", null, jobprofileTab, null);
+		
 		JPanel jobProfilePanel = new JPanel();
+		jobprofileTab.add(jobProfilePanel);
 		jobProfilePanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Job Profile", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		queryPanel.add(jobProfilePanel);
 		
 		cbJobProfile = new JComboBox<JobProfile>();
-		cbJobProfileModel = new DefaultComboBoxModel<JobProfile>();
 		jobProfilePanel.setLayout(new BoxLayout(jobProfilePanel, BoxLayout.Y_AXIS));
 		jobProfilePanel.add(cbJobProfile);
 		
@@ -305,8 +327,11 @@ public class QueriesMainPanel extends JPanel {
 		btnSkillsMissedForK = new JButton("21. Skills Missed For K");
 		panel_9.add(btnSkillsMissedForK);
 		
+		hardonesTab = new JPanel();
+		tabbedPane.addTab("The Hard Queries", null, hardonesTab, null);
+		
 		panel_10 = new JPanel();
-		queryPanel.add(panel_10);
+		hardonesTab.add(panel_10);
 		panel_10.setLayout(new GridLayout(2, 1, 0, 0));
 		
 		btnJobProfilesWithMostOpeningsPerQualifiedPerson = new JButton("22. Job Profiles With Most Openings Per Qualified People");
@@ -628,9 +653,8 @@ public class QueriesMainPanel extends JPanel {
 		frame.getContentPane().add(panel);
 		
 		frame.setTitle("Queries Panel");
-		frame.setSize(900, 900);
+		frame.setSize(900, 450);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 	}
 }

@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,42 +16,37 @@ import db.DBConnection;
 import models.Person;
 import models.queries.PersonQueries;
 
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.BoxLayout;
+
 import java.awt.Component;
 
 @SuppressWarnings("serial")
 public class PersonFormPanel extends JPanel{
 	Connection connection;
 	Person person;
-	
-	ButtonController controller;
-	
+		
 	private JTextField tfPersonCode;
 	private JTextField tfLastName;
 	private JTextField tfFirstName;
 	private JTextField tfGender;
 	private JTextField tfEmail;
 	
-	private JButton editButton;
 	private JPanel panel;
 	private Component horizontalStrut;
 	private Component horizontalStrut_1;
 	
 	public PersonFormPanel(Connection connection) {
 		this.connection = connection;
-		this.controller = new ButtonController();
 		
 		initializeGUIComponents();
 	}
 	
 	private void initializeGUIComponents() {
 		initializeDisplayPanel();
-		initializeButtonPanel();
 	}
 	
 	private void initializeDisplayPanel() {
@@ -93,19 +87,12 @@ public class PersonFormPanel extends JPanel{
 		panel.add(horizontalStrut_1);
 	}
 	
-	private void initializeButtonPanel() {
-		editButton = new JButton("Edit");
-		editButton.addActionListener(controller);
-		
-		JPanel buttonPanel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) buttonPanel.getLayout();
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		buttonPanel.add(editButton);
-		add(buttonPanel, BorderLayout.SOUTH);
+	private void setPerson(Person person) {
+		this.person = person;
+		displayPerson();
 	}
 	
-	private void displayPerson(Person person) {
-		this.person = person;
+	private void displayPerson() {
 		tfPersonCode.setText(person.getPersonCode());
 		tfLastName.setText(person.getLastName());
 		tfFirstName.setText(person.getFirstName());
@@ -113,22 +100,13 @@ public class PersonFormPanel extends JPanel{
 		tfEmail.setText(person.getEmail());
 	}
 	
-	public class ButtonController implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			editButton();
-		}
-		
-		public void editButton() {
-			
-		}
-	}
-	
 	public class PersonListener implements PropertyChangeListener {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals("currentPerson")) {
-				displayPerson((Person)evt.getNewValue());
+				setPerson((Person)evt.getNewValue());
+			} else if (evt.getPropertyName().equals("currentList")) {
+				
 			}
 		}
 	}
@@ -148,7 +126,7 @@ public class PersonFormPanel extends JPanel{
 		JFrame frame = new JFrame();
 		PersonFormPanel personPanel = new PersonFormPanel(connection);
 		frame.getContentPane().add(personPanel);
-		personPanel.displayPerson(list.get(0));
+		personPanel.setPerson(list.get(0));
 		
 		frame.setBounds(100, 100, 450, 300);
 		frame.setTitle("Test Person Panel");

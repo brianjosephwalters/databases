@@ -19,6 +19,7 @@ import ui.swing.test.ConnectionDialog;
 @SuppressWarnings("serial")
 public class PersonApp extends JFrame {
 	private Connection connection;
+	
 	private JPanel contentPane;
 	private JMenuBar menuBar;
 	private JMenuItem mntmConnect;
@@ -56,7 +57,7 @@ public class PersonApp extends JFrame {
 		setContentPane(contentPane);
 		
 		
-		setBounds(100, 100, 650, 600);
+		setBounds(50, 50, 700, 550);
 		setTitle("Person Program");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -74,7 +75,7 @@ public class PersonApp extends JFrame {
 		menuBar.add(mnConnection);
 		mnConnection.setText(userName);
 		// Add Panels
-		setSize(600, 700);
+		setSize(700, 550);
 		contentPane.add(new PersonMainPanel(connection));
 	}
 	

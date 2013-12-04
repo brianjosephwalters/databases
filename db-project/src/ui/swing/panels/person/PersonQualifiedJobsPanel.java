@@ -28,7 +28,7 @@ import models.queries.JobQueries;
 import javax.swing.JCheckBox;
 
 import ui.swing.panels.EditPersonEmployment;
-import ui.swing.panels.EditPersonSkillsPanel;
+import ui.swing.panels.EditPersonSkillsDialog;
 import ui.swing.panels.person.PersonSkillPanel.EditWindowListener;
 
 import java.awt.Component;
@@ -88,12 +88,12 @@ public class PersonQualifiedJobsPanel extends JPanel{
 		add(scrollPane);
 		add(buttonPanel);
 	}
-	
+
 	private void displayPerson(Person person) {
 		this.person = person;
 		setJobsTextArea();
 	}
-	
+
 	private void generateJobList() {
 		String personCode = person.getPersonCode();
 		if (!chckbxShowAll.isSelected()) {

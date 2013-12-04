@@ -91,4 +91,8 @@ public class Certificate {
 	public void setDaysValid(int daysValid) {
 		this.daysValid = daysValid;
 	}
+	
+	public String toString() {
+		return this.certificateCode + ": " + this.certificateTitle;
+	}
 }

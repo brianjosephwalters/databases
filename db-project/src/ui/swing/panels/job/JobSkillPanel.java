@@ -27,7 +27,7 @@ import models.queries.SkillQueries;
 import javax.swing.JScrollPane;
 
 import ui.swing.panels.EditJobSkillsPanel;
-import ui.swing.panels.EditPersonSkillsPanel;
+import ui.swing.panels.EditPersonSkillsDialog;
 import ui.swing.panels.person.PersonSkillPanel.EditWindowListener;
 
 @SuppressWarnings("serial")

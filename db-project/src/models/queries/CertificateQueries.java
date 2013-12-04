@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import models.Certificate;
+import models.Person;
 
 public class CertificateQueries {
 	// Instance Variables
@@ -179,6 +180,28 @@ public class CertificateQueries {
 		return list;
 	}
 	
+	/**
+	 * All certificates not possessed by a person.
+	 */
+	public List<Certificate> getCertificatesNotPossessedByPerson(String personCode) 
+			throws SQLException {
+		List<Certificate> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH  lacked_certificates AS" +
+			"   ( (SELECT certificate_code" + 
+		    "      FROM certificate)" +
+		    "     MINUS " +
+		    "     (SELECT certificate_code" +
+		    "      FROM certificate NATURAL JOIN earns" +
+		    "      WHERE person_code = ?) )" +
+			" SELECT * " +
+			" FROM certificate NATURAL JOIN lacked_certificates");
+		stmt.setString(1, personCode);
+		list = getListOfCertificates(stmt);
+		
+		return list;
+	}	
+	
 	// Insertions
 	public int addCertificate(Certificate certificate) throws SQLException {
 		int count = 0;
@@ -193,6 +216,34 @@ public class CertificateQueries {
 		stmt.setString(5, certificate.getCompanyCode());
 		stmt.setInt(6, certificate.getDaysValid());
 		count = stmt.executeUpdate();
+		return count;
+	}
+	
+	public int addCertificatesToPerson(Person person, List<Certificate> list)
+			throws SQLException {
+		int count = 0;
+		connection.setAutoCommit(false);
+		try {
+			for (Certificate certificate : list) {
+				PreparedStatement stmt = connection.prepareStatement(
+					" INSERT INTO earns " +
+					"   VALUES (?, ?) "
+				);
+				stmt.setString(1, person.getPersonCode());
+				stmt.setString(2, certificate.getCertificateCode());
+				count += stmt.executeUpdate();
+			}
+			if (count != list.size()) {
+				connection.rollback();
+			} else {
+				connection.commit();
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			connection.setAutoCommit(true);
+		}
+		
 		return count;
 	}
 	
@@ -215,6 +266,46 @@ public class CertificateQueries {
 		stmt.setInt(5, certificate.getDaysValid());
 		stmt.setString(6, certificate.getCertificateCode());
 		count = stmt.executeUpdate();
+		return count;
+	}
+	
+	// Deletes
+	
+	public int removeCertificateFromPerson(Person person, Certificate certificate) 
+			throws SQLException {
+		PreparedStatement stmt = connection.prepareStatement(
+			" DELETE FROM earns " +
+			" WHERE person_code = ? AND " +
+			"       certificate_code = ? ");
+		stmt.setString(1, person.getPersonCode());
+		stmt.setString(2, certificate.getCertificateCode());
+		return stmt.executeUpdate();
+	}
+	
+	public int removeCertificatesFromPerson(Person person, List<Certificate> list)
+			throws SQLException {
+		int count = 0;
+		connection.setAutoCommit(false);
+		try {
+			for (Certificate certificate : list) {
+				PreparedStatement stmt = connection.prepareStatement(
+					" DELETE FROM earns " +
+					" WHERE person_code = ? AND " +
+					"       certificate_code = ? ");
+				stmt.setString(1, person.getPersonCode());
+				stmt.setString(2, certificate.getCertificateCode());
+				count += stmt.executeUpdate();
+			}
+			if (count != list.size()) {
+				connection.rollback();
+			} else {
+				connection.commit();
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			connection.setAutoCommit(true);
+		}
 		return count;
 	}
 	

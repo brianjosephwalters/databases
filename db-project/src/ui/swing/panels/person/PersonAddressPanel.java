@@ -141,10 +141,14 @@ public class PersonAddressPanel extends JPanel {
 	}
 	
 	private void displayPersonAddress(Address address) {
-		tfStreet1.setText(address.getStreet1());
-		tfStreet2.setText(address.getStreet2());
-		tfCity.setText(address.getCity());
-		tfZipcode.setText(address.getZipcode());
+		if (address != null) {
+			tfStreet1.setText(address.getStreet1());
+			tfStreet2.setText(address.getStreet2());
+			tfCity.setText(address.getCity());
+			tfZipcode.setText(address.getZipcode());
+		} else {
+			clearAddress();
+		}
 	}
 	
 	private void generateAddressList() {
@@ -189,6 +193,8 @@ public class PersonAddressPanel extends JPanel {
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals("currentPerson")) {
 				displayPerson((Person)evt.getNewValue());
+			} else if (evt.getPropertyName().equals("currentList")) {
+				
 			}
 		}
 	}

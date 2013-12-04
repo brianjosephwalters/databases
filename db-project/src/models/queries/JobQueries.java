@@ -12,7 +12,7 @@ import models.Job;
 public class JobQueries {
 	// Instance Variables
 	private Connection connection;
-	
+
 	// Constructors
 	public JobQueries (Connection connection) {
 		this.connection = connection;
@@ -48,14 +48,16 @@ public class JobQueries {
 		PreparedStatement stmt = connection.prepareStatement(
 			" WITH available_jobs as " +
 		    "   (SELECT job_code, job_profile_code, company_code, " + 
-			"           job_type, pay_rate, opening_date, closing_date " +
+			"           job_type, pay_rate, pay_type, " +
+			"           opening_date, closing_date " +
 			"    FROM job " +
 		    "    WHERE opening_date < current_date AND" +
 			"          (closing_date > current_date OR " +
 		    "           closing_date is null) " +
 			"   MINUS " +
 			"    SELECT job_code, job_profile_code, company_code, " + 
-			"           job_type, pay_rate, opening_date, closing_date " +
+			"           job_type, pay_rate, pay_type, " +
+			"           opening_date, closing_date " +
 			"	 FROM employment NATURAL JOIN job" +
 			"    WHERE end_date is null OR " +
             "          end_date > current_date) " +
@@ -156,16 +158,20 @@ public class JobQueries {
 		List<Job> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			" WITH available_jobs as " +
-		    "   (SELECT job_code, job_profile_code, company_code, job_type, pay_rate, opening_date, closing_date  " +
+		    "   (SELECT job_code, job_profile_code, company_code, " +
+		    "           job_type, pay_rate, pay_type, " +
+		    "           opening_date, closing_date  " +
 			"    FROM job " +
 		    "    WHERE opening_date < current_date AND" +
 			"          (closing_date > current_date OR " +
 		    "           closing_date is null) " +
 			"   MINUS " +
-			"    SELECT job_code, job_profile_code, company_code, job_type, pay_rate, opening_date, closing_date  " +
+			"    SELECT job_code, job_profile_code, company_code, " +
+			"           job_type, pay_rate, pay_type, " +
+			"           opening_date, closing_date  " +
 			"	 FROM employment NATURAL JOIN job" +
-			"    WHERE end_date is null OR " +
-            "          end_date > current_date), " +
+			"    WHERE closing_date is null OR " +
+            "          closing_date > current_date), " +
             " job_profiles_qualified as ( " +
 			"   SELECT job_profile_code " +
 			"   FROM job_profile JP " +
@@ -221,17 +227,19 @@ public class JobQueries {
 		PreparedStatement stmt = connection.prepareStatement(
 			" WITH available_jobs as " +
 		    "   (SELECT job_code, job_profile_code, company_code, " +
-		    "           job_type, pay_rate, opening_date, closing_date " +
+		    "           job_type, pay_rate, pay_type, " +
+		    "           opening_date, closing_date " +
 			"    FROM job " +
 		    "    WHERE opening_date < current_date AND" +
 			"          (closing_date > current_date OR " +
 		    "           closing_date is null) " +
 			"   MINUS " +
 			"    SELECT job_code, job_profile_code, company_code, " +
-			"           job_type, pay_rate, opening_date, closing_date " +
+			"           job_type, pay_rate, pay_type, " +
+			"           opening_date, closing_date " +
 			"	 FROM employment NATURAL JOIN job" +
-			"    WHERE end_date is null OR " +
-            "          end_date > current_date) " +
+			"    WHERE closing_date is null OR " +
+            "          closing_date > current_date) " +
             " SELECT * " +
 			" FROM available_jobs J NATURAL JOIN " + 
 			"      job_profile NATURAL JOIN company " +

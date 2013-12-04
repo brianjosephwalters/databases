@@ -56,7 +56,7 @@ public class JobHuntingApp extends JFrame {
 		setContentPane(contentPane);
 		
 		
-		setBounds(100, 100, 650, 600);
+		setBounds(50, 50, 650, 500);
 		setTitle("Job Hunting Program");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -74,7 +74,7 @@ public class JobHuntingApp extends JFrame {
 		menuBar.add(mnConnection);
 		mnConnection.setText(userName);
 		// Add Panels
-		setSize(650, 600);
+		setSize(650, 500);
 		contentPane.add(new JobHuntingMainPanel(connection));
 	}
 	

@@ -103,7 +103,11 @@ public class PersonPhonePanel extends JPanel{
 	}
 	
 	private void displayPersonPhone(PhoneNumber phone) {
-		tfPhoneNumber.setText(phone.getPhoneNum());
+		if (phone != null ) {
+			tfPhoneNumber.setText(phone.getPhoneNum());
+		} else {
+			clearPhone();
+		}
 	}
 	
 	private void generatePhoneList() {

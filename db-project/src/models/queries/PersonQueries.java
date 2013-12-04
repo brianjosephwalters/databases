@@ -345,9 +345,9 @@ public class PersonQueries {
 		int count = 0;
 		PreparedStatement stmt = connection.prepareStatement(
 			" UPDATE person " +
-			"   SET last_name = ? " +
-			"       first_name = ? " +
-			"       gender = ? " +
+			"   SET last_name = ?, " +
+			"       first_name = ?, " +
+			"       gender = ?, " +
 			"       email = ? " +
 			"   WHERE person_code = ? "
 			);
@@ -360,6 +360,74 @@ public class PersonQueries {
 		return count;
 	}
 	
+	
+	// Deletes
+	public int deletePersonTransaction(Person person) throws SQLException {
+		int count = 0;
+		try {
+			connection.setAutoCommit(false);
+			connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			
+			PreparedStatement stmt1 = connection.prepareStatement(
+					"DELETE FROM exam_taken WHERE person_code = ?"
+			);
+			stmt1.setString(1, person.getPersonCode());
+			
+			PreparedStatement stmt2 = connection.prepareStatement(
+					"DELETE FROM employment WHERE person_code = ?"
+			);
+			stmt2.setString(1, person.getPersonCode());
+			
+			PreparedStatement stmt3 = connection.prepareStatement(
+					"DELETE FROM person_address WHERE person_code = ?"
+			);
+			stmt3.setString(1, person.getPersonCode());
+			
+			PreparedStatement stmt4 = connection.prepareStatement(
+					"DELETE FROM person_phone WHERE person_code = ?"
+			);
+			stmt4.setString(1, person.getPersonCode());
+			
+			PreparedStatement stmt5 = connection.prepareStatement(
+					"DELETE FROM person_skill WHERE person_code = ?"
+			);
+			stmt5.setString(1, person.getPersonCode());
+			
+			PreparedStatement stmt6 = connection.prepareStatement(
+					"DELETE FROM earns WHERE person_code = ?"
+			);
+			stmt6.setString(1, person.getPersonCode());	
+			
+			stmt1.executeUpdate();
+			stmt2.executeUpdate();
+			stmt3.executeUpdate();
+			stmt4.executeUpdate();
+			stmt5.executeUpdate();
+			stmt6.executeUpdate();
+			
+			PreparedStatement stmt7 = connection.prepareStatement(
+					"DELETE FROM person WHERE person_code = ?"
+			);
+			stmt7.setString(1, person.getPersonCode());
+			
+			count = stmt7.executeUpdate();
+			connection.commit();
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e2) {
+				System.out.println("Rollback Error: " + e2);
+			}
+			throw e;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("Reseting AutoCommit Error: " + e);
+			}
+		}
+		return count;
+	}
 	
 	// Helper Functions
 	private List<Person> getListOfPeople(PreparedStatement stmt) 

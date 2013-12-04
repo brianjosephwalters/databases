@@ -87,7 +87,7 @@ public class ProjectQueries {
 				results.getString("project_code"),
 				results.getString("project_title"),
 				results.getString("company_code"),
-				results.getString("company_title"),
+				results.getString("company_name"),
 				results.getString("budget_code"),
 				results.getDate("start_date"),
 				results.getDate("end_date"))

@@ -1,39 +1,23 @@
 package ui.swing.panels.person;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import models.Person;
-import models.queries.PersonQueries;
 import db.DBConnection;
-import java.awt.GridLayout;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 @SuppressWarnings("serial")
 public class PersonMainPanel extends JPanel {
 	private Connection connection;
-	private PersonQueries personQueries;
-
-	// Data Instance Variables
-	private List<Person> personList;
-	private Person currentPerson;
-
-	private PropertyChangeSupport pcS;
-
+	
 	// GUI Instance Variables
-	private PersonNavigationPanel navPanel;
+	private PersonNavigationPanel2 navigationPanel;
 	private PersonFormPanel personFormPanel;
 	private PersonAddressPanel personAddressPanel;
 	private PersonPhonePanel personPhonePanel;
@@ -42,122 +26,109 @@ public class PersonMainPanel extends JPanel {
 	private PersonCoursePanel personCoursePanel;
 	private PersonEmploymentPanel personEmploymentPanel;
 	
-	private JPanel leftPanel;
-	private JPanel centerPanel;
+	private PersonQualifiedJobsPanel personQualifiedJobsPanel;
+	
+	private JPanel personInfoTab;
+	private JPanel qualificationsTab;
 	private JPanel panel;
 	private JTabbedPane tabbedPane;
+	private JPanel employmentTab;
+	private JPanel courseTab;
+	private JPanel panel_1;
+	private JPanel qualifiedTab;
+	private JPanel closelyQualifiedTab;
 
 	public PersonMainPanel(Connection connection) {
 		this.connection = connection;
-		personQueries = new PersonQueries(connection);
-		
-		pcS = new PropertyChangeSupport(this);
-		
-		try {
-			personList = personQueries.getAllPeople();
-		} catch (SQLException e) {
-			System.out.println("Unable to get people!");
-		}
 		
 		initializeGUIComponents();
-		setCurrentPerson(getPersonList().get(0));
 	}
 	
 	private void initializeGUIComponents() {
-		// Setup Navigation Panel
-		navPanel = new PersonNavigationPanel(personList);
-		navPanel.addPropertyChangeListener(new NavigationListener());
-		this.addPropertyChangeListener(navPanel.new ListListener());
+		setLayout(new BorderLayout(0, 0));
 		
+		// Setup Info Panel
 		JPanel infoPanel = new JPanel();
+		add(infoPanel, BorderLayout.CENTER);
 		infoPanel.setBorder(BorderFactory.createEtchedBorder());
 		infoPanel.setLayout(new BorderLayout(0, 0));
 		
-		// Setup Info Panel
+		
 		personFormPanel = new PersonFormPanel(connection);
 		infoPanel.add(personFormPanel, BorderLayout.NORTH);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		infoPanel.add(tabbedPane);
 		
-		leftPanel = new JPanel();
-		tabbedPane.addTab("Person Info", null, leftPanel, null);
-		leftPanel.setLayout(new BorderLayout(0, 0));
+		personInfoTab = new JPanel();
+		tabbedPane.addTab("Person Info", null, personInfoTab, null);
+		personInfoTab.setLayout(new BorderLayout(0, 0));
 		
 		panel = new JPanel();
-		leftPanel.add(panel, BorderLayout.NORTH);
+		personInfoTab.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		personPhonePanel = new PersonPhonePanel(connection);
 		panel.add(personPhonePanel);
 		personAddressPanel = new PersonAddressPanel(connection);
 		panel.add(personAddressPanel);
 		
-		centerPanel = new JPanel();
-		tabbedPane.addTab("Qualifications", null, centerPanel, null);
-		centerPanel.setLayout(new GridLayout(5, 1, 0, 0));
-		personSkillPanel = new PersonSkillPanel(connection);	
-		centerPanel.add(personSkillPanel);
+		qualificationsTab = new JPanel();
+		tabbedPane.addTab("Qualifications", null, qualificationsTab, null);
+		qualificationsTab.setLayout(new BorderLayout(0, 0));
+		
+		panel_1 = new JPanel();
+		qualificationsTab.add(panel_1, BorderLayout.CENTER);
+		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
+		personSkillPanel = new PersonSkillPanel(connection);
+		panel_1.add(personSkillPanel);
 		personCertificatePanel = new PersonCertificatePanel(connection);
-		centerPanel.add(personCertificatePanel);
+		panel_1.add(personCertificatePanel);
+		
+		employmentTab = new JPanel();
+		tabbedPane.addTab("Employment History", null, employmentTab, null);
+		employmentTab.setLayout(new BorderLayout(0, 0));
 		
 		personEmploymentPanel = new PersonEmploymentPanel(connection);
-		tabbedPane.addTab("Employment History", null, personEmploymentPanel, null);
+		employmentTab.add(personEmploymentPanel);
+		
+		courseTab = new JPanel();
+		tabbedPane.addTab("Course History", null, courseTab, null);
+		courseTab.setLayout(new BorderLayout(0, 0));
 		
 		personCoursePanel = new PersonCoursePanel(connection);
-		tabbedPane.addTab("Course History", null, personCoursePanel, null);
-		this.addPropertyChangeListener(personFormPanel.new PersonListener());
-		this.addPropertyChangeListener(personAddressPanel.new PersonListener());
-		this.addPropertyChangeListener(personPhonePanel.new PersonListener());
+		courseTab.add(personCoursePanel);
 		
-		// Setup Main Panel
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BorderLayout(10,10));
-		mainPanel.add(navPanel, BorderLayout.NORTH);
-		mainPanel.add(infoPanel, BorderLayout.CENTER);
-		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
-		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
-		this.addPropertyChangeListener(personCoursePanel.new PersonListener());
-		this.addPropertyChangeListener(personEmploymentPanel.new PersonListener());
-
-		setLayout(new FlowLayout(10,10,10));
-		add(mainPanel);
-	}
-	
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		pcS.addPropertyChangeListener(listener);
-	}
-	
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		pcS.addPropertyChangeListener(listener);
-	}
-	
-	public List<Person> getPersonList() {
-		return this.personList;
-	}
-	
-	public void setPersonList(List<Person> newPersonList) {
-		List<Person> oldPersonList = this.personList;
-		this.personList = newPersonList;
-		pcS.firePropertyChange("personList", oldPersonList, newPersonList);
-	}
-	
-	public Person getCurrentPerson() {
-		return this.currentPerson;
-	}
-	
-	public void setCurrentPerson(Person newPerson) {
-		Person oldPerson = this.currentPerson;
-		this.currentPerson = newPerson;
-		pcS.firePropertyChange("currentPerson", oldPerson, newPerson);
-	}	
-	
-	public class NavigationListener implements PropertyChangeListener {
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (evt.getPropertyName().equals("currentIndex")) {
-				int index = (Integer)evt.getNewValue();
-				setCurrentPerson(getPersonList().get(index));
-			}
-		}
+		qualifiedTab = new JPanel();
+		tabbedPane.addTab("Qualified Jobs", null, qualifiedTab, null);
+		
+		personQualifiedJobsPanel = new PersonQualifiedJobsPanel(connection);
+		qualifiedTab.add(personQualifiedJobsPanel);
+		closelyQualifiedTab = new JPanel();
+		tabbedPane.addTab("Closely Qualified", null, closelyQualifiedTab, null);
+		
+		
+		// Setup Navigation Panel
+		navigationPanel = new PersonNavigationPanel2(connection);
+		add(navigationPanel, BorderLayout.NORTH);
+		
+		navigationPanel.addPropertyChangeListener(
+			personFormPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personAddressPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personPhonePanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personSkillPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personCertificatePanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personCoursePanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personEmploymentPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personQualifiedJobsPanel.new PersonListener());
+		
+		navigationPanel.resetPersonList();
 	}
 
 	public static void main (String[] args) {

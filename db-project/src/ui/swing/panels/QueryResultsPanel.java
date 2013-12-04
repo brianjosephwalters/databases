@@ -12,14 +12,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import db.DBConnection;
-
 import models.queries.QueryResultsTableModel;
 import models.queries.RequiredQueries;
 
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
 public class QueryResultsPanel extends JPanel{
@@ -32,16 +29,33 @@ public class QueryResultsPanel extends JPanel{
 		
 		table = new JTable();
 		table.setFillsViewportHeight(true);
-		add(new JScrollPane(table));
+		JScrollPane pane = new JScrollPane(table);
+		add(pane);
 	}
 	
 	public void setResultsSet(ResultSet results) {
 		tableModel = new QueryResultsTableModel(results);
+		tableModel.fireTableStructureChanged();
 		table.setModel(tableModel);
+		redrawTable();
 	}
 	
 	public void setLabel(String label) {
 		this.setBorder(new TitledBorder(null, label, TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	}
+	
+	private void redrawTable() {
+		//int columnCount = table.getColumnCount();
+		//int tableWidth = table.getWidth();
+		//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setPreferredSize(this.getSize());
+		//for (int i = 0; i < columnCount; i++ ) {
+		//	TableColumn header = table.getTableHeader().getColumnModel().getColumn(i);
+		//	TableColumn column = table.getColumnModel().getColumn(i);
+		//	header.setPreferredWidth(tableWidth/columnCount);
+		//	column.setPreferredWidth(tableWidth/columnCount);
+		//}
+		this.doLayout();
 	}
 	
 	public static void main (String[] args) {

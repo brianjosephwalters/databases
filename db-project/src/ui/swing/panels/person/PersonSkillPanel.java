@@ -26,7 +26,7 @@ import models.queries.SkillQueries;
 
 import javax.swing.JScrollPane;
 
-import ui.swing.panels.EditPersonSkillsPanel;
+import ui.swing.panels.EditPersonSkillsDialog;
 
 @SuppressWarnings("serial")
 public class PersonSkillPanel extends JPanel {
@@ -110,21 +110,20 @@ public class PersonSkillPanel extends JPanel {
 		}
 		
 		private void editButton() {
-			JDialog dialog = new JDialog();
-			dialog.getContentPane().add(new EditPersonSkillsPanel(connection, person));
-			dialog.setBounds(100, 100, 550, 400);
-			dialog.setTitle("Change Skills");
-			dialog.setVisible(true);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			JDialog dialog = new EditPersonSkillsDialog(connection, person);
 			dialog.addWindowListener(new EditWindowListener());
-			dialog.setModal(true);
 		}
 	}
 	
 	public class PersonListener implements PropertyChangeListener {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
-			displayPerson((Person)evt.getNewValue());
+			
+			if (evt.getPropertyName().equals("currentPerson")) {
+				displayPerson((Person)evt.getNewValue());
+			} else if (evt.getPropertyName().equals("currentList")) {
+				
+			}
 		}
 	}
 	

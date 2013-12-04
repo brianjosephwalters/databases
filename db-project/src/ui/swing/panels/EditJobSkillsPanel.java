@@ -234,8 +234,8 @@ public class EditJobSkillsPanel extends JPanel {
 			e.printStackTrace();
 		}
 		
-		EditPersonSkillsPanel panel = 
-				new EditPersonSkillsPanel(connection, list.get(0));
+		EditPersonSkillsDialog panel = 
+				new EditPersonSkillsDialog(connection, list.get(0));
 		
 		JFrame frame = new JFrame();
 		frame.add(panel);
