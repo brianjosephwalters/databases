@@ -24,7 +24,7 @@ import db.DBConnection;
 
 import models.Company;
 import models.JobProfile;
-import models.JobReadable;
+import models.Job;
 import models.Person;
 import models.Project;
 import models.queries.CompanyQueries;
@@ -57,20 +57,20 @@ public class QueriesMainPanel extends JPanel {
 	private List<Project> projectList;
 	private List<Person> personList;
 	private List<JobProfile> jobProfileList;
-	private List<JobReadable> jobList;
+	private List<Job> jobList;
 	
 	private DefaultComboBoxModel<Company> cbCompanyModel;
 	private DefaultComboBoxModel<Project> cbProjectModel;
 	private DefaultComboBoxModel<Person> cbPersonModel;
 	private DefaultComboBoxModel<JobProfile> cbJobProfileModel;
-	private DefaultComboBoxModel<JobReadable> cbJobModel;
+	private DefaultComboBoxModel<Job> cbJobModel;
 	
 	private JTextField tfMissingK;
 	private JComboBox<Company> cbCompany;
 	private JComboBox<Project> cbProject;
 	private JComboBox<Person> cbPerson;
 	private JComboBox<JobProfile> cbJobProfile;
-	private JComboBox<JobReadable> cbJob;
+	private JComboBox<Job> cbJob;
 	
 	private JButton btnStaffBySalary;
 	private JButton btnWorkersByName;
@@ -93,8 +93,6 @@ public class QueriesMainPanel extends JPanel {
 	private JButton btnQualifiedPeople;
 	private JButton btnClosestQualified;
 	private JButton btnMissingOne;
-	
-	
 	
 	private JPanel tablePanel;
 	private JPanel panel_6;
@@ -121,7 +119,7 @@ public class QueriesMainPanel extends JPanel {
 		projectList = new ArrayList<Project>();
 		personList = new ArrayList<Person>();
 		jobProfileList = new ArrayList<JobProfile>();
-		jobList = new ArrayList<JobReadable>();
+		jobList = new ArrayList<Job>();
 		
 		buttonController = new ButtonController();
 		initializeGUIComponents();
@@ -218,8 +216,8 @@ public class QueriesMainPanel extends JPanel {
 		panel_1.add(panel_4);
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.Y_AXIS));
 		
-		cbJob = new JComboBox<JobReadable>();
-		cbJobModel = new DefaultComboBoxModel<JobReadable>();
+		cbJob = new JComboBox<Job>();
+		cbJobModel = new DefaultComboBoxModel<Job>();
 		panel_4.add(cbJob);
 		
 		panel_7 = new JPanel();
@@ -386,7 +384,7 @@ public class QueriesMainPanel extends JPanel {
 	
 	private void generateJobList() {
 		try {
-			jobList = jobQueries.getAllJobsReadable();
+			jobList = jobQueries.getAllJobs();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -394,8 +392,8 @@ public class QueriesMainPanel extends JPanel {
 	
 	private void updateJobComboBox() {
 		generateJobList();
-		cbJobModel = new DefaultComboBoxModel<JobReadable>();
-		for (JobReadable job : jobList) {
+		cbJobModel = new DefaultComboBoxModel<Job>();
+		for (Job job : jobList) {
 			cbJobModel.addElement(job);
 		}
 		cbJob.setModel(cbJobModel);
@@ -511,7 +509,7 @@ public class QueriesMainPanel extends JPanel {
 				}
 			} else if (event.getSource() == btnMissingSkills) {
 				Person person = (Person)cbPerson.getSelectedItem();
-				JobReadable job = (JobReadable)cbJob.getSelectedItem();
+				Job job = (Job)cbJob.getSelectedItem();
 				try {
 					ResultSet results = 
 						requiredQueries.getSkillGapOfPersonForJob(
@@ -574,7 +572,7 @@ public class QueriesMainPanel extends JPanel {
 			} else if (event.getSource() == btnCoursesForMissingSkills) {
 				// 10. Not Yet implemented
 			} else if (event.getSource() == btnMinimumCoursesForSkillSet) {
-				JobReadable job = (JobReadable)cbJob.getSelectedItem();
+				Job job = (Job)cbJob.getSelectedItem();
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -590,7 +588,7 @@ public class QueriesMainPanel extends JPanel {
 				//13. Not Yet Implemented
 			} else if (event.getSource() == btnPeopleMissingK) {
 				Integer K = Integer.parseInt(tfMissingK.getText());
-				JobReadable job = (JobReadable)cbJob.getSelectedItem();
+				Job job = (Job)cbJob.getSelectedItem();
 				try {
 					ResultSet results = 
 						requiredQueries.getPeopleMissingUpToKSkills(job.getJobCode(), K);
@@ -601,7 +599,7 @@ public class QueriesMainPanel extends JPanel {
 				}
 			} else if (event.getSource() == btnSkillsMissedForK) {
 				Integer K = Integer.parseInt(tfMissingK.getText());
-				JobReadable job = (JobReadable)cbJob.getSelectedItem();
+				Job job = (Job)cbJob.getSelectedItem();
 				try {
 					ResultSet results = 
 						requiredQueries.getUpToKSkillsMissedByPeople(job.getJobCode(), K);

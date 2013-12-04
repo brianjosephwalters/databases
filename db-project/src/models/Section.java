@@ -4,11 +4,16 @@ public class Section {
 	private String courseCode;
 	private String sectionCode;
 	private int year;
+	private String courseTitle;
 	private String formatCode;
+	private String formatName;
 	private double cost;
 	
 	public Section(String courseCode, String sectionCode, int year,
-				   String formatCode, double cost) {
+				   String courseTitle, 
+				   String formatCode, 
+				   String formatName,
+				   double cost) {
 		this.courseCode = courseCode;
 		this.sectionCode = sectionCode;
 		this.year = year;
@@ -75,5 +80,33 @@ public class Section {
 	 */
 	public void setCost(double cost) {
 		this.cost = cost;
+	}
+
+	/**
+	 * @return the courseTitle
+	 */
+	public String getCourseTitle() {
+		return courseTitle;
+	}
+
+	/**
+	 * @return the formatName
+	 */
+	public String getFormatName() {
+		return formatName;
+	}
+
+	/**
+	 * @param courseTitle the courseTitle to set
+	 */
+	public void setCourseTitle(String courseTitle) {
+		this.courseTitle = courseTitle;
+	}
+
+	/**
+	 * @param formatName the formatName to set
+	 */
+	public void setFormatName(String formatName) {
+		this.formatName = formatName;
 	}
 }

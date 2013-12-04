@@ -25,8 +25,8 @@ public class CompanyQueries {
 			throws SQLException {
 		List<Company> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM company");
+			" SELECT * " +
+			" FROM company");
 		list = getListOfCompanies(stmt);
 
 		return list;
@@ -39,9 +39,9 @@ public class CompanyQueries {
 			throws SQLException {
 		List<Company> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM company NATURAL JOIN company_specialty" +
-			"WHERE specialty_code = ?");
+			" SELECT * " +
+			" FROM company NATURAL JOIN company_specialty" +
+			" WHERE specialty_code = ?");
 		stmt.setString(1, specialtyCode);
 		list = getListOfCompanies(stmt);
 		
@@ -55,9 +55,9 @@ public class CompanyQueries {
 			throws SQLException {
 		List<Company> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM company NATURAL JOIN uses" +
-			"WHERE tool_code = ?");
+			" SELECT * " +
+			" FROM company NATURAL JOIN uses" +
+			" WHERE tool_code = ?");
 		stmt.setString(1, toolCode);
 		list = getListOfCompanies(stmt);
 
@@ -71,9 +71,9 @@ public class CompanyQueries {
 			throws SQLException {
 		List<Company> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM company NATURAL JOIN job_company NATURAL JOIN job" +
-			"WHERE job_profile_code = ?");
+			" SELECT * " +
+			" FROM company NATURAL JOIN job_company NATURAL JOIN job" +
+			" WHERE job_profile_code = ?");
 		stmt.setString(1, jobProfileCode);
 		list = getListOfCompanies(stmt);
 
@@ -87,13 +87,43 @@ public class CompanyQueries {
 		throws SQLException {
 		List<Company> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM company NATURAL JOIN provides NATURAL JOIN section" +
-			"WHERE course_code = ?");
+			" SELECT * " +
+			" FROM company NATURAL JOIN provides NATURAL JOIN section" +
+			" WHERE course_code = ?");
 		stmt.setString(1, courseCode);
 		list = getListOfCompanies(stmt);
 
 		return list;
+	}
+	
+	// Insertions
+	public int addCompany(Company company) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" INSERT INTO company " +
+			"   VALUES (?, ?, ?) "
+		);
+		stmt.setString(1, company.getCompanyCode());
+		stmt.setString(2, company.getCompanyName());
+		stmt.setString(3, company.getWebsite());
+		count = stmt.executeUpdate();
+		return count;
+	}
+	
+	// Updates
+	public int updateCompany(Company company) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE company " +
+			" SET company_name = ? " +
+			"     website = ? " +
+			" WHERE company_code = ? "
+		);
+		
+		stmt.setString(1, company.getCompanyName());
+		stmt.setString(2, company.getWebsite());
+		stmt.setString(3, company.getCompanyCode());
+		return count;
 	}
 	
 	// Helper Functions

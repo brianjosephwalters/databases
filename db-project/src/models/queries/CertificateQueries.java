@@ -179,6 +179,45 @@ public class CertificateQueries {
 		return list;
 	}
 	
+	// Insertions
+	public int addCertificate(Certificate certificate) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" INSERT INTO certificate " +
+			"   VALUES (?, ?, ?, ?, ?, ?) "
+		);
+		stmt.setString(1, certificate.getCertificateCode());
+		stmt.setString(2, certificate.getCertificateTitle());
+		stmt.setString(3, certificate.getCertificateDescription());
+		stmt.setString(4, certificate.getToolCode());
+		stmt.setString(5, certificate.getCompanyCode());
+		stmt.setInt(6, certificate.getDaysValid());
+		count = stmt.executeUpdate();
+		return count;
+	}
+	
+	// Updates
+	public int updateCertificate(Certificate certificate) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE certificate " +
+			" SET certificate_title = ? " +
+			"     certificate_description = ? " +
+			"     tool_code = ? " +
+			"     company_code = ? " +
+			"     days_valid = ? " +
+			" WHERE certificate_code = ? "
+		);
+		stmt.setString(1, certificate.getCertificateTitle());
+		stmt.setString(2, certificate.getCertificateDescription());
+		stmt.setString(3, certificate.getToolCode());
+		stmt.setString(4, certificate.getCompanyCode());
+		stmt.setInt(5, certificate.getDaysValid());
+		stmt.setString(6, certificate.getCertificateCode());
+		count = stmt.executeUpdate();
+		return count;
+	}
+	
 	// Helper Functions
 	private List<Certificate> getListOfCertificates(PreparedStatement stmt) 
 			throws SQLException {

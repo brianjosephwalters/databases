@@ -20,7 +20,6 @@ import models.Course;
 import models.Exam;
 import models.ExamType;
 import models.Job;
-import models.JobReadable;
 import models.Person;
 import models.Skill;
 import models.queries.CertificateQueries;
@@ -43,7 +42,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private ExamTypeQueries examTypeQueries;
 	private Person person;
 	private Job job;
-	private List<JobReadable> listJobs;
+	private List<Job> listJobs;
 	private List<Skill> listMissingSkills;
 	private List<Course> listCoursesForSkills;
 	private List<Certificate> listMissingCertificates;
@@ -52,8 +51,8 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	
 	private ComboBoxController cbController;
 	
-	private JComboBox<JobReadable> cbJobs;
-	private DefaultComboBoxModel<JobReadable> cbJobsModel;
+	private JComboBox<Job> cbJobs;
+	private DefaultComboBoxModel<Job> cbJobsModel;
 	
 	private JTextArea taMissingSkills;
 	private JTextArea taCoursesForSkills;
@@ -73,7 +72,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		this.courseQueries = new CourseQueries(connection);
 		this.certificateQueries = new CertificateQueries(connection);
 		this.examTypeQueries = new ExamTypeQueries(connection);
-		this.listJobs = new ArrayList<JobReadable>();
+		this.listJobs = new ArrayList<Job>();
 		this.person = null;
 		
 		this.listMissingSkills = new ArrayList<Skill>();
@@ -88,9 +87,9 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	}
 	
 	private void intializeGUIController() {
-		cbJobs = new JComboBox<JobReadable>();
+		cbJobs = new JComboBox<Job>();
 		cbJobs.addActionListener(cbController);
-		cbJobsModel = new DefaultComboBoxModel<JobReadable>();
+		cbJobsModel = new DefaultComboBoxModel<Job>();
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(cbJobs);
@@ -144,10 +143,10 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		
 	}
 	
-	private void displayPersonJob(JobReadable jobReadable) {
-		if (jobReadable != null) {
+	private void displayPersonJob(Job job) {
+		if (job != null) {
 			try {
-				this.job = jobQueries.getJob(jobReadable.getJobCode()).get(0);	
+				this.job = jobQueries.getJob(job.getJobCode()).get(0);	
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} catch (ArrayIndexOutOfBoundsException e) {
@@ -270,7 +269,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private void generateJobList() {
 		String personCode = person.getPersonCode();
 		try {
-			listJobs = jobQueries.getJobsNotQualifiedForByPersonReadable(personCode);
+			listJobs = jobQueries.getJobsNotQualifiedForByPerson(personCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -280,9 +279,9 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		if (this.person != null) {
 			generateJobList();
 		}
-		cbJobsModel = new DefaultComboBoxModel<JobReadable>();
+		cbJobsModel = new DefaultComboBoxModel<Job>();
 		cbJobsModel.removeAllElements();
-		for (JobReadable job: listJobs) {
+		for (Job job: listJobs) {
 			cbJobsModel.addElement(job);
 		}
 		cbJobs.setModel(cbJobsModel);
@@ -292,7 +291,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		this.person = person;
 		clearJobs();
 		displayJobs();
-		JobReadable job = (JobReadable)cbJobs.getSelectedItem();
+		Job job = (Job)cbJobs.getSelectedItem();
 		displayPersonJob(job);
 	}
 	
@@ -300,7 +299,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private class ComboBoxController implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == cbJobs) {
-				JobReadable job = (JobReadable)cbJobs.getSelectedItem(); 
+				Job job = (Job)cbJobs.getSelectedItem(); 
 				displayPersonJob(job);
 			}
 		}

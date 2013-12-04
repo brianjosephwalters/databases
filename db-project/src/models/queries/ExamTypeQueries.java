@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.Address;
-import models.Exam;
 import models.ExamType;
 
 public class ExamTypeQueries {
@@ -72,7 +70,36 @@ public class ExamTypeQueries {
 		stmt.setString(3, personCode);
 		list = getListOfExamTypes(stmt);
 		return list;
-		
+	}
+	
+	// Inserts
+	public int addExamType(ExamType examType) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" INSERT INTO exam_type " +
+			" VALUES (?, ?, ?)"
+			);
+		stmt.setString(1, examType.getExamTypeCode());
+		stmt.setString(2, examType.getCertificateCode());
+		stmt.setString(3, examType.getExamTitle());
+		count = stmt.executeUpdate();
+		return count; 
+	}
+	
+	// Updates
+	public int updateExamType(ExamType examType) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE exam_type " +
+			" SET certificate_code = ? " +
+			"     exam_title = ? " +
+			" WHERE exam_type_code = ? "
+		);
+		stmt.setString(1, examType.getCertificateCode());
+		stmt.setString(2, examType.getExamTitle());
+		stmt.setString(3, examType.getExamTypeCode());
+		count = stmt.executeUpdate();
+		return count;
 	}
 	
 	// Helper Functions

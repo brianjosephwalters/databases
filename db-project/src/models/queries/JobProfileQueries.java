@@ -32,6 +32,37 @@ public class JobProfileQueries {
 		return list;
 	}
 	
+	// Inserts
+	public int addJobProfile(JobProfile jobProfile) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" INSERT INTO job_profile " +
+			" VALUES (?, ?, ?)"
+			);
+		stmt.setString(1, jobProfile.getJobProfileCode());
+		stmt.setString(2, jobProfile.getJobProfileTitle());
+		stmt.setString(3, jobProfile.getJobProfileDescription());
+		
+		count = stmt.executeUpdate();
+		return count; 
+	}
+	
+	// Updates
+	public int updateJobProfile(JobProfile jobProfile) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE job_profile " +
+			" SET job_profile_title = ? " +
+			"     job_profile_description = ? " +
+			" WHERE job_profile_code = ? "
+		);
+		stmt.setString(1, jobProfile.getJobProfileTitle());
+		stmt.setString(2, jobProfile.getJobProfileDescription());
+		stmt.setString(3, jobProfile.getJobProfileCode());
+		count = stmt.executeUpdate();
+		return count;
+	}
+	
 	// Helper Functions
 	private List<JobProfile> getListOfJobProfiles(PreparedStatement stmt) 
 			throws SQLException {

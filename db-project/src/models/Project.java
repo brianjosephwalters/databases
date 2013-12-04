@@ -6,12 +6,14 @@ public class Project {
 	private String projectCode;
 	private String companyCode;
 	private String projectTitle;
+	private String companyName;
 	private String budgetCode;
 	private Date startDate;
 	private Date endDate;
 	
-	public Project(String projectCode, String companyCode,
-				   String projectTitle, String budgetCode,
+	public Project(String projectCode, String projectTitle, 
+				   String companyCode, String companyName,
+				   String budgetCode,
 				   Date startDate, Date endDate) {
 		this.projectCode = projectCode;
 		this.companyCode = companyCode;
@@ -93,9 +95,22 @@ public class Project {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+
+	/**
+	 * @return the companyName
+	 */
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	/**
+	 * @param companyName the companyName to set
+	 */
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
 	
 	public String toString() {
 		return this.projectCode + ": " + this.projectTitle;
 	}
-	
 }

@@ -269,13 +269,31 @@ public class SkillQueries {
 		return count;
 	}
 	
+	// Updates
+	public int updateSkill(Skill skill) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE skill " +
+			" SET skill_name " +
+			"     skill_description " +
+			"     skill_level " +
+			" WHERE skill_code = ?"
+		);
+		stmt.setString(1, skill.getSkillName());
+		stmt.setString(2, skill.getSkillDescription());
+		stmt.setString(3, skill.getSkillLevel());
+		stmt.setString(4, skill.getSkillCode());
+		count = stmt.executeUpdate();
+		return count;
+	}	
+	
 	// Deletes
 	public int removeSkillFromPerson(Person person, Skill skill) 
 			throws SQLException {
 		PreparedStatement stmt = connection.prepareStatement(
-			"DELETE FROM person_skill" +
-			"WHERE person_code = ? AND" +
-			"      skill_code = ?");
+			" DELETE FROM person_skill " +
+			" WHERE person_code = ? AND " +
+			"       skill_code = ? ");
 		stmt.setString(1, person.getPersonCode());
 		stmt.setString(2, skill.getSkillCode());
 		return stmt.executeUpdate();
@@ -284,9 +302,9 @@ public class SkillQueries {
 	public int removeSkillFromJob(Job job, Skill skill) 
 			throws SQLException {
 		PreparedStatement stmt = connection.prepareStatement(
-			"DELETE FROM job_skill" +
-			"WHERE job_code = ? AND" +
-			"      skill_code = ?");
+			" DELETE FROM job_skill " +
+			" WHERE job_code = ? AND " +
+			"       skill_code = ? ");
 		stmt.setString(1, job.getJobCode());
 		stmt.setString(2, skill.getSkillCode());
 		return stmt.executeUpdate();
@@ -299,9 +317,9 @@ public class SkillQueries {
 		try {
 			for (Skill skill : list) {
 				PreparedStatement stmt = connection.prepareStatement(
-					"DELETE FROM person_skill " +
-					"WHERE person_code = ? AND " +
-					"      skill_code = ?");
+					" DELETE FROM person_skill " +
+					" WHERE person_code = ? AND " +
+					"       skill_code = ? ");
 				stmt.setString(1, person.getPersonCode());
 				stmt.setString(2, skill.getSkillCode());
 				count += stmt.executeUpdate();
@@ -327,9 +345,9 @@ public class SkillQueries {
 		try {
 			for (Skill skill : list) {
 				PreparedStatement stmt = connection.prepareStatement(
-					"DELETE FROM job_skill " +
-					"WHERE job_code = ? AND " +
-					"      skill_code = ?");
+					" DELETE FROM job_skill " +
+					" WHERE job_code = ? AND " +
+					"       skill_code = ? ");
 				stmt.setString(1, job.getJobCode());
 				stmt.setString(2, skill.getSkillCode());
 				count += stmt.executeUpdate();

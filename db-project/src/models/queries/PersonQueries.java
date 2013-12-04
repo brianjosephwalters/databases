@@ -23,8 +23,8 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM person");
+			" SELECT * " +
+			" FROM person");
 		list = getListOfPeople(stmt);
 		
 		return list;
@@ -34,9 +34,9 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM person " +
-			"WHERE last_name = ?");
+			" SELECT * " +
+			" FROM person " +
+			" WHERE last_name = ?");
 		stmt.setString(1, lastName);
 		list = getListOfPeople(stmt);
 		
@@ -47,9 +47,9 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM person NATURAL JOIN person_skill " +
-			"WHERE skill_code = ?");
+			" SELECT * " +
+			" FROM person NATURAL JOIN person_skill " +
+			" WHERE skill_code = ?");
 		stmt.setString(1, skillCode);
 		list = getListOfPeople(stmt);
 		
@@ -60,8 +60,8 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM person NATURAL JOIN employment");
+			" SELECT * " +
+			" FROM person NATURAL JOIN employment");
 		list = getListOfPeople(stmt);
 		
 		return list;
@@ -73,9 +73,9 @@ public class PersonQueries {
 		PreparedStatement stmt = connection.prepareStatement(
 			"(SELECT * " +
 			" FROM person)" +
-			"EXCEPT" +
-			"(SELECT * " +
-			"FROM person NATURAL JOIN employment)");
+			" EXCEPT" +
+			" (SELECT * " +
+			" FROM person NATURAL JOIN employment)");
 		list = getListOfPeople(stmt);
 		
 		return list;
@@ -114,9 +114,9 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM attended NATURAL JOIN person" +
-			"WHERE course_code = ?"
+			" SELECT *" +
+			" FROM attended NATURAL JOIN person" +
+			" WHERE course_code = ?"
 			);
 		stmt.setString(1, course_code);
 
@@ -130,10 +130,10 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM attended NATURAL JOIN person" +
-			"WHERE course_code = ? AND section_code = ?" +
-			"      year = ?"
+			" SELECT *" +
+			" FROM attended NATURAL JOIN person" +
+			" WHERE course_code = ? AND section_code = ?" +
+			"       year = ?"
 			);
 		stmt.setString(1, course_code);
 		stmt.setString(2, course_code);
@@ -149,10 +149,10 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM person NATURAL JOIN takes NATURAL JOIN " +
-			"     exam NATURAL JOIN exam_type" +
-			"WHERE certificate_code = ?"
+			" SELECT *" +
+			" FROM person NATURAL JOIN takes NATURAL JOIN " +
+			"      exam NATURAL JOIN exam_type" +
+			" WHERE certificate_code = ?"
 			);
 		stmt.setString(1, certificate_code);
 		list = getListOfPeople(stmt);
@@ -164,9 +164,9 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM person NATURAL JOIN takes NATURAL JOIN exam" +
-			"WHERE exam_type_code = ?"
+			" SELECT *" +
+			" FROM person NATURAL JOIN takes NATURAL JOIN exam" +
+			" WHERE exam_type_code = ?"
 			);
 		stmt.setString(1, exam_type_code);
 		list = getListOfPeople(stmt);
@@ -178,10 +178,10 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM person NATURAL JOIN takes NATURAL JOIN exam NATURAL JOIN " +
+			" SELECT *" +
+			" FROM person NATURAL JOIN takes NATURAL JOIN exam NATURAL JOIN " +
 			"     exam_type NATURAL_JOIN certificate" +
-			"WHERE tool_code = ?"
+			" WHERE tool_code = ?"
 			);
 		stmt.setString(1, tool_code);
 		list = getListOfPeople(stmt);
@@ -193,9 +193,9 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM person NATURAL JOIN employment NATURAL JOIN job" +
-			"WHERE company_code = ? AND" +
+			" SELECT *" +
+			" FROM person NATURAL JOIN employment NATURAL JOIN job" +
+			" WHERE company_code = ? AND" +
 			"      start_date < CURRENT_DATE AND" +
 			"      (end_date > CURRENT_DATE OR end_date IS NULL)"
 		);
@@ -208,9 +208,9 @@ public class PersonQueries {
 			throws SQLException {
 		List<Person> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT *" +
-			"FROM person NATURAL JOIN employment NATURAL JOIN job" +
-			"WHERE company_code = ?"
+			" SELECT *" +
+			" FROM person NATURAL JOIN employment NATURAL JOIN job" +
+			" WHERE company_code = ?"
 		);
 		stmt.setString(1, company_code);
 		list = getListOfPeople(stmt);
@@ -249,18 +249,6 @@ public class PersonQueries {
 	}
 	
 	// People qualified for a job_profile
-	/**
-		SELECT * 
-		FROM person P
-		WHERE NOT EXISTS 
-		     (SELECT skill_code 
-					FROM job_profile_skill 
-					WHERE job_profile_code = '100' 
-					MINUS 
-					SELECT skill_code
-					FROM person_skill 
-					WHERE person_code = P.person_code ) 
-	 */
 	public List<Person> getPeopleQualifiedForJobProfile(String jobProfileCode) 
 			throws SQLException {
 		List<Person> list = null;
@@ -304,28 +292,6 @@ public class PersonQueries {
 		list = getListOfPeople(stmt);
 		return list;
 	}
-	/**
-
-WITH skills as 
-        (SELECT skill_code 
-		     FROM job_skill 
-		     WHERE job_code = '100'
-		     UNION
-		    SELECT skill_code 
-         FROM job_profile_skill 
-         WHERE job_profile_code = '101')
-SELECT * 
-	FROM person P 
-	WHERE NOT EXISTS 
-       (SELECT skill_code FROM skills
-			  MINUS  
-			    SELECT skill_code 
-			    FROM person_skill 
-			    WHERE person_code = P.person_code )
-    
-
-	 */
-	
 	
 	public List<Person> getPeopleFullyQualifiedForJob(String jobCode,
 													  String jobProfileCode) 
@@ -361,8 +327,8 @@ SELECT *
 			throws SQLException {
 		int count = 0;
 		PreparedStatement stmt = connection.prepareStatement(
-			"INSERT INTO person " +
-			"VALUES (?, ?, ?, ?, ?)"
+			" INSERT INTO person " +
+			" VALUES (?, ?, ?, ?, ?) "
 			);
 		stmt.setString(1, person.getPersonCode());
 		stmt.setString(2, person.getLastName());
@@ -378,12 +344,12 @@ SELECT *
 			throws SQLException {
 		int count = 0;
 		PreparedStatement stmt = connection.prepareStatement(
-			"UPDATE person" +
-			"  SET last_name = ?" +
-			"      first_name = ?" +
-			"      gender = ?" +
-			"      email = ?" +
-			"  WHERE person_code = ?"
+			" UPDATE person " +
+			"   SET last_name = ? " +
+			"       first_name = ? " +
+			"       gender = ? " +
+			"       email = ? " +
+			"   WHERE person_code = ? "
 			);
 		stmt.setString(1, person.getLastName());
 		stmt.setString(2, person.getFirstName());

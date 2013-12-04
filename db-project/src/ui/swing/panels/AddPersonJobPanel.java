@@ -22,7 +22,6 @@ import javax.swing.ListSelectionModel;
 import ui.swing.panels.person.PersonFormPanel;
 import ui.swing.panels.person.PersonFormPanel.PersonListener;
 import models.Job;
-import models.JobReadable;
 import models.Person;
 import models.queries.JobQueries;
 import models.queries.PersonQueries;
@@ -36,7 +35,7 @@ public class AddPersonJobPanel extends JPanel {
 	private PropertyChangeSupport pcS;
 	
 	private List<Person> personList;
-	private List<JobReadable> jobList;
+	private List<Job> jobList;
 	
 	private PersonQueries personQueries;
 	private JobQueries jobQueries;
@@ -48,8 +47,8 @@ public class AddPersonJobPanel extends JPanel {
 	private JComboBox<Person> cbPerson;
 	private DefaultComboBoxModel<Person> cbPersonModel;
 	private PersonFormPanel personFormPanel;
-	private JList<JobReadable> lJobs;
-	private DefaultListModel<JobReadable> lJobsModel;
+	private JList<Job> lJobs;
+	private DefaultListModel<Job> lJobsModel;
 	private JButton btnOkay;
 	private JButton btnCancel;
 	private JScrollPane scrollPane;
@@ -61,7 +60,7 @@ public class AddPersonJobPanel extends JPanel {
 		this.connection = connection;
 		
 		this.personList = new ArrayList<Person>();
-		this.jobList = new ArrayList<JobReadable>();
+		this.jobList = new ArrayList<Job>();
 		this.personQueries = new PersonQueries(connection);
 		this.jobQueries = new JobQueries(connection);
 		
@@ -95,7 +94,7 @@ public class AddPersonJobPanel extends JPanel {
 		cbPersonModel = new DefaultComboBoxModel<Person>();
 		this.addPropertyChangeListener(personFormPanel.new PersonListener());
 		
-		lJobsModel = new DefaultListModel<JobReadable>();
+		lJobsModel = new DefaultListModel<Job>();
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
@@ -130,7 +129,7 @@ public class AddPersonJobPanel extends JPanel {
 		
 		scrollPane = new JScrollPane();
 		jobPanel.add(scrollPane);
-		lJobs = new JList<JobReadable>();
+		lJobs = new JList<Job>();
 		scrollPane.setViewportView(lJobs);
 		lJobs.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jobPanel.add(buttonPanel);
@@ -167,7 +166,7 @@ public class AddPersonJobPanel extends JPanel {
 	private void updateJobList() {
 		generateJobList();
 		lJobsModel.clear();
-		for (JobReadable job : jobList) {
+		for (Job job : jobList) {
 			lJobsModel.addElement(job);
 		}
 	}

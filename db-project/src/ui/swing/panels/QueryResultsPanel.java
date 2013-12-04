@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -15,6 +14,8 @@ import javax.swing.JTable;
 import db.DBConnection;
 
 import models.queries.QueryResultsTableModel;
+import models.queries.RequiredQueries;
+
 import javax.swing.BoxLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -27,9 +28,10 @@ public class QueryResultsPanel extends JPanel{
 	
 	public QueryResultsPanel(String label) {
 		setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		setLayout(new BorderLayout(0, 0));
 		
 		table = new JTable();
+		table.setFillsViewportHeight(true);
 		add(new JScrollPane(table));
 	}
 	
@@ -46,12 +48,14 @@ public class QueryResultsPanel extends JPanel{
 		ResultSet results = null;
 		try {
 			Connection conn = DBConnection.getConnection();
+			RequiredQueries r = new RequiredQueries(conn);
 			PreparedStatement stmt = conn.prepareStatement(
 					"SELECT * " +
 					"FROM person", 
 					ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
-			results = stmt.executeQuery();
+			//results = stmt.executeQuery();
+			results = r.getCompanyEmployees("400");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

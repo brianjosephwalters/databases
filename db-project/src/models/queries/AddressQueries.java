@@ -83,6 +83,26 @@ public class AddressQueries {
 	}
 	
 	// Updates
+	public int updateAddress(Address address) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE course " +
+			" SET address_type = ? " +
+			"     street_1 = ? " +
+			"     street_2 = ? " +
+			"     city = ? " +
+			"     type = ? " +
+			" WHERE address_code = ? "
+		);
+		stmt.setString(1, address.getAddressType());
+		stmt.setString(2, address.getStreet1());
+		stmt.setString(3, address.getStreet2());
+		stmt.setString(4, address.getCity());
+		stmt.setString(5, address.getZipcode());
+		stmt.setString(6, address.getAddressCode());
+		count = stmt.executeUpdate();
+		return count;
+	}
 	
 	// Helper Functions
 	private List<Address> getListOfAddresses(PreparedStatement stmt) 

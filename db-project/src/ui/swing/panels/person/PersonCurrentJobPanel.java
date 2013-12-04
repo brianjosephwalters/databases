@@ -17,7 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import models.JobReadable;
+import models.Job;
 import models.Person;
 import models.queries.JobQueries;
 
@@ -29,7 +29,7 @@ public class PersonCurrentJobPanel extends JPanel {
 	private Connection connection;
 	private Person person;
 	private JobQueries jobQueries;
-	private List<JobReadable> list;
+	private List<Job> list;
 	
 	private ButtonController buttonController;
 	private CheckBoxController checkBoxController;
@@ -42,7 +42,7 @@ public class PersonCurrentJobPanel extends JPanel {
 	public PersonCurrentJobPanel (Connection connection) {
 		this.connection = connection;
 		this.jobQueries = new JobQueries(connection);
-		this.list = new ArrayList<JobReadable>();
+		this.list = new ArrayList<Job>();
 		
 		this.buttonController = new ButtonController();
 		this.checkBoxController = new CheckBoxController();
@@ -90,13 +90,13 @@ public class PersonCurrentJobPanel extends JPanel {
 		String personCode = person.getPersonCode();
 		if (!chckbxShowAll.isSelected()) {
 			try {
-				this.list = jobQueries.getCurrentJobsOfPersonReadable(personCode);
+				this.list = jobQueries.getCurrentJobsOfPerson(personCode);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} 
 		} else {
 			try {
-				this.list = jobQueries.getJobsOfPersonReadable(personCode);
+				this.list = jobQueries.getJobsOfPerson(personCode);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -106,7 +106,7 @@ public class PersonCurrentJobPanel extends JPanel {
 	private void setJobsTextArea() {
 		generateJobList();
 		StringBuilder sb = new StringBuilder();
-		for (JobReadable job : list) {
+		for (Job job : list) {
 			sb.append(job.getJobProfileTitle() + " at " + job.getCompanyName() + "\n");
 		}
 		taJobs.setText(sb.toString());

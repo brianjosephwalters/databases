@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import models.JobReadable;
+import models.Job;
 import models.Person;
 import models.queries.JobQueries;
 
@@ -38,7 +38,7 @@ public class PersonQualifiedJobsPanel extends JPanel{
 	private Connection connection;
 	private Person person;
 	private JobQueries jobQueries;
-	private List<JobReadable> list;
+	private List<Job> list;
 	
 	private CheckBoxController checkBoxController;
 	private ButtonController buttonController;
@@ -51,7 +51,7 @@ public class PersonQualifiedJobsPanel extends JPanel{
 	public PersonQualifiedJobsPanel (Connection connection) {
 		this.connection = connection;
 		this.jobQueries = new JobQueries(connection);
-		this.list = new ArrayList<JobReadable>();
+		this.list = new ArrayList<Job>();
 		this.checkBoxController = new CheckBoxController();
 		this.buttonController = new ButtonController();
 		
@@ -114,7 +114,7 @@ public class PersonQualifiedJobsPanel extends JPanel{
 	private void setJobsTextArea() {
 		generateJobList();
 		StringBuilder sb = new StringBuilder();
-		for (JobReadable job : list) {
+		for (Job job : list) {
 			sb.append(job.getJobProfileTitle() + " at " + job.getCompanyName() + "\n");
 		}
 		taJobs.setText(sb.toString());

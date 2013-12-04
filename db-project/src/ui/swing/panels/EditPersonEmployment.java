@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 
-import models.JobReadable;
+import models.Job;
 import models.Person;
 import models.queries.JobQueries;
 import models.queries.PersonQueries;
@@ -38,13 +38,13 @@ public class EditPersonEmployment extends JPanel {
 	private ComboBoxController comboBoxController;
 	
 	private List<Person> personList;
-	private List<JobReadable> jobList;
+	private List<Job> jobList;
 	
 	private DefaultComboBoxModel<Person> cbPersonModel;
-	private DefaultListModel<JobReadable> lJobModel;
+	private DefaultListModel<Job> lJobModel;
 	
 	private JComboBox<Person> cbPerson;
-	private JList<JobReadable> lJobList;
+	private JList<Job> lJobList;
 	
 	
 	private JCheckBox chkbxShowAll;
@@ -65,10 +65,10 @@ public class EditPersonEmployment extends JPanel {
 		this.comboBoxController = new ComboBoxController();
 		
 		personList = new ArrayList<Person>();
-		jobList = new ArrayList<JobReadable>();
+		jobList = new ArrayList<Job>();
 		
 		cbPersonModel = new DefaultComboBoxModel<Person>();
-		lJobModel = new DefaultListModel<JobReadable>();
+		lJobModel = new DefaultListModel<Job>();
 		
 		initializeGUIComponents();
 		displayPersonComboBox();
@@ -96,7 +96,7 @@ public class EditPersonEmployment extends JPanel {
 		add(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
-		lJobList = new JList<JobReadable>();
+		lJobList = new JList<Job>();
 		lJobList.setModel(lJobModel);
 		panel_1.add(lJobList);
 		
@@ -162,7 +162,7 @@ public class EditPersonEmployment extends JPanel {
 		generateJobList();
 		lJobModel.clear();
 		
-		for (JobReadable job : jobList) {
+		for (Job job : jobList) {
 			lJobModel.addElement(job);
 		}
 		lJobList.setModel(lJobModel);

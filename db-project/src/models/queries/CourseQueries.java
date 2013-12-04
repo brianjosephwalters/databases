@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.Certificate;
 import models.Course;
 
 public class CourseQueries {
@@ -27,8 +26,8 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course");
+			" SELECT * " +
+			" FROM course");
 		list = getListOfCourses(stmt);
 		
 		return list;
@@ -41,9 +40,9 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course NATURAL JOIN section" +
-			"WHERE year = ?");
+			" SELECT * " +
+			" FROM course NATURAL JOIN section" +
+			" WHERE year = ?");
 		stmt.setInt(1,  year);
 		list = getListOfCourses(stmt);
 		
@@ -57,9 +56,9 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course NATURAL JOIN course_skill" +
-			"WHERE skill_code = ?");
+			" SELECT * " +
+			" FROM course NATURAL JOIN course_skill" +
+			" WHERE skill_code = ?");
 		stmt.setString(1,  skillCode);
 		list = getListOfCourses(stmt);
 		
@@ -74,9 +73,9 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course NATURAL JOIN prepares_for" +
-			"WHERE certificate_code = ?");
+			" SELECT * " +
+			" FROM course NATURAL JOIN prepares_for" +
+			" WHERE certificate_code = ?");
 		stmt.setString(1,  certCode);
 		list = getListOfCourses(stmt);
 		
@@ -91,9 +90,9 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course NATURAL JOIN prepares_for NATURAL JOIN certificate" +
-			"WHERE tool_code = ?");
+			" SELECT * " +
+			" FROM course NATURAL JOIN prepares_for NATURAL JOIN certificate" +
+			" WHERE tool_code = ?");
 		stmt.setString(1,  toolCode);
 		list = getListOfCourses(stmt);
 		
@@ -107,10 +106,10 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course NATURAL JOIN section NATURAL JOIN" +
-			"     provides" +
-			"WHERE company_code = ?");
+			" SELECT * " +
+			" FROM course NATURAL JOIN section NATURAL JOIN" +
+			"      provides" +
+			" WHERE company_code = ?");
 		stmt.setString(1,  companyCode);
 		list = getListOfCourses(stmt);
 		
@@ -124,10 +123,10 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course NATURAL JOIN section NATURAL JOIN" +
-			"     attended" +
-			"WHERE person_code = ?");
+			" SELECT * " +
+			" FROM course NATURAL JOIN section NATURAL JOIN" +
+			"      attended" +
+			" WHERE person_code = ?");
 		stmt.setString(1,  personCode);
 		list = getListOfCourses(stmt);
 		
@@ -141,10 +140,10 @@ public class CourseQueries {
 			throws SQLException {
 		List<Course> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM course NATURAL JOIN course_skill NATURAL JOIN" +
-			"     job_profile" +
-			"WHERE job_profile_code = ?");
+			" SELECT * " +
+			" FROM course NATURAL JOIN course_skill NATURAL JOIN" +
+			"      job_profile" +
+			" WHERE job_profile_code = ?");
 		stmt.setString(1,  jobProfileCode);
 		list = getListOfCourses(stmt);
 		
@@ -181,6 +180,46 @@ public class CourseQueries {
 	stmt.setString(3, personCode);
 	list = getListOfCourses(stmt);
 	return list;
+	}
+	
+	// Insertions
+	public int addCourse(Course course) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" INSERT INTO course " +
+			"   VALUES (?, ?, ?, ?, ?, ?) "
+		);
+		stmt.setString(1, course.getCourseCode());
+		stmt.setString(2, course.getCourseTitle());
+		stmt.setString(3, course.getCourseDescription());
+		stmt.setString(4, course.getCourseLevel());
+		stmt.setString(5, course.getStatus());
+		stmt.setDouble(6, course.getRetailPrice());
+		count = stmt.executeUpdate();
+		return count;
+	}
+	
+	// Updates
+	public int updateCourse(Course course) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE course " +
+			" SET course_title = ? " +
+			"     course_description = ? " +
+			"     course_level = ? " +
+			"     status = ? " +
+			"     retail_price = ? " +
+			" WHERE company_code = ? "
+		);
+		
+		stmt.setString(1, course.getCourseTitle());
+		stmt.setString(2, course.getCourseDescription());
+		stmt.setString(3, course.getCourseLevel());
+		stmt.setString(4, course.getStatus());
+		stmt.setDouble(5, course.getRetailPrice());
+		stmt.setString(6, course.getCourseCode());
+		count = stmt.executeUpdate();
+		return count;
 	}
 	
 	// Helper Functions

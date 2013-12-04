@@ -20,7 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import models.Job;
-import models.JobReadable;
 import models.queries.JobQueries;
 
 @SuppressWarnings("serial")
@@ -120,14 +119,14 @@ public class JobFormPanel extends JPanel {
 	
 	private void displayJob(Job job) {
 		this.job = job;
-		List<JobReadable> list = null;
+		List<Job> list = null;
 		try {
-			list  = jobQueries.getJobReadable(job.getJobCode());
+			list  = jobQueries.getJob(job.getJobCode());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		if (list != null) {
-			JobReadable jobR = list.get(0);
+			Job jobR = list.get(0);
 			Date opening = jobR.getOpeningDate();
 			Date closing = jobR.getClosingDate();
 			tfJobCode.setText(jobR.getJobCode());

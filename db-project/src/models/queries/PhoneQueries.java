@@ -25,8 +25,8 @@ public class PhoneQueries {
 			throws SQLException {
 		List<PhoneNumber> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM phone_number");
+			" SELECT * " +
+			" FROM phone_number ");
 		list = getListOfPhoneNumbers(stmt);
 		
 		return list;
@@ -35,14 +35,14 @@ public class PhoneQueries {
 	/**
 	 * The phone numbers and types of a particular company.
 	 */
-	public List<PhoneNumber> getCompanyAddresses(String company_code) 
+	public List<PhoneNumber> getCompanyPhoneNumbers(String companyCode) 
 			throws SQLException {
 		List<PhoneNumber> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM phone_number NATURAL JOIN company_phone " +
-			"WHERE company_code = ?");
-		stmt.setString(1, company_code);
+			" SELECT * " +
+			" FROM phone_number NATURAL JOIN company_phone " +
+			" WHERE company_code = ?");
+		stmt.setString(1, companyCode);
 		
 		list = getListOfPhoneNumbers(stmt);
 		return list;
@@ -51,14 +51,14 @@ public class PhoneQueries {
 	/**
 	 * The addresses and types of a particular person.
 	 */
-	public List<PhoneNumber> getPersonPhoneNumbers(String person_code) 
+	public List<PhoneNumber> getPersonPhoneNumbers(String personCode) 
 			throws SQLException {
 		List<PhoneNumber> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM phone_number NATURAL JOIN person_phone " +
-			"WHERE person_code = ?");
-		stmt.setString(1, person_code);
+			" SELECT * " +
+			" FROM phone_number NATURAL JOIN person_phone " +
+			" WHERE person_code = ?");
+		stmt.setString(1, personCode);
 		
 		list = getListOfPhoneNumbers(stmt);
 		return list;
@@ -69,8 +69,8 @@ public class PhoneQueries {
 			throws SQLException {
 		int count = 0;
 		PreparedStatement stmt = connection.prepareStatement(
-			"INSERT INTO phone_number " +
-			"VALUES (?, ?, ?)"
+			" INSERT INTO phone_number " +
+			" VALUES (?, ?, ?)"
 			);
 		stmt.setString(1, phoneNumber.getPhoneCode());
 		stmt.setString(2, phoneNumber.getPhoneType());
@@ -80,6 +80,20 @@ public class PhoneQueries {
 	}
 		
 	// Updates
+	public int updatePhoneNumber(PhoneNumber phone) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE phone_number " +
+			" SET phone_type = ? " +
+			"     phone_num = ? " +
+			" WHERE phone_code = ? "
+		);
+		stmt.setString(1, phone.getPhoneType());
+		stmt.setString(2, phone.getPhoneNum());
+		stmt.setString(3, phone.getPhoneCode());
+		count = stmt.executeUpdate();
+		return count;
+	}
 		
 	// Helper Functions
 	private List<PhoneNumber> getListOfPhoneNumbers(PreparedStatement stmt) 

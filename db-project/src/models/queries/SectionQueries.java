@@ -25,8 +25,9 @@ public class SectionQueries {
 			throws SQLException {
 		List<Section> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM section");
+			" SELECT * " +
+			" FROM section " +
+			"      NATURAL JOIN format NATURAL JOIN course ");
 		list = getListOfSections(stmt);
 		
 		return list;
@@ -39,9 +40,10 @@ public class SectionQueries {
 			throws SQLException {
 		List<Section> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM section" +
-			"WHERE course_code = ?");
+			" SELECT * " +
+			" FROM section " +
+			"      NATURAL JOIN format NATURAL JOIN course " +
+			" WHERE course_code = ? ");
 		stmt.setString(1, courseCode);
 		list = getListOfSections(stmt);
 		
@@ -56,10 +58,11 @@ public class SectionQueries {
 			throws SQLException {
 		List<Section> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM section" +
-			"WHERE course_code = ? AND" +
-			"      year = ?");
+			" SELECT * " +
+			" FROM section " +
+			"      NATURAL JOIN format NATURAL JOIN course " +
+			" WHERE course_code = ? AND " +
+			"       year = ? ");
 		stmt.setString(1, courseCode);
 		stmt.setInt(2, year);
 		list = getListOfSections(stmt);
@@ -74,9 +77,10 @@ public class SectionQueries {
 			throws SQLException {
 		List<Section> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM section" +
-			"WHERE format_code = ?");
+			" SELECT * " +
+			" FROM section " +
+			"      NATURAL JOIN format NATURAL JOIN course " +
+			" WHERE format_code = ? ");
 		stmt.setString(1, formatCode);
 		list = getListOfSections(stmt);
 		
@@ -90,10 +94,11 @@ public class SectionQueries {
 			throws SQLException {
 		List<Section> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM section" +
-			"WHERE format_code = ? AND" +
-			"      year = ?");
+			" SELECT * " +
+			" FROM section" +
+			"      NATURAL JOIN format NATURAL JOIN course " +
+			" WHERE format_code = ? AND " +
+			"       year = ? ");
 		stmt.setString(1, formatCode);
 		stmt.setInt(2, year);
 		list = getListOfSections(stmt);
@@ -109,9 +114,10 @@ public class SectionQueries {
 			throws SQLException {
 		List<Section> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM section NATURAL JOIN provides" +
-			"WHERE company_code = ?");
+			" SELECT * " +
+			" FROM section NATURAL JOIN provides " +
+			"      NATURAL JOIN format NATURAL JOIN course " +
+			" WHERE company_code = ? ");
 		stmt.setString(1, companyCode);
 		list = getListOfSections(stmt);
 		
@@ -125,10 +131,11 @@ public class SectionQueries {
 			throws SQLException {
 		List<Section> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			"SELECT * " +
-			"FROM section NATURAL JOIN provides" +
-			"WHERE company_code = ?" +
-			"      AND year = ?");
+			" SELECT * " +
+			" FROM section NATURAL JOIN provides " +
+			"      NATURAL JOIN format NATURAL JOIN course " +
+			" WHERE company_code = ? " +
+			"       AND year = ? ");
 		stmt.setString(1, companyCode);
 		stmt.setInt(2, year);
 		list = getListOfSections(stmt);
@@ -136,6 +143,41 @@ public class SectionQueries {
 		return list;
 	}
 	
+	// Inserts
+	public int addSection(Section section) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" INSERT INTO section " +
+			" VALUES (?, ?, ?, ?, ?)"
+			);
+		stmt.setString(1, section.getCourseCode());
+		stmt.setString(2, section.getSectionCode());
+		stmt.setInt(3, section.getYear());
+		stmt.setString(4, section.getFormatCode());
+		stmt.setDouble(5, section.getCost());
+		count = stmt.executeUpdate();
+		return count;
+	}
+
+	// Updates
+	public int updateSection(Section section) throws SQLException {
+		int count = 0;
+		PreparedStatement stmt = connection.prepareStatement(
+			" UPDATE section " +
+			" SET format_code = ? " +
+			"     cost = ? " +
+			" WHERE course_code = ? " +
+			"       section_code = ? " +
+			"       year = ?"
+		);
+		stmt.setString(1, section.getFormatCode());
+		stmt.setDouble(2, section.getCost());
+		stmt.setString(3, section.getCourseCode());
+		stmt.setString(4, section.getSectionCode());
+		stmt.setInt(5, section.getYear());
+		count = stmt.executeUpdate();
+		return count;
+	}
 	
 	// Helper Functions
 	private List<Section> getListOfSections(PreparedStatement stmt) 
@@ -152,7 +194,9 @@ public class SectionQueries {
 				results.getString("course_code"),
 				results.getString("section_code"),
 				results.getInt("year"),
+				results.getString("course_title"),
 				results.getString("format_code"),
+				results.getString("format_name"),
 				results.getDouble("cost"))
 			);
 		}
