@@ -6,52 +6,35 @@ import javax.swing.BoxLayout;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
 
-import ui.swing.panels.person.PersonAddressPanel;
 import ui.swing.panels.person.PersonCertificatePanel;
 import ui.swing.panels.person.PersonCloselyQualifiedPanel;
 import ui.swing.panels.person.PersonCurrentJobPanel;
 import ui.swing.panels.person.PersonFormPanel;
-import ui.swing.panels.person.PersonNavigationPanel;
-import ui.swing.panels.person.PersonPhonePanel;
+import ui.swing.panels.person.PersonNavigationPanel2;
 import ui.swing.panels.person.PersonQualifiedJobsPanel;
 import ui.swing.panels.person.PersonSkillPanel;
-import models.Person;
-import models.queries.PersonQueries;
 import db.DBConnection;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public class JobHuntingMainPanel extends JPanel {
-	Connection connection;
-	private PersonQueries personQueries;
-	
-	// Data Instance Variables
-	List<Person> personList;
-	Person currentPerson;
-	
-	PropertyChangeSupport pcS;
+	private Connection connection;
 	
 	// GUI Instance Variables
-	JPanel mainPanel;
-	PersonNavigationPanel navPanel;
-	PersonFormPanel personFormPanel;
-	PersonAddressPanel personAddressPanel;
-	PersonPhonePanel personPhonePanel;
-	PersonSkillPanel personSkillPanel;
-	PersonCertificatePanel personCertificatePanel;
+	private JPanel mainPanel;
+	private PersonNavigationPanel2 navigationPanel;
+	private PersonFormPanel personFormPanel;
+	private PersonSkillPanel personSkillPanel;
+	private PersonCertificatePanel personCertificatePanel;
 	
-	PersonCurrentJobPanel personCurrentJobPanel;
-	PersonQualifiedJobsPanel personQualifiedJobsPanel;
-	PersonCloselyQualifiedPanel personCloselyQualifiedPanel;
+	private PersonCurrentJobPanel personCurrentJobPanel;
+	private PersonQualifiedJobsPanel personQualifiedJobsPanel;
+	private PersonCloselyQualifiedPanel personCloselyQualifiedPanel;
 	private JPanel panel;
 	
 	/**
@@ -59,17 +42,8 @@ public class JobHuntingMainPanel extends JPanel {
 	 */
 	public JobHuntingMainPanel(Connection connection) {
 		this.connection = connection;
-		personQueries = new PersonQueries(connection);
-		
-		pcS = new PropertyChangeSupport(this);
-		try {
-			personList = personQueries.getAllPeople();
-		} catch (SQLException e) {
-			System.out.println("Unable to get people!");
-		}
-		
+
 		initializeGUIComponents();
-		setCurrentPerson(getPersonList().get(0));
 	}
 	
 	private void initializeGUIComponents() {
@@ -82,14 +56,12 @@ public class JobHuntingMainPanel extends JPanel {
 		initializePersonPanel();
 		initializeQualifiedPanel();
 		initializeNearlyQualifiedPanel();
-		add(navPanel, BorderLayout.NORTH);
+		add(navigationPanel, BorderLayout.NORTH);
 		add(mainPanel, BorderLayout.CENTER);	
 	}
 	
 	private void initializeNavigationPanel() {
-		navPanel = new PersonNavigationPanel(personList);
-		navPanel.addPropertyChangeListener(new NavigationListener());
-		this.addPropertyChangeListener(navPanel.new ListListener());
+		navigationPanel = new PersonNavigationPanel2(connection);
 	}
 	
 	private void initializePersonPanel() {
@@ -98,7 +70,7 @@ public class JobHuntingMainPanel extends JPanel {
 		personPanel.setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)), "Person Summary", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		personFormPanel = new PersonFormPanel(connection);
-		this.addPropertyChangeListener(personFormPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(personFormPanel.new PersonListener());
 		personPanel.setLayout(new BorderLayout(0, 0));
 		
 		personPanel.add(personFormPanel, BorderLayout.NORTH);
@@ -109,11 +81,11 @@ public class JobHuntingMainPanel extends JPanel {
 		personPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		personSkillPanel = new PersonSkillPanel(connection);	
-		this.addPropertyChangeListener(personSkillPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(personSkillPanel.new PersonListener());
 
 		panel.add(personSkillPanel);
 		personCertificatePanel = new PersonCertificatePanel(connection);
-		this.addPropertyChangeListener(personCertificatePanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(personCertificatePanel.new PersonListener());
 
 		panel.add(personCertificatePanel);
 	}
@@ -124,10 +96,10 @@ public class JobHuntingMainPanel extends JPanel {
 		jobQualifiedPanel.setLayout(new BoxLayout(jobQualifiedPanel, BoxLayout.Y_AXIS));
 		
 		personCurrentJobPanel = new PersonCurrentJobPanel(connection);
-		this.addPropertyChangeListener(personCurrentJobPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(personCurrentJobPanel.new PersonListener());
 		
 		personQualifiedJobsPanel = new PersonQualifiedJobsPanel(connection);
-		this.addPropertyChangeListener(personQualifiedJobsPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(personQualifiedJobsPanel.new PersonListener());
 		
 		
 		jobQualifiedPanel.add(personCurrentJobPanel);
@@ -142,45 +114,8 @@ public class JobHuntingMainPanel extends JPanel {
 		jobNearlyQualifiedPanel.setLayout(new BoxLayout(jobNearlyQualifiedPanel, BoxLayout.Y_AXIS));
 		
 		personCloselyQualifiedPanel = new PersonCloselyQualifiedPanel(connection);
-		this.addPropertyChangeListener(personCloselyQualifiedPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(personCloselyQualifiedPanel.new PersonListener());
 		jobNearlyQualifiedPanel.add(personCloselyQualifiedPanel);
-	}
-	
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		pcS.addPropertyChangeListener(listener);
-	}
-	
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		pcS.addPropertyChangeListener(listener);
-	}
-	
-	public List<Person> getPersonList() {
-		return this.personList;
-	}
-	
-	public void setPersonList(List<Person> newPersonList) {
-		List<Person> oldPersonList = this.personList;
-		this.personList = newPersonList;
-		pcS.firePropertyChange("personList", oldPersonList, newPersonList);
-	}
-	
-	public Person getCurrentPerson() {
-		return this.currentPerson;
-	}
-	
-	public void setCurrentPerson(Person newPerson) {
-		Person oldPerson = this.currentPerson;
-		this.currentPerson = newPerson;
-		pcS.firePropertyChange("currentPerson", oldPerson, newPerson);
-	}	
-	
-	public class NavigationListener implements PropertyChangeListener {
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (evt.getPropertyName().equals("currentIndex")) {
-				int index = (Integer)evt.getNewValue();
-				setCurrentPerson(getPersonList().get(index));
-			}
-		}
 	}
 	
 	public static void main (String[] args) {

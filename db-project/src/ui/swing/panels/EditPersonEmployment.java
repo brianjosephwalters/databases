@@ -55,7 +55,8 @@ public class EditPersonEmployment extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public EditPersonEmployment(Connection connection, Person person) {
+	public EditPersonEmployment(Connection connection, 
+								Person person) {
 		this.connection = connection;
 		this.jobQueries = new JobQueries(connection);
 		this.personQueries = new PersonQueries(connection);

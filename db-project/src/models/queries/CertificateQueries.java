@@ -74,7 +74,7 @@ public class CertificateQueries {
 		List<Certificate> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
 			" SELECT * " +
-			" FROM certificate NATURAL job_certificate" +
+			" FROM certificate NATURAL job_certificate " +
 			" WHERE job_code = ?");
 		stmt.setString(1, jobCode);
 		list = getListOfCertificates(stmt);
@@ -137,9 +137,12 @@ public class CertificateQueries {
 			"      FROM earns " +
 			"      WHERE person_code = ?) " +
 			" SELECT * " + 
-			" FROM certificate NATURAL JOIN (SELECT * FROM person_certificates MINUS " +
-			"                                SELECT * FROM job_certificates MINUS " +
-			"                                SELECT * FROM job_profile_certificates)"
+			" FROM certificate NATURAL JOIN ( (SELECT * FROM job_certificates" +
+			"                                  INTERSECT" +
+			"                                  SELECT * FROM job_profile_certificates)" +
+			"								  MINUS" +
+			"                                 SELECT * FROM person_certificates  " +
+			"                                 )"
 			);
 		stmt.setString(1, jobCode);
 		stmt.setString(2, jobProfileCode);

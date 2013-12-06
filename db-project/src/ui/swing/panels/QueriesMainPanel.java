@@ -75,13 +75,13 @@ public class QueriesMainPanel extends JPanel {
 	
 	private JButton btnStaffBySalary;
 	private JButton btnWorkersByName;
-	private JButton btnLaborCostsForAll;
+	private JButton btnLaborCostsForAllCompanies;
 	private JButton btnCurrentEmployees;
 	private JButton btnJobsCurrentlyHeld;
 	private JButton btnSkills;
 	private JButton btnSkillGapForCurrentJobs;
-	private JButton btnJobProfilesQualified;
-	private JButton btnHighestPayingJob;
+	private JButton btnJobsQualified;
+	private JButton btnHighestPayingAvailableJob;
 	private JButton btnMissingSkills;
 	private JButton btnCoursesForMissingSkills;
 	private JButton btnMinimumCoursesForSkillSet;
@@ -109,6 +109,13 @@ public class QueriesMainPanel extends JPanel {
 	private JPanel personJobTab;
 	private JPanel jobprofileTab;
 	private JPanel hardonesTab;
+	private JButton btnDistinctWorkersByName;
+	private JButton btnFulltimeStaff;
+	private JButton btnCurrentEmployeeWages;
+	private JButton btnCurrentEmployeeTotal;
+	private JButton btnAllTimeHighestPayingJobQualified;
+	private JButton btnEmployeeHistory;
+	private JButton btnJobProfilesQualified;
 	
 	public QueriesMainPanel(Connection connection) {
 		this.connection = connection;
@@ -162,16 +169,32 @@ public class QueriesMainPanel extends JPanel {
 		
 		btnStaffBySalary = new JButton("2. Staff By Salary");
 		btnStaffBySalary.addActionListener(buttonController);
-		panel.setLayout(new GridLayout(2, 2, 0, 0));
+		panel.setLayout(new GridLayout(4, 2, 0, 0));
 		
 		btnWorkersByName = new JButton("1. Workers By Name");
 		btnWorkersByName.addActionListener(buttonController);
 		panel.add(btnWorkersByName);
+		
+		btnDistinctWorkersByName = new JButton("1.a Distinct Workers By Name");
+		btnDistinctWorkersByName.addActionListener(buttonController);
+		panel.add(btnDistinctWorkersByName);
 		panel.add(btnStaffBySalary);
 		
-		btnLaborCostsForAll = new JButton("3. Labor Costs For All");
-		btnLaborCostsForAll.addActionListener(buttonController);
-		panel.add(btnLaborCostsForAll);
+		btnFulltimeStaff = new JButton("2.b Fulltime Staff");
+		btnFulltimeStaff.addActionListener(buttonController);
+		panel.add(btnFulltimeStaff);
+		
+		btnCurrentEmployeeWages = new JButton("Current Employee Wages");
+		btnCurrentEmployeeWages.addActionListener(buttonController);
+		panel.add(btnCurrentEmployeeWages);
+		
+		btnCurrentEmployeeTotal = new JButton("Current Employee Total Wages");
+		btnCurrentEmployeeTotal.addActionListener(buttonController);
+		panel.add(btnCurrentEmployeeTotal);
+		
+		btnLaborCostsForAllCompanies = new JButton("3. Labor Costs For All");
+		btnLaborCostsForAllCompanies.addActionListener(buttonController);
+		panel.add(btnLaborCostsForAllCompanies);
 		
 		projectTab = new JPanel();
 		tabbedPane.addTab("Project Queries", null, projectTab, null);
@@ -193,6 +216,10 @@ public class QueriesMainPanel extends JPanel {
 		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.Y_AXIS));
 		panel_5.add(btnCurrentEmployees);
 		
+		btnEmployeeHistory = new JButton("Employee History");
+		btnEmployeeHistory.addActionListener(buttonController);
+		panel_5.add(btnEmployeeHistory);
+		
 		personJobTab = new JPanel();
 		tabbedPane.addTab("Person and Job Queries", null, personJobTab, null);
 		
@@ -210,28 +237,36 @@ public class QueriesMainPanel extends JPanel {
 		
 		panel_6 = new JPanel();
 		panel_1.add(panel_6);
-		panel_6.setLayout(new GridLayout(3, 2, 0, 0));
+		panel_6.setLayout(new GridLayout(4, 2, 0, 0));
 		
 		btnJobsCurrentlyHeld = new JButton("4. Jobs Currently Held");
+		btnJobsCurrentlyHeld.addActionListener(buttonController);
 		panel_6.add(btnJobsCurrentlyHeld);
 		
 		btnSkills = new JButton("6. Skills");
+		btnSkills.addActionListener(buttonController);
 		panel_6.add(btnSkills);
 		
 		btnSkillGapForCurrentJobs = new JButton("7. Skill Gap For Current Jobs");
+		btnSkillGapForCurrentJobs.addActionListener(buttonController);
 		panel_6.add(btnSkillGapForCurrentJobs);
 		
-		btnJobProfilesQualified = new JButton("14. Job Profiles Qualified");
+		btnJobsQualified = new JButton("14. Jobs Qualified");
+		btnJobsQualified.addActionListener(buttonController);
+		panel_6.add(btnJobsQualified);
+		
+		btnJobProfilesQualified = new JButton("14b. Job Profiles Qualified");
+		btnJobProfilesQualified.addActionListener(buttonController);
 		panel_6.add(btnJobProfilesQualified);
 		
-		btnHighestPayingJob = new JButton("15. Highest Paying Job Qualified");
-		panel_6.add(btnHighestPayingJob);
-		btnHighestPayingJob.addActionListener(buttonController);
-		btnJobProfilesQualified.addActionListener(buttonController);
-		btnSkillGapForCurrentJobs.addActionListener(buttonController);
-		btnSkills.addActionListener(buttonController);
-		btnJobsCurrentlyHeld.addActionListener(buttonController);
+		btnHighestPayingAvailableJob = new JButton("15. Highest Paying Available Job Qualified");
+		btnHighestPayingAvailableJob.addActionListener(buttonController);
+		panel_6.add(btnHighestPayingAvailableJob);
 		
+		btnAllTimeHighestPayingJobQualified = new JButton("AllTimeHighestPayingJobQualified");
+		btnAllTimeHighestPayingJobQualified.addActionListener(buttonController);
+		panel_6.add(btnAllTimeHighestPayingJobQualified);
+				
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Job", TitledBorder.TRAILING, TitledBorder.TOP, null, null));
 		panel_1.add(panel_4);
@@ -245,18 +280,17 @@ public class QueriesMainPanel extends JPanel {
 		panel_7.setLayout(new GridLayout(3, 2, 0, 0));
 		
 		btnMissingSkills = new JButton("9. Person's Missing Skills");
-		panel_7.add(btnMissingSkills);
 		btnMissingSkills.addActionListener(buttonController);
+		panel_7.add(btnMissingSkills);
+		
 		
 		btnMinimumCoursesForSkillSet = new JButton("10. Minimum Courses For Skill Set");
 		panel_7.add(btnMinimumCoursesForSkillSet);
 		btnMinimumCoursesForSkillSet.addActionListener(buttonController);
-		btnMinimumCoursesForSkillSet.setEnabled(false);
 		
 		btnCoursesForMissingSkills = new JButton("11. Courses For Person's Missing Skills");
 		panel_7.add(btnCoursesForMissingSkills);
 		btnCoursesForMissingSkills.addActionListener(buttonController);
-		btnCoursesForMissingSkills.setEnabled(false);
 		
 		btnCheapestCoursesForMissingSkills = new JButton("12. Cheapest Courses For Missing Skill");
 		panel_7.add(btnCheapestCoursesForMissingSkills);
@@ -322,9 +356,11 @@ public class QueriesMainPanel extends JPanel {
 		panel_3.add(panel_9);
 		
 		btnPeopleMissingK = new JButton("20. People Missing K");
+		btnPeopleMissingK.addActionListener(buttonController);
 		panel_9.add(btnPeopleMissingK);
 		
 		btnSkillsMissedForK = new JButton("21. Skills Missed For K");
+		btnSkillsMissedForK.addActionListener(buttonController);
 		panel_9.add(btnSkillsMissedForK);
 		
 		hardonesTab = new JPanel();
@@ -341,12 +377,10 @@ public class QueriesMainPanel extends JPanel {
 		btnCoursesTrainingUnqualified = new JButton("23. Courses Training Unqualified People For Job Profiles \r\nWith The Most Openings");
 		btnCoursesTrainingUnqualified.setEnabled(false);
 		panel_10.add(btnCoursesTrainingUnqualified);
-		btnSkillsMissedForK.addActionListener(buttonController);
-		btnPeopleMissingK.addActionListener(buttonController);
 		
 		tablePanel = new JPanel();
 		tablePanel.setLayout(new BorderLayout(0, 0));
-		tablePanel.add(queryResultsPanel);
+		tablePanel.add(queryResultsPanel, BorderLayout.CENTER);
 		add(tablePanel);
 		
 		updateCompanyComboBox();
@@ -443,6 +477,7 @@ public class QueriesMainPanel extends JPanel {
 	
 	private class ButtonController implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			// 1
 			if (event.getSource() == btnWorkersByName ) {
 				Company company = (Company)cbCompany.getSelectedItem();
 				try {
@@ -452,27 +487,82 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnStaffBySalary) {
+			} 
+			// 1.a No Duplicates
+			if (event.getSource() == btnDistinctWorkersByName ) {
+				Company company = (Company)cbCompany.getSelectedItem();
+				try {
+					ResultSet results = requiredQueries.getCompanyEmployeesNoDuplicates(company.getCompanyCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Company Employees");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} 
+			
+			// 2
+			else if (event.getSource() == btnStaffBySalary) {
+				Company company = (Company)cbCompany.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getCompanySalaryEmployeesBySalaryDesc(company.getCompanyCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Company Salary Staff by Salary");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} 
+			
+			// 2b fulltime
+			else if (event.getSource() == btnFulltimeStaff) {
 				Company company = (Company)cbCompany.getSelectedItem();
 				try {
 					ResultSet results = 
 						requiredQueries.getCompanyFullTimeEmployeesBySalaryDesc(company.getCompanyCode());
 					queryResultsPanel.setResultsSet(results);
-					queryResultsPanel.setLabel("Company Staff by Salary");
+					queryResultsPanel.setLabel("Company Fulltime Staff by Salary");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnLaborCostsForAll) {
+			} 
+			// 3
+			else if (event.getSource() == btnLaborCostsForAllCompanies) {
+				try {
+					ResultSet results = 
+						requiredQueries.getAllCompanyCurrentTotalLaborCost();
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Total Labors Costs by Company");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}	
+			} 
+			// 3b
+			else if (event.getSource() == btnCurrentEmployeeWages) {
 				Company company = (Company)cbCompany.getSelectedItem();
 				try {
 					ResultSet results = 
-						requiredQueries.getCompanyCurrentTotalLaborCost(company.getCompanyCode());
+						requiredQueries.getCurrentCompanyEmployeesWithWages(company.getCompanyCode());
 					queryResultsPanel.setResultsSet(results);
-					queryResultsPanel.setLabel("Company Total Labor Costs");
+					queryResultsPanel.setLabel("Company Employee Wages");
 				} catch (SQLException e) {
 					e.printStackTrace();
-				}
-			} else if (event.getSource() == btnCurrentEmployees) {
+				}	
+			} 
+			// 3c
+			else if (event.getSource() == btnCurrentEmployeeTotal) {
+				Company company = (Company)cbCompany.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getCurrentCompanyEmployeesWithTotalWages(company.getCompanyCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Company Employee Wages");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}	
+			} 
+			
+			// 5
+			else if (event.getSource() == btnCurrentEmployees) {
 				Project project = (Project)cbProject.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -482,7 +572,22 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnJobsCurrentlyHeld) {
+			} 
+			// 5b btnEmployeeHistory
+			else if (event.getSource() == btnEmployeeHistory) {
+				Project project = (Project)cbProject.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getAllProjectEmployees(project.getProjectCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Project Emloyees History");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} 
+			
+			// 4
+			else if (event.getSource() == btnJobsCurrentlyHeld) {
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -492,7 +597,9 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnSkills) {
+			} 
+			// 6
+			else if (event.getSource() == btnSkills) {
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -502,7 +609,10 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnSkillGapForCurrentJobs) {
+			} 
+			
+			// 7
+			else if (event.getSource() == btnSkillGapForCurrentJobs) {
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -512,27 +622,56 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnJobProfilesQualified) {
+			} 
+			//14
+			else if (event.getSource() == btnJobsQualified) {
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
-						requiredQueries.getJobProfileQualifiedFor(person.getPersonCode());
+						requiredQueries.getJobsQualifiedFor(person.getPersonCode());
 					queryResultsPanel.setResultsSet(results);
 					queryResultsPanel.setLabel("Jobs Qualified For");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnHighestPayingJob) {
+			} 
+			else if (event.getSource() == btnJobProfilesQualified) {
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
-						requiredQueries.getHighestPayingJobGivenSkills(person.getPersonCode());
+						requiredQueries.getJobProfilesQualifiedFor(person.getPersonCode());
 					queryResultsPanel.setResultsSet(results);
-					queryResultsPanel.setLabel("Highest Paying Jobs Qualified For");
+					queryResultsPanel.setLabel("Job Profiles Qualified For");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnMissingSkills) {
+			} 
+			//15.a
+			else if (event.getSource() == btnHighestPayingAvailableJob) {
+				Person person = (Person)cbPerson.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getHighestPayingJobAvailableGivenSkills(person.getPersonCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Highest Paying Available Jobs Qualified For");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} 
+			//15.b
+			else if (event.getSource() == btnAllTimeHighestPayingJobQualified) {
+				Person person = (Person)cbPerson.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getHighestPayingJobEverGivenSkills(person.getPersonCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("All-Time Highest Paying Jobs Qualified For");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} 
+			//9. 
+			else if (event.getSource() == btnMissingSkills) {
 				Person person = (Person)cbPerson.getSelectedItem();
 				Job job = (Job)cbJob.getSelectedItem();
 				try {
@@ -544,7 +683,9 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnRequiredSkills) {
+			} 
+			// 8
+			else if (event.getSource() == btnRequiredSkills) {
 				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -554,7 +695,9 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnQualifiedPeople) {
+			} 
+			// 16
+			else if (event.getSource() == btnQualifiedPeople) {
 				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -564,7 +707,9 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnClosestQualified) {
+			} 
+			//17
+			else if (event.getSource() == btnClosestQualified) {
 				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -574,7 +719,9 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnMissingOne) {
+			} 
+			//18
+			else if (event.getSource() == btnMissingOne) {
 				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -584,7 +731,9 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnSkillsMissedOne) {
+			} 
+			//19
+			else if (event.getSource() == btnSkillsMissedOne) {
 				JobProfile jobProfile = (JobProfile)cbJobProfile.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -594,25 +743,47 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnCoursesForMissingSkills) {
-				// 10. Not Yet implemented
-			} else if (event.getSource() == btnMinimumCoursesForSkillSet) {
+			} 
+			// 11.
+			else if (event.getSource() == btnCoursesForMissingSkills) {
 				Job job = (Job)cbJob.getSelectedItem();
 				Person person = (Person)cbPerson.getSelectedItem();
 				try {
 					ResultSet results = 
-						requiredQueries.getLeastCoursesForPersonToGetJob(job.getJobCode(), person.getPersonCode());
+						requiredQueries.getCoursesForPersonToCoverMissingSkillsForJob(job.getJobProfileCode(), person.getPersonCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Courses for a person to cover missing skills for a job");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} 
+			// 10.
+			else if (event.getSource() == btnMinimumCoursesForSkillSet) {
+				Job job = (Job)cbJob.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getLeastCoursesToCoverJobSkills(job.getJobProfileCode());
 					queryResultsPanel.setResultsSet(results);
 					queryResultsPanel.setLabel("Least Courses for Person to get Job");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnCheapestCoursesForMissingSkills) {
-				//12. Not Yet Implemented
-			} else if (event.getSource() == btnQuickestCoursesForMissingSkill) {
-				//13. Not Yet Implemented
-			} else if (event.getSource() == btnPeopleMissingK) {
-				Integer K = Integer.parseInt(tfMissingK.getText());
+			} 
+			//12. Not finished
+			else if (event.getSource() == btnCheapestCoursesForMissingSkills) {
+				
+			} 
+			//13. Not finished
+			else if (event.getSource() == btnQuickestCoursesForMissingSkill) {
+				
+			} 
+			// 20.
+			else if (event.getSource() == btnPeopleMissingK) {
+				Integer K = 0;
+				if (!tfMissingK.getText().equals("")) {
+					K = Integer.parseInt(tfMissingK.getText());
+				}
+				
 				Job job = (Job)cbJob.getSelectedItem();
 				try {
 					ResultSet results = 
@@ -622,8 +793,13 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} else if (event.getSource() == btnSkillsMissedForK) {
-				Integer K = Integer.parseInt(tfMissingK.getText());
+			} 
+			// 21.
+			else if (event.getSource() == btnSkillsMissedForK) {
+				Integer K = 0;
+				if (!tfMissingK.getText().equals("")) {
+					K = Integer.parseInt(tfMissingK.getText());
+				}
 				Job job = (Job)cbJob.getSelectedItem();
 				try {
 					ResultSet results = 

@@ -27,6 +27,7 @@ public class PersonMainPanel extends JPanel {
 	private PersonEmploymentPanel personEmploymentPanel;
 	
 	private PersonQualifiedJobsPanel personQualifiedJobsPanel;
+	private PersonCloselyQualifiedPanel personCloselyQualifiedPanel;
 	
 	private JPanel personInfoTab;
 	private JPanel qualificationsTab;
@@ -103,9 +104,12 @@ public class PersonMainPanel extends JPanel {
 		
 		personQualifiedJobsPanel = new PersonQualifiedJobsPanel(connection);
 		qualifiedTab.add(personQualifiedJobsPanel);
+		
 		closelyQualifiedTab = new JPanel();
 		tabbedPane.addTab("Closely Qualified", null, closelyQualifiedTab, null);
 		
+		personCloselyQualifiedPanel = new PersonCloselyQualifiedPanel(connection);
+		closelyQualifiedTab.add(personCloselyQualifiedPanel);
 		
 		// Setup Navigation Panel
 		navigationPanel = new PersonNavigationPanel2(connection);
@@ -127,6 +131,8 @@ public class PersonMainPanel extends JPanel {
 			personEmploymentPanel.new PersonListener());
 		navigationPanel.addPropertyChangeListener(
 			personQualifiedJobsPanel.new PersonListener());
+		navigationPanel.addPropertyChangeListener(
+			personCloselyQualifiedPanel.new PersonListener());
 		
 		navigationPanel.resetPersonList();
 	}

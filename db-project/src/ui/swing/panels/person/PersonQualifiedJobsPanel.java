@@ -28,10 +28,6 @@ import models.queries.JobQueries;
 import javax.swing.JCheckBox;
 
 import ui.swing.panels.EditPersonEmployment;
-import ui.swing.panels.EditPersonSkillsDialog;
-import ui.swing.panels.person.PersonSkillPanel.EditWindowListener;
-
-import java.awt.Component;
 
 @SuppressWarnings("serial")
 public class PersonQualifiedJobsPanel extends JPanel{

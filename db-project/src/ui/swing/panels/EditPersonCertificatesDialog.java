@@ -87,11 +87,11 @@ public class EditPersonCertificatesDialog extends JDialog {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
-		JLabel lblCurrentSkills = new JLabel("Current Skills");
+		JLabel lblCurrentSkills = new JLabel("Current Certificates");
 		lblCurrentSkills.setFont(new Font("Tahoma", Font.BOLD, 11));
 		add(lblCurrentSkills, "2, 2, center, default");
 		
-		JLabel lblAvailableSkills = new JLabel("Available Skills");
+		JLabel lblAvailableSkills = new JLabel("Available Certificates");
 		lblAvailableSkills.setFont(new Font("Tahoma", Font.BOLD, 11));
 		add(lblAvailableSkills, "6, 2, center, default");
 		

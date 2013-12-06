@@ -31,6 +31,8 @@ import models.queries.SkillQueries;
 import javax.swing.border.TitledBorder;
 
 import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 @SuppressWarnings("serial")
 public class PersonCloselyQualifiedPanel extends JPanel {
@@ -64,6 +66,9 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private JPanel panel_2;
 	private JPanel panel_3;
 	private JPanel panel_4;
+	private JPanel panel_5;
+	private JPanel panel_6;
+	private JPanel panel_7;
 	
 	public PersonCloselyQualifiedPanel(Connection connection) {
 		this.connection = connection;
@@ -90,13 +95,49 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		cbJobs = new JComboBox<Job>();
 		cbJobs.addActionListener(cbController);
 		cbJobsModel = new DefaultComboBoxModel<Job>();
+		setLayout(new BorderLayout(0, 0));
+		add(cbJobs, BorderLayout.NORTH);
 		
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		add(cbJobs);
+		panel_5 = new JPanel();
+		add(panel_5, BorderLayout.CENTER);
+		panel_5.setLayout(new GridLayout(0, 2, 0, 0));
+		
+		panel_6 = new JPanel();
+		panel_5.add(panel_6);
+		panel_6.setLayout(new BoxLayout(panel_6, BoxLayout.Y_AXIS));
+		
+		panel_4 = new JPanel();
+		panel_6.add(panel_4);
+		panel_4.setBorder(new TitledBorder(null, "Missing Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
+		
+		taMissingCertificates = new JTextArea();
+		panel_4.add(taMissingCertificates);
+		taMissingCertificates.setEditable(false);
+		
+		panel_3 = new JPanel();
+		panel_6.add(panel_3);
+		panel_3.setBorder(new TitledBorder(null, "Exams for Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
+		taExamsForCertificates = new JTextArea();
+		panel_3.add(taExamsForCertificates);
+		taExamsForCertificates.setEditable(false);
+		
+		panel_2 = new JPanel();
+		panel_6.add(panel_2);
+		panel_2.setBorder(new TitledBorder(null, "Courses for Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
+		taCoursesForCertificates = new JTextArea();
+		panel_2.add(taCoursesForCertificates);
+		taCoursesForCertificates.setEditable(false);
+		
+		panel_7 = new JPanel();
+		panel_5.add(panel_7);
+		panel_7.setLayout(new BoxLayout(panel_7, BoxLayout.Y_AXIS));
 		
 		panel = new JPanel();
+		panel_7.add(panel);
 		panel.setBorder(new TitledBorder(null, "Missing Skills", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panel);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		
 		taMissingSkills = new JTextArea();
@@ -105,38 +146,13 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		taMissingSkills.setEditable(false);
 		
 		panel_1 = new JPanel();
+		panel_7.add(panel_1);
 		panel_1.setBorder(new TitledBorder(null, "Courses To Gain Skills", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panel_1);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 		taCoursesForSkills = new JTextArea();
 		taCoursesForSkills.setEnabled(false);
 		panel_1.add(taCoursesForSkills);
 		taCoursesForSkills.setEditable(false);
-		
-		panel_4 = new JPanel();
-		panel_4.setBorder(new TitledBorder(null, "Missing Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panel_4);
-		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
-		
-		taMissingCertificates = new JTextArea();
-		panel_4.add(taMissingCertificates);
-		taMissingCertificates.setEditable(false);
-		
-		panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(null, "Courses for Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panel_2);
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
-		taCoursesForCertificates = new JTextArea();
-		panel_2.add(taCoursesForCertificates);
-		taCoursesForCertificates.setEditable(false);
-		
-		panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(null, "Exams for Certificates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panel_3);
-		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
-		taExamsForCertificates = new JTextArea();
-		panel_3.add(taExamsForCertificates);
-		taExamsForCertificates.setEditable(false);
 	}
 	
 	private void clearJobs() {
@@ -212,6 +228,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private void displayMissingCertificates() {
 		if (this.job != null && this.person != null) {
 			generateMissingCertificatesList();
+			System.out.println(listMissingCertificates);
 		}
 		StringBuilder sb = new StringBuilder();
 		for (Certificate certificate : listMissingCertificates) {
@@ -269,7 +286,7 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private void generateJobList() {
 		String personCode = person.getPersonCode();
 		try {
-			listJobs = jobQueries.getJobsNotQualifiedForByPerson(personCode);
+			listJobs = jobQueries.getAvailableJobsNotQualifiedForByPerson(personCode);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -180,9 +180,11 @@ public class SkillQueries {
 			"     (SELECT skill_code " +
 			"      FROM person_skill " +
 			"      WHERE person_code = ?), " +
-			"	missing_skills as (SELECT * FROM skills_person MINUS " +
-            "       			   SELECT * FROM skills_job MINUS " +
-            "        			   SELECT * FROM skills_job_profile) " +
+			"	missing_skills as ( (SELECT * FROM skills_job " +
+			"                        INTERSECT" +
+			"                         SELECT * FROM skills_job_profile ) " +
+            "       			     MINUS " +
+            "        			     SELECT * FROM skills_person ) " +
 			" SELECT * " +
 			" FROM skill NATURAL JOIN missing_skills "
 		);

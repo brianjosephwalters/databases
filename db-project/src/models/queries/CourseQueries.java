@@ -237,7 +237,7 @@ public class CourseQueries {
 				results.getString("course_code"),
 				results.getString("course_title"),
 				results.getString("course_description"),
-				results.getString("level"),
+				results.getString("course_level"),
 				results.getString("status"),
 				results.getDouble("retail_price"))
 			);

@@ -104,7 +104,16 @@ public class JobQueries {
 			throws SQLException {
 		List<Job> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
-			" WITH job_profiles_qualified as ( " +
+			" WITH " +
+			" person_skills as" +
+			"   (SELECT skill_code " +
+			"    FROM person_skill " +
+			"    WHERE person_code = ?), " +
+			" person_certificates as" +
+			"   (SELECT certificate_code" +
+			"    FROM earns " +
+			"    WHERE person_code = ?), " +
+			" job_profiles_qualified as ( " +
 			"   SELECT job_profile_code " +
 			"   FROM job_profile JP " +
 			"   WHERE NOT EXISTS ( " +
@@ -112,43 +121,33 @@ public class JobQueries {
 			"          FROM job_profile_skill " +
 			"          WHERE JP.job_profile_code = job_profile_code) " +
 			"        MINUS " +
-			"         (SELECT skill_code " +
-			"          FROM person NATURAL JOIN person_skill " +
-			"          WHERE person_code = ?) ) " +
+			"         (SELECT * FROM person_skills) )" +
 			"       AND  " +
 			"       NOT EXISTS ( " +
 			"         (SELECT certificate_code " +
 			"          FROM job_profile_certificate " +
 			"          WHERE JP.job_profile_code = job_profile_code) " +
 			"         MINUS " +
-			"         (SELECT skill_code " +
-			"          FROM person NATURAL JOIN person_skill " +
-			"          WHERE person_code = ?) ) ) " +
+			"         (SELECT certificate_code FROM person_certificates) ) ) " +
 			" SELECT * " +
 			" FROM job_profiles_qualified NATURAL JOIN job J " + 
 			"      NATURAL JOIN job_profile NATURAL JOIN company" +
-			" WHERE NOT EXISTS ( " +
+			"      WHERE NOT EXISTS ( " +
 			"       (SELECT skill_code " +
 			"        FROM job_skill " +
 			"        WHERE J.job_code = job_code) " +
 			"       MINUS " +
-			"       (SELECT skill_code " +
-			"        FROM person NATURAL JOIN person_skill " +
-			"        WHERE person_code = ?) ) " +
+			"       (SELECT * FROM person_skills) ) " +
 			"      AND  " +
 			"       NOT EXISTS ( " +
 			"       (SELECT certificate_code " +
 			"        FROM job_certificate " +
 			"        WHERE J.job_code = job_code) " +
 			"       MINUS " +
-			"       (SELECT skill_code " +
-			"        FROM person NATURAL JOIN person_skill " +
-			"        WHERE person_code = ?) )	"
+			"       (SELECT * FROM person_certificates) )	"
 		);
 		stmt.setString(1, personCode);
 		stmt.setString(2, personCode);
-		stmt.setString(3, personCode);
-		stmt.setString(4, personCode);
 		list = getListOfJobs(stmt);
 		return list;
 	}
@@ -172,6 +171,14 @@ public class JobQueries {
 			"	 FROM employment NATURAL JOIN job" +
 			"    WHERE closing_date is null OR " +
             "          closing_date > current_date), " +
+			" person_skills as" +
+			"   (SELECT skill_code " +
+			"    FROM person_skill " +
+			"    WHERE person_code = ?), " +
+			" person_certificates as" +
+			"   (SELECT certificate_code" +
+			"    FROM earns " +
+			"    WHERE person_code = ?), " +
             " job_profiles_qualified as ( " +
 			"   SELECT job_profile_code " +
 			"   FROM job_profile JP " +
@@ -180,18 +187,14 @@ public class JobQueries {
 			"          FROM job_profile_skill " +
 			"          WHERE JP.job_profile_code = job_profile_code) " +
 			"        MINUS " +
-			"         (SELECT skill_code " +
-			"          FROM person NATURAL JOIN person_skill " +
-			"          WHERE person_code = ?) ) " +
+			"         (SELECT * FROM person_skills) ) " +
 			"       AND  " +
 			"       NOT EXISTS ( " +
 			"         (SELECT certificate_code " +
 			"          FROM job_profile_certificate " +
 			"          WHERE JP.job_profile_code = job_profile_code) " +
 			"         MINUS " +
-			"         (SELECT skill_code " +
-			"          FROM person NATURAL JOIN person_skill " +
-			"          WHERE person_code = ?) ) ) " +
+			"         (SELECT * FROM person_certificates) ) ) " +
 			" SELECT * " +
 			" FROM job_profiles_qualified NATURAL JOIN available_jobs J " + 
 			"      NATURAL JOIN job_profile NATURAL JOIN company " +
@@ -200,28 +203,22 @@ public class JobQueries {
 			"        FROM job_skill " +
 			"        WHERE J.job_code = job_code) " +
 			"       MINUS " +
-			"       (SELECT skill_code " +
-			"        FROM person NATURAL JOIN person_skill " +
-			"        WHERE person_code = ?) ) " +
+			"       (SELECT * FROM person_skills) ) " +
 			"      AND  " +
 			"       NOT EXISTS ( " +
 			"       (SELECT certificate_code " +
 			"        FROM job_certificate " +
 			"        WHERE J.job_code = job_code) " +
 			"       MINUS " +
-			"       (SELECT skill_code " +
-			"        FROM person NATURAL JOIN person_skill " +
-			"        WHERE person_code = ?) )	"
+			"       (SELECT * FROM person_certificates) )	"
 		);
 		stmt.setString(1, personCode);
 		stmt.setString(2, personCode);
-		stmt.setString(3, personCode);
-		stmt.setString(4, personCode);
 		list = getListOfJobs(stmt);
 		return list;
 	}
 	
-	public List<Job> getJobsNotQualifiedForByPerson(String personCode) 
+	public List<Job> getAvailableJobsNotQualifiedForByPerson(String personCode) 
 			throws SQLException {
 		List<Job> list = null;
 		PreparedStatement stmt = connection.prepareStatement(
