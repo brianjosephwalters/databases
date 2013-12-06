@@ -150,6 +150,44 @@ public class CourseQueries {
 		return list;
 	}
 	
+	/**
+	 * Get courses that fullfill missing skills.
+	 */
+	public List<Course> getCoursesForMissingSkills(String jobProfileCode) 
+			throws SQLException {
+		List<Course> list = null;
+		PreparedStatement stmt = connection.prepareStatement(
+			" WITH " +
+		    "   skills_job as " + 
+			"     (SELECT skill_code " +
+			"      FROM job_skill " +
+			"      WHERE job_code = ?), " +
+			"   skills_job_profile as " +
+			"     (SELECT skill_code " +
+			"      FROM job_profile_skill NATURAL JOIN job " +
+			"      WHERE job_code = ?), " +
+			"   skills_person as " +
+			"     (SELECT skill_code " +
+			"      FROM person_skill " +
+			"      WHERE person_code = ?), " +
+			"	missing_skills as ( (SELECT * FROM skills_job " +
+			"                        INTERSECT" +
+			"                         SELECT * FROM skills_job_profile ) " +
+            "       			     MINUS " +
+            "        			     SELECT * FROM skills_person )" +
+			" SELECT *" +
+			" FROM (SELECT DISTINCT course_code " +
+			"       FROM course_skill NATURAL JOIN missing_skills) " +
+			"      NATURAL JOIN course"
+		);
+		stmt.setString(1,  jobProfileCode);
+		stmt.setString(2,  jobProfileCode);
+		stmt.setString(3,  jobProfileCode);		
+		list = getListOfCourses(stmt);
+		
+		return list;
+	}
+	
 	public List<Course> getCoursesRequiredForCertificateForJob(String personCode,
 															   String jobCode,
 															   String jobProfileCode)
@@ -236,7 +274,7 @@ public class CourseQueries {
 			list.add( new Course(
 				results.getString("course_code"),
 				results.getString("course_title"),
-				results.getString("course_description"),
+				results.getClob("course_description").toString(),
 				results.getString("course_level"),
 				results.getString("status"),
 				results.getDouble("retail_price"))

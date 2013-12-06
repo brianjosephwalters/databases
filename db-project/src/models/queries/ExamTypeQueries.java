@@ -60,9 +60,11 @@ public class ExamTypeQueries {
 			"      FROM earns " +
 			"      WHERE person_code = ?) " +
 			" SELECT * " + 
-			" FROM certificate NATURAL JOIN (SELECT * FROM person_certificates MINUS " +
-			"                                SELECT * FROM job_certificates MINUS " +
-			"                                SELECT * FROM job_profile_certificates)" +
+			" FROM certificate NATURAL JOIN ( (SELECT * FROM job_profile_certificates " +
+			"                                 INTERSECT " +
+			"                                  SELECT * FROM job_certificates) " +
+			"                                MINUS " +
+			"                                 SELECT * FROM person_certificates)" +
 			"      NATURAL JOIN exam_type "
 		);
 		stmt.setString(1, jobCode);

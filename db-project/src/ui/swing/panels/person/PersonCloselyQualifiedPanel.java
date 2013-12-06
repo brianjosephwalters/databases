@@ -180,7 +180,6 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 		String personCode = person.getPersonCode();
 		String jobCode = job.getJobCode();
 		String jobProfileCode = job.getJobProfileCode();
-		
 		try {
 			
 			this.listMissingSkills = skillQueries.getSkillsMissingFromPersonForJob(personCode, jobCode, jobProfileCode);
@@ -201,10 +200,13 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	}
 	
 	private void generateCoursesForSkillsList() {
-		String personCode = person.getPersonCode();
-		String jobCode = job.getJobCode();
 		String jobProfileCode = job.getJobProfileCode();
-		
+		try {
+			
+			this.listCoursesForSkills = courseQueries.getCoursesForMissingSkills(jobProfileCode);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void displayCoursesForSkills() {
@@ -228,7 +230,6 @@ public class PersonCloselyQualifiedPanel extends JPanel {
 	private void displayMissingCertificates() {
 		if (this.job != null && this.person != null) {
 			generateMissingCertificatesList();
-			System.out.println(listMissingCertificates);
 		}
 		StringBuilder sb = new StringBuilder();
 		for (Certificate certificate : listMissingCertificates) {
