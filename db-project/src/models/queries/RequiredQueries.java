@@ -438,22 +438,159 @@ public class RequiredQueries {
 	}
 	//***************
 	//12. Find the cheapest way to make up one’s skill gap by showing the courses to take. 
-	public ResultSet getCheapestCourseSetForGap(String person_code, String job_code)
+	public ResultSet getCheapestCourseSetForGap(String jobProfileCode)
 			throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement(""
-			);
-		stmt.setString(1, job_code);
+		PreparedStatement stmt = conn.prepareStatement(
+				"WITH  " + 
+				"required_skills as ( " + 
+				"    SELECT skill_code FROM job_profile_skill WHERE job_profile_code = ? ),  " + 
+				"available_courses as (  " + 
+				"    SELECT UNIQUE course_code " + 
+				"    FROM course_skill NATURAL JOIN course NATURAL JOIN section " + 
+				"    WHERE status = 'active' AND " + 
+				"          to_date(year, 'yyyy') >= current_date ), " + 
+				"course_sets as ( " + 
+				"    (SELECT course_code as A, null as B, null as C " + 
+				"     FROM available_courses) " + 
+				"    UNION " + 
+				"    (SELECT A.course_code as A, B.course_code as B, null as C " + 
+				"     FROM available_courses A, available_courses B " + 
+				"     WHERE a.course_code < b.course_code ) " + 
+				"    UNION " + 
+				"    (SELECT A.course_code as A, B.course_code as B, C.course_code as C " + 
+				"     FROM available_courses A, available_courses B, available_courses C " + 
+				"     WHERE A.course_code < B.course_code AND " + 
+				"           B.course_code < C.course_code ) ), " + 
+				"course_set_skills as ( " + 
+				"    SELECT A, B, C, skill_code " + 
+				"    FROM course_sets, course_skill " + 
+				"    WHERE course_sets.A = course_skill.course_code OR " + 
+				"        course_sets.B = course_skill.course_code OR " + 
+				"        course_sets.C = course_skill.course_code), " + 
+				"satisfying_sets as ( " + 
+				"    SELECT *  " + 
+				"    FROM ( " + 
+				"        (SELECT A, B, C from course_set_skills) " + 
+				"        MINUS " + 
+				"        (SELECT A, B, C " + 
+				"         FROM (SELECT A, B, C, skill_code " + 
+				"               FROM (SELECT A, B, C " + 
+				"                     FROM course_set_skills), (SELECT * FROM required_skills) " + 
+				"               MINUS " + 
+				"               SELECT A, B, C, skill_code " + 
+				"               FROM course_set_skills) ) ) " + 
+				"    WHERE EXISTS (SELECT * FROM required_skills) ), " + 
+				"satisfying_sets_course as ( " + 
+				"    SELECT A, B, C, A as course_code " + 
+				"    FROM satisfying_sets  " + 
+				"   UNION " + 
+				"    SELECT A, B, C, B as course_code " + 
+				"    FROM satisfying_sets  " + 
+				"   UNION " + 
+				"    SELECT A, B, C, C as course_code " + 
+				"    FROM satisfying_sets ), " + 
+				"satisfying_sets_cost as ( " + 
+				"    SELECT A, B, C, SUM(retail_price) as cost " + 
+				"    FROM satisfying_sets_course NATURAL JOIN course " + 
+				"    GROUP BY A, B, C ) " + 
+				"SELECT A, B, C, cost " + 
+				"FROM satisfying_sets_cost " + 
+				"WHERE cost = (SELECT min(cost) " + 
+				"              FROM satisfying_sets_cost) ",
+				ResultSet.TYPE_SCROLL_SENSITIVE,
+	            ResultSet.CONCUR_UPDATABLE
+		);
+		stmt.setString(1, jobProfileCode);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
 	
 	//13. Find the “shortest” way to make up one’s skill gap by 
 	//    taking minimum number of courses. (Show the courses to take.) 
-	public ResultSet getShortestCourseSetForGap(String person_code, String job_code)
+	public ResultSet getShortestCourseSetForGap(String jobProfileCode)
 			throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement(""
-			);
-		stmt.setString(1, job_code);
+		PreparedStatement stmt = conn.prepareStatement(
+			"WITH  " + 
+			"required_skills as ( " + 
+			"    SELECT skill_code from job_profile_skill WHERE job_profile_code = ?),  " + 
+			"available_courses as (  " + 
+			"    SELECT UNIQUE course_code " + 
+			"    FROM course_skill NATURAL JOIN course NATURAL JOIN section " + 
+			"    WHERE status = 'active' AND " + 
+			"        to_date(year, 'yyyy') >= current_date ), " + 
+			"course_sets as ( " + 
+			"    (SELECT course_code as A, null as B, null as C " + 
+			"     FROM available_courses) " + 
+			"    UNION " + 
+			"    (SELECT A.course_code as A, B.course_code as B, null as C " + 
+			"     FROM available_courses A, available_courses B " + 
+			"     WHERE a.course_code < b.course_code ) " + 
+			"    UNION " + 
+			"    (SELECT A.course_code as A, B.course_code as B, C.course_code as C " + 
+			"     FROM available_courses A, available_courses B, available_courses C " + 
+			"     WHERE A.course_code < B.course_code AND " + 
+			"           B.course_code < C.course_code ) ), " + 
+			"course_set_skills as ( " + 
+			"    SELECT A, B, C, skill_code " + 
+			"    FROM course_sets, course_skill " + 
+			"    WHERE course_sets.A = course_skill.course_code OR " + 
+			"        course_sets.B = course_skill.course_code OR " + 
+			"        course_sets.C = course_skill.course_code), " + 
+			"satisfying_sets as ( " + 
+			"    SELECT *  " + 
+			"    FROM ( " + 
+			"        (SELECT A, B, C from course_set_skills) " + 
+			"        MINUS " + 
+			"        (SELECT A, B, C " + 
+			"         FROM (SELECT A, B, C, skill_code " + 
+			"               FROM (SELECT A, B, C " + 
+			"                     FROM course_set_skills), (SELECT * FROM required_skills) " + 
+			"              MINUS " + 
+			"               SELECT A, B, C, skill_code " + 
+			"               FROM course_set_skills) ) ) " + 
+			"    WHERE EXISTS (SELECT * FROM required_skills) ), " + 
+			"sets_count as ( " + 
+			"    SELECT A, B, C, CASE " + 
+			"      WHEN B is null THEN 1 " + 
+			"      WHEN C is null THEN 2 " + 
+			"      ELSE 3 " + 
+			"    END as num_courses " + 
+			"FROM satisfying_sets ), " + 
+			"min_sets as ( " + 
+			"    SELECT A, B, C, num_courses " + 
+			"    FROM sets_count  " + 
+			"    WHERE num_courses = (SELECT min(num_courses) FROM sets_count)), " + 
+			"satisfying_sets_course as ( " + 
+			"    SELECT A, B, C, A as course_code " + 
+			"    FROM min_sets  " + 
+			"   UNION " + 
+			"    SELECT A, B, C, B as course_code " + 
+			"    FROM min_sets  " + 
+			"   UNION " + 
+			"    SELECT A, B, C, C as course_code " + 
+			"    FROM min_sets ), " + 
+			"satisfying_sets_sections as ( " + 
+			"    SELECT A, B, C, course_code, section_code, year " + 
+			"    FROM (satisfying_sets_course NATURAL JOIN course) NATURAL JOIN section " + 
+			"    WHERE status = 'active' AND " + 
+			"          to_date(year, 'yyyy') >= current_date ), " + 
+			"satisfying_sets_soonest as (  " + 
+			"    SELECT A, B, C, course_code, min(year) as soonest " + 
+			"    FROM satisfying_sets_sections " + 
+			"    GROUP BY A, B, C, course_code ), " + 
+			"satisfying_set_last_complete as ( " + 
+			"    SELECT A, B, C, max(soonest) as last_complete " + 
+			"    FROM satisfying_sets_soonest " + 
+			"    GROUP BY A, B, C ) " + 
+			"SELECT A, B, C, last_complete " + 
+			"FROM satisfying_set_last_complete " + 
+			"WHERE last_complete = (  " + 
+			"        SELECT min(last_complete) " + 
+			"        FROM satisfying_set_last_complete) ",
+			ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_UPDATABLE
+		);
+		stmt.setString(1, jobProfileCode);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
@@ -501,50 +638,50 @@ public class RequiredQueries {
 	public ResultSet getJobsQualifiedFor(String personCode)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"  WITH " + 
-			" certificate_codes as ( " + 
-			"   SELECT certificate_code " + 
-			"   FROM earns " + 
-			"   WHERE person_code = ?), " + 
-			" skill_codes as ( " + 
-			"   SELECT skill_code " + 
-			"   FROM person NATURAL JOIN person_skill " + 
-			"  WHERE person_code = ?), " + 
-			" job_profiles_qualified as ( " + 
-			"   SELECT job_profile_code, job_profile_title " + 
-			"   FROM job_profile JP " + 
-			"   WHERE NOT EXISTS ( " + 
-			"     	SELECT skill_code " + 
-			"      	FROM job_profile_skill " + 
-			"      	WHERE JP.job_profile_code = job_profile_code " + 
-			"     	MINUS " + 
-			"     	SELECT * " + 
-			"     	FROM skill_codes ) " + 
-			"   	AND " + 
-			"   	NOT EXISTS ( " + 
-			"     	SELECT certificate_code " + 
-			"      	FROM job_profile_certificate " + 
-			"      	WHERE JP.job_profile_code = job_profile_code " + 
-			"    	MINUS " + 
-			"     	SELECT * " + 
-			"      	FROM certificate_codes )) " + 
-			" SELECT job_code , job_profile_title " + 
-			" FROM job_profiles_qualified NATURAL JOIN job J " + 
-			" WHERE NOT EXISTS ( " + 
-			"   	(SELECT skill_code " + 
-			"    	FROM job_skill " + 
-			"    	WHERE J.job_code = job_code) " + 
-			"   	MINUS " + 
-			"   	SELECT * " + 
-			"    	FROM skill_codes ) " + 
-			"   	AND " + 
-			"   	NOT EXISTS ( " + 
-			"   	SELECT certificate_code " + 
-			"    	FROM job_certificate " + 
-			"    	WHERE J.job_code = job_code " + 
-			"   	MINUS " + 
-			"   	SELECT * " + 
-			"    	FROM certificate_codes )",
+			"WITH " + 
+			"person_skills as ( " + 
+			"    SELECT skill_code " + 
+			"    FROM person NATURAL JOIN person_skill " + 
+			"    WHERE person_code = ?), " + 
+			"person_certificates as ( " + 
+			"    SELECT certificate_code " + 
+			"    FROM earns " + 
+			"    WHERE person_code = ?), " + 
+			"job_profiles_qualified as ( " + 
+			"    SELECT job_profile_code, job_profile_title " + 
+			"    FROM job_profile JP " + 
+			"    WHERE NOT EXISTS ( " + 
+			"            SELECT skill_code " + 
+			"            FROM job_profile_skill " + 
+			"            WHERE JP.job_profile_code = job_profile_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_skills ) " + 
+			"    AND " + 
+			"    NOT EXISTS ( " + 
+			"            SELECT certificate_code " + 
+			"            FROM job_profile_certificate " + 
+			"            WHERE JP.job_profile_code = job_profile_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_certificates ) ) " + 
+			"SELECT job_code , job_profile_title " + 
+			"FROM job_profiles_qualified NATURAL JOIN job J " + 
+			"WHERE NOT EXISTS (  " + 
+			"        SELECT skill_code " + 
+			"        FROM job_skill " + 
+			"        WHERE J.job_code = job_code " + 
+			"       MINUS " + 
+			"        SELECT * " + 
+			"        FROM person_skills ) " + 
+			"    AND " + 
+			"    NOT EXISTS (  " + 
+			"        SELECT certificate_code " + 
+			"        FROM job_certificate " + 
+			"        WHERE J.job_code = job_code " + 
+			"       MINUS " + 
+			"        SELECT * " + 
+			"        FROM person_certificates )",
 			ResultSet.TYPE_SCROLL_SENSITIVE,
             ResultSet.CONCUR_UPDATABLE
 		);
@@ -559,59 +696,64 @@ public class RequiredQueries {
 	public ResultSet getHighestPayingJobEverGivenSkills(String personCode)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			"  WITH " + 
-			" skill_codes as ( " + 
-			"   SELECT skill_code " + 
-			"   FROM person NATURAL JOIN person_skill " + 
-			"   WHERE person_code = ?), " + 
-			" person_certificates as ( " + 
-			"   SELECT certificate_code " + 
-			"   FROM earns " + 
-			"   WHERE person_code = ?), " + 
-			" job_profiles_qualified as ( " + 
-			"   SELECT job_profile_code " + 
-			"   FROM job_profile JP " + 
-			"   WHERE NOT EXISTS ( " + 
-			"     	(SELECT skill_code " + 
-			"      	FROM job_profile_skill " + 
-			"      	WHERE JP.job_profile_code = job_profile_code) " + 
-			"     	MINUS " + 
-			"     	SELECT * " + 
-			"      	FROM skill_codes) " + 
-			"   	AND " + 
-			"   	NOT EXISTS ( " + 
-			"     	(SELECT certificate_code " + 
-			"      	FROM job_profile_certificate " + 
-			"      	WHERE JP.job_profile_code = job_profile_code) " + 
-			"     	MINUS " + 
-			"     	SELECT * " + 
-			"      	FROM person_certificates) ), " + 
-			" jobs_qualified as ( " + 
-			"   SELECT job_code " + 
-			"   FROM job_profiles_qualified NATURAL JOIN job J " + 
-			"   WHERE NOT EXISTS ( " + 
-			"   	(SELECT skill_code " + 
-			"    	FROM job_skill " + 
-			"    	WHERE J.job_code = job_code) " + 
-			"   	MINUS " + 
-			"   	SELECT * " + 
-			"    	FROM skill_codes ) " + 
-			"   	AND " + 
-			"   	NOT EXISTS ( " + 
-			"   	(SELECT certificate_code " + 
-			"    	FROM job_certificate " + 
-			"    	WHERE J.job_code = job_code) " + 
-			"   	MINUS " + 
-			"   	SELECT * " + 
-			"    	FROM person_certificates ) ) " + 
-			" SELECT job_code, MAX(CASE " + 
-			"         	WHEN pay_type = 'salary' THEN pay_rate " + 
-			"         	WHEN pay_type = 'wage' THEN pay_rate * 1920 " + 
-			"         	ELSE NULL " + 
-			"        	END) as max_pay " + 
-			" FROM job NATURAL JOIN jobs_qualified " + 
-			" GROUP BY job_code " + 
-			" ",
+			"WITH " + 
+			"person_skills as ( " + 
+			"    SELECT skill_code " + 
+			"    FROM person NATURAL JOIN person_skill " + 
+			"    WHERE person_code  =?), " + 
+			"person_certificates as ( " + 
+			"    SELECT certificate_code " + 
+			"    FROM earns " + 
+			"    WHERE person_code = ?), " + 
+			"job_profiles_qualified as ( " + 
+			"    SELECT job_profile_code " + 
+			"    FROM job_profile JP " + 
+			"    WHERE NOT EXISTS (  " + 
+			"            SELECT skill_code " + 
+			"            FROM job_profile_skill " + 
+			"            WHERE JP.job_profile_code = job_profile_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_skills ) " + 
+			"    AND " + 
+			"    NOT EXISTS (  " + 
+			"            SELECT certificate_code " + 
+			"            FROM job_profile_certificate " + 
+			"            WHERE JP.job_profile_code = job_profile_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_certificates ) ), " + 
+			"jobs_qualified as ( " + 
+			"    SELECT job_code " + 
+			"    FROM job_profiles_qualified NATURAL JOIN job J " + 
+			"    WHERE NOT EXISTS (  " + 
+			"            SELECT skill_code " + 
+			"            FROM job_skill " + 
+			"            WHERE J.job_code = job_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_skills ) " + 
+			"    AND " + 
+			"    NOT EXISTS ( " + 
+			"            SELECT certificate_code " + 
+			"            FROM job_certificate " + 
+			"            WHERE J.job_code = job_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_certificates ) ), " + 
+			"best_paying_job as ( " + 
+			"    SELECT job_code, MAX(CASE " + 
+			"                           WHEN pay_type = 'salary' THEN pay_rate " + 
+			"                           WHEN pay_type = 'wage' THEN pay_rate * 1920 " + 
+			"                           ELSE NULL " + 
+			"                         END) as max_pay " + 
+			"    FROM job NATURAL JOIN jobs_qualified " + 
+			"    GROUP BY job_code ) " + 
+			" " + 
+			"SELECT job_code, max_pay " + 
+			"FROM best_paying_job " + 
+			"WHERE max_pay = (SELECT max(max_pay)  " + 
+			"                 FROM best_paying_job) ",
 			ResultSet.TYPE_SCROLL_SENSITIVE,
             ResultSet.CONCUR_UPDATABLE
 		);
@@ -620,78 +762,81 @@ public class RequiredQueries {
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
-	//15.a
+	//15.b
 	public ResultSet getHighestPayingJobAvailableGivenSkills(String personCode)
 			throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement(
-			"  WITH " + 
-			" skill_codes as ( " + 
-			"   SELECT skill_code " + 
-			"   FROM person NATURAL JOIN person_skill " + 
-			"   WHERE person_code = ?), " + 
-			" person_certificates as ( " + 
-			"   SELECT certificate_code " + 
-			"   FROM earns " + 
-			"   WHERE person_code = ?), " + 
-			" job_profiles_qualified as ( " + 
-			"   SELECT job_profile_code " + 
-			"   FROM job_profile JP " + 
-			"   WHERE NOT EXISTS ( " + 
-			"     	(SELECT skill_code " + 
-			"      	FROM job_profile_skill " + 
-			"      	WHERE JP.job_profile_code = job_profile_code) " + 
-			"     	MINUS " + 
-			"     	SELECT * " + 
-			"      	FROM skill_codes) " + 
-			"   	AND " + 
-			"   	NOT EXISTS ( " + 
-			"     	(SELECT certificate_code " + 
-			"      	FROM job_profile_certificate " + 
-			"      	WHERE JP.job_profile_code = job_profile_code) " + 
-			"     	MINUS " + 
-			"     	SELECT * " + 
-			"     	FROM person_certificates) ), " + 
-			" jobs_qualified as ( " + 
-			"   SELECT job_code " + 
-			"   FROM job_profiles_qualified NATURAL JOIN job J " + 
-			"   WHERE NOT EXISTS ( " + 
-			"   	(SELECT skill_code " + 
-			"    	FROM job_skill " + 
-			"    	WHERE J.job_code = job_code) " + 
-			"   	MINUS " + 
-			"   	SELECT * " + 
-			"    	FROM skill_codes ) " + 
-			"   	AND " + 
-			"   	NOT EXISTS ( " + 
-			"   	(SELECT certificate_code " + 
-			"    	FROM job_certificate " + 
-			"    	WHERE J.job_code = job_code) " + 
-			"   	MINUS " + 
-			"   	SELECT * " + 
-			"    	FROM person_certificates ) ), " + 
-			" available_jobs as " + 
-			"	(SELECT job_code, job_profile_code, company_code, " + 
-			"           	job_type, pay_rate, pay_type, " + 
-			"     	opening_date, closing_date " + 
-			"   	FROM job " + 
-			"   	WHERE opening_date < current_date AND " + 
-			"      	(closing_date > current_date OR " + 
-			"         	closing_date is null) " + 
-			"   	MINUS " + 
-			"	SELECT job_code, job_profile_code, company_code, " + 
-			"     	job_type, pay_rate, pay_type, " + 
-			"     	opening_date, closing_date " + 
-			"   	FROM employment NATURAL JOIN job " + 
-			"  	WHERE end_date is null OR " + 
-			"        	end_date > current_date) " + 
-			" SELECT job_code, MAX(CASE " + 
-			"         	WHEN pay_type = 'salary' THEN pay_rate " + 
-			"         	WHEN pay_type = 'wage' THEN pay_rate * 1920 " + 
-			"         	ELSE NULL " + 
-			"        	END) as max_pay " + 
-			" FROM job NATURAL JOIN jobs_qualified " + 
-			" GROUP BY job_code " + 
-			" ",
+		PreparedStatement stmt = conn.prepareStatement( 
+			" WITH " + 
+			"person_skills as ( " + 
+			"    SELECT skill_code " + 
+			"    FROM person NATURAL JOIN person_skill " + 
+			"    WHERE person_code = ?), " + 
+			"person_certificates as ( " + 
+			"    SELECT certificate_code " + 
+			"    FROM earns " + 
+			"    WHERE person_code = ?), " + 
+			"job_profiles_qualified as ( " + 
+			"    SELECT job_profile_code " + 
+			"    FROM job_profile JP " + 
+			"    WHERE NOT EXISTS ( " + 
+			"            SELECT skill_code " + 
+			"            FROM job_profile_skill " + 
+			"            WHERE JP.job_profile_code = job_profile_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_skills ) " + 
+			"      AND " + 
+			"      NOT EXISTS (  " + 
+			"            SELECT certificate_code " + 
+			"            FROM job_profile_certificate " + 
+			"            WHERE JP.job_profile_code = job_profile_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_certificates ) ), " + 
+			"jobs_qualified as ( " + 
+			"    SELECT job_code " + 
+			"    FROM job_profiles_qualified NATURAL JOIN job J " + 
+			"    WHERE NOT EXISTS ( " + 
+			"            SELECT skill_code " + 
+			"            FROM job_skill " + 
+			"            WHERE J.job_code = job_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_skills ) " + 
+			"        AND " + 
+			"        NOT EXISTS (  " + 
+			"            SELECT certificate_code " + 
+			"            FROM job_certificate " + 
+			"            WHERE J.job_code = job_code " + 
+			"           MINUS " + 
+			"            SELECT * " + 
+			"            FROM person_certificates ) ), " + 
+			"available_jobs as ( " + 
+			"    SELECT job_code, job_profile_code, company_code, " + 
+			"           job_type, pay_rate, pay_type, " + 
+			"           opening_date, closing_date " + 
+			"    FROM job " + 
+			"    WHERE opening_date < current_date AND " + 
+			"          (closing_date > current_date OR closing_date is null) " + 
+			"   MINUS " + 
+			"    SELECT job_code, job_profile_code, company_code, " + 
+			"           job_type, pay_rate, pay_type, " + 
+			"           opening_date, closing_date " + 
+			"    FROM employment NATURAL JOIN job " + 
+			"    WHERE end_date is null OR end_date > current_date), " + 
+			"best_paying_job as ( " + 
+			"    SELECT job_code, MAX(CASE " + 
+			"                           WHEN pay_type = 'salary' THEN pay_rate " + 
+			"                           WHEN pay_type = 'wage' THEN pay_rate * 1920 " + 
+			"                           ELSE NULL " + 
+			"                         END) as max_pay " + 
+			"    FROM available_jobs NATURAL JOIN jobs_qualified " + 
+			"    GROUP BY job_code ) " + 
+			"     " + 
+			"SELECT job_code, max_pay " + 
+			"FROM best_paying_job " + 
+			"WHERE max_pay = (SELECT max(max_pay)  " + 
+			"                 FROM best_paying_job)",
 			ResultSet.TYPE_SCROLL_SENSITIVE,
             ResultSet.CONCUR_UPDATABLE
 		);
@@ -706,29 +851,35 @@ public class RequiredQueries {
 	public ResultSet getAllQualifiedForJobProfile(String jobProfileCode)
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
-			" WITH required_skills as ( " +
-			" 	    SELECT skill_code " +
-			" 	    FROM job_profile_skill " +
-			"	    WHERE job_profile_code = ?) " +
-			"SELECT last_name, first_name, email " +
-			"FROM person P " +
-			"WHERE NOT EXISTS ( " +
-			"       SELECT * FROM required_skills " +
-			"		MINUS " +
-			"       SELECT skill_code " +
-			"       FROM person_skill " +
-			"       WHERE P.person_code = person_code) " +
-			"      AND " +
-			"      NOT EXISTS ( " +
-			"        SELECT * FROM required_skills " +
-			"        MINUS " +
-			"        (SELECT certificate_code " +
-			"        FROM earns " +
-			"        WHERE P.person_code = person_code) ) ",
+			" WITH  " + 
+			"required_skills as ( " + 
+			"    SELECT skill_code " + 
+			"    FROM job_profile_skill " + 
+			"    WHERE job_profile_code = ?), " + 
+			"required_certificates as ( " + 
+			"    SELECT certificate_code " + 
+			"    FROM job_profile_certificate " + 
+			"    WHERE job_profile_code = ?) " + 
+			"SELECT last_name, first_name, email " + 
+			"FROM person P " + 
+			"WHERE NOT EXISTS (  " + 
+			"         SELECT * FROM required_skills " + 
+			"        MINUS " + 
+			"         SELECT skill_code " + 
+			"         FROM person_skill " + 
+			"         WHERE P.person_code = person_code) " + 
+			"      AND " + 
+			"      NOT EXISTS (  " + 
+			"         SELECT * FROM required_certificates " + 
+			"        MINUS " + 
+			"         SELECT certificate_code " + 
+			"         FROM earns " + 
+			"         WHERE P.person_code = person_code )",
 			ResultSet.TYPE_SCROLL_SENSITIVE,
             ResultSet.CONCUR_UPDATABLE
 		);
 		stmt.setString(1, jobProfileCode);
+		stmt.setString(2, jobProfileCode);
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
@@ -740,28 +891,27 @@ public class RequiredQueries {
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
 			" WITH " + 
-			" skill_codes as ( " + 
-			"   SELECT skill_code " + 
-			"   FROM job_profile_skill " + 
-			"   WHERE job_profile_code = ?), " + 
-			" missing_skills (person_code, num_missing) as ( " + 
-			"   SELECT person_code, COUNT(skill_code) " + 
-			"   FROM person P, (SELECT * " + 
-			"             	FROM skill_codes) J " + 
-			" WHERE J.skill_code IN ( " + 
-			"    SELECT * " + 
-			"    FROM skill_codes " + 
-			"   MINUS " + 
+			"required_skills as ( " + 
 			"    SELECT skill_code " + 
-			"    FROM person_skill " + 
-			"    WHERE person_code = P.person_code ) " + 
-			" GROUP BY person_code ), " + 
-			" min_num_missing (min_missing) as ( " + 
-			"   SELECT min(num_missing) " + 
-			"   FROM missing_skills ) " + 
-			" SELECT person_code, num_missing " + 
-			" FROM missing_skills, min_num_missing " + 
-			" WHERE num_missing = min_num_missing.min_missing ",
+			"    FROM job_profile_skill " + 
+			"    WHERE job_profile_code = ?), " + 
+			"missing_skills (person_code, num_missing) as ( " + 
+			"    SELECT person_code, COUNT(skill_code) " + 
+			"    FROM person P, required_skills J " + 
+			"    WHERE J.skill_code IN (  " + 
+			"            SELECT * " + 
+			"            FROM required_skills " + 
+			"           MINUS " + 
+			"            SELECT skill_code " + 
+			"            FROM person_skill " + 
+			"            WHERE person_code = P.person_code ) " + 
+			"    GROUP BY person_code ), " + 
+			"min_num_missing (min_missing) as ( " + 
+			"    SELECT min(num_missing) " + 
+			"    FROM missing_skills ) " + 
+			"SELECT person_code, num_missing " + 
+			"FROM missing_skills, min_num_missing " + 
+			"WHERE num_missing = min_num_missing.min_missing",
 			ResultSet.TYPE_SCROLL_SENSITIVE,
             ResultSet.CONCUR_UPDATABLE
 			);
@@ -914,7 +1064,6 @@ public class RequiredQueries {
 			"	SELECT person_code, num_missing " + 
 			" 	FROM missing_skills " + 
 			"	WHERE num_missing <= ? ) " + 
-			"  " + 
 			" SELECT skill_code, COUNT(person_code) as num_people_lacking " + 
 			" FROM people_lacking_at_most_x P , (SELECT * " + 
 			"                                	FROM skill_codes) J " + 
@@ -934,4 +1083,144 @@ public class RequiredQueries {
 		ResultSet rset = stmt.executeQuery();
 		return rset;
 	}
+	
+//	--  22.  Find the job profiles that have the most openings due to lack of
+//	--       qualified workers.  If there are many open jobs of a job profile but 
+//	--       at the same time there are many jobless people, then this is not a job 
+//	--       profile that training can help fill up. What we want to find is such a 
+//	--       job profile that has the largest difference between the unfilled jobs 
+//	--       of this profile and the number of jobless people who are qualified for 
+//	--       this job profile.
+	public ResultSet getMaxDifferenceJobOffersPeopleQualified()
+			throws SQLException {
+		PreparedStatement stmt = conn.prepareStatement(
+			" WITH  " + 
+			" unemployed_people as ( " + 
+			"    SELECT person_code FROM person " + 
+			"   MINUS " + 
+			"    SELECT DISTINCT person_code " + 
+			"    FROM employment " + 
+			"    WHERE start_date < CURRENT_DATE AND " + 
+			"         (end_date > CURRENT_DATE OR end_date is NULL) ), " + 
+			" lacking_qualified as ( " + 
+			"    SELECT job_profile_code, num_unfilled, num_qualified,  " + 
+			"           (num_unfilled - num_qualified) as lack_qualified " + 
+			"    FROM  " + 
+			"        (SELECT job_profile_code, count(*) as num_unfilled " + 
+			"         FROM job NATURAL LEFT OUTER JOIN employment " + 
+			"         WHERE (closing_date > current_date or closing_date is null) AND " + 
+			"               (start_date > current_date or start_date is null) AND " + 
+			"               (end_date < current_date OR end_date is null) " + 
+			"         GROUP BY job_profile_code ) " + 
+			"    NATURAL JOIN " + 
+			"        (SELECT job_profile_code, count(*) as num_qualified " + 
+			"         FROM job_profile JP, person P " + 
+			"         WHERE NOT EXISTS ( " + 
+			"               SELECT skill_code " + 
+			"               FROM job_profile_skill " + 
+			"               WHERE job_profile_code = JP.job_profile_code " + 
+			"              MINUS " + 
+			"               SELECT skill_code " + 
+			"               FROM unemployed_people NATURAL JOIN person_skill " + 
+			"               WHERE person_code = P.person_code ) " + 
+			"        GROUP BY job_profile_code ) ), " + 
+			" max_lacking_qualified as ( " + 
+			"    SELECT max(lack_qualified) as max_lack_qualified " + 
+			"    FROM lacking_qualified ) " + 
+			"SELECT * " + 
+			"FROM lacking_qualified, max_lacking_qualified " + 
+			"WHERE lack_qualified = max_lacking_qualified.max_lack_qualified ",
+			ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_UPDATABLE
+		);
+		ResultSet rset = stmt.executeQuery();
+		return rset;
+	}
+
+//	-- 23.  Find the courses that can help people find a job by training people 
+//	--      toward the job profiles that have the most openings due to lack of 
+//	--      qualified workers.  
+	public ResultSet CoursesForJobsLackingQualifiedWorkers()
+			throws SQLException {
+		PreparedStatement stmt = conn.prepareStatement(
+			"WITH  " + 
+			"umemployed_people as ( " + 
+			"    SELECT person_code FROM person " + 
+			"   MINUS " + 
+			"    SELECT DISTINCT person_code " + 
+			"    FROM employment " + 
+			"    WHERE start_date < CURRENT_DATE AND " + 
+			"         (end_date > CURRENT_DATE OR end_date is NULL) ), " + 
+			"lacking_qualified as ( " + 
+			"    SELECT job_profile_code, num_unfilled, num_qualified,  " + 
+			"           (num_unfilled - num_qualified) as lack_qualified " + 
+			"    FROM  " + 
+			"        (SELECT job_profile_code, count(*) as num_unfilled " + 
+			"         FROM job NATURAL LEFT OUTER JOIN employment " + 
+			"         WHERE (closing_date > current_date or closing_date is null) AND " + 
+			"               (start_date > current_date or start_date is null) AND " + 
+			"               (end_date < current_date OR end_date is null) " + 
+			"         GROUP BY job_profile_code ) " + 
+			"    NATURAL JOIN " + 
+			"        (SELECT job_profile_code, count(*) as num_qualified " + 
+			"         FROM job_profile JP, person P " + 
+			"         WHERE NOT EXISTS ( " + 
+			"               SELECT skill_code " + 
+			"               FROM job_profile_skill " + 
+			"               WHERE job_profile_code = JP.job_profile_code " + 
+			"              MINUS " + 
+			"               SELECT skill_code " + 
+			"               FROM umemployed_people NATURAL JOIN person_skill " + 
+			"               WHERE person_code = P.person_code ) " + 
+			"        GROUP BY job_profile_code ) ), " + 
+			"max_lacking_qualified as ( " + 
+			"    SELECT max(lack_qualified) as max_lack_qualified " + 
+			"    FROM lacking_qualified ), " + 
+			"jobs_lacking_qualified as ( " + 
+			"    SELECT job_profile_code " + 
+			"    FROM lacking_qualified, max_lacking_qualified " + 
+			"    WHERE lack_qualified = max_lacking_qualified.max_lack_qualified ), " + 
+			"course_sets as ( " + 
+			"    (SELECT course_code as A, null as B, null as C " + 
+			"     FROM course_skill) " + 
+			"   UNION " + 
+			"    (SELECT A.course_code as A, B.course_code as B, null as C " + 
+			"     FROM course_skill A, course_skill B " + 
+			"     WHERE a.course_code < b.course_code) " + 
+			"   UNION " + 
+			"    (SELECT A.course_code as A, B.course_code as B, C.course_code as C " + 
+			"     FROM course_skill A, course_skill B, course_skill C " + 
+			"     WHERE a.course_code < b.course_code AND " + 
+			"           b.course_code < c.course_code ) ), " + 
+			"course_set_skills as ( " + 
+			"    SELECT A, B, C, skill_code " + 
+			"    FROM course_sets, course_skill " + 
+			"    WHERE course_sets.A = course_skill.course_code OR " + 
+			"          course_sets.B = course_skill.course_code OR " + 
+			"          course_sets.C = course_skill.course_code), " + 
+			"satisfying_sets as ( " + 
+			"  SELECT *  " + 
+			"  FROM ( " + 
+			"      (SELECT A, B, C, job_profile_code " + 
+			"       FROM course_set_skills, jobs_lacking_qualified) " + 
+			"      MINUS " + 
+			"      (SELECT A, B, C, job_profile_code " + 
+			"       FROM (   " + 
+			"               SELECT A, B, C, job_profile_code, skill_code " + 
+			"               FROM (SELECT A, B, C " + 
+			"                     FROM course_set_skills), " + 
+			"                    (SELECT job_profile_code, skill_code  " + 
+			"                     FROM jobs_lacking_qualified NATURAL JOIN job_profile_skill) " + 
+			"               MINUS " + 
+			"               SELECT A, B, C, job_profile_code, skill_code " + 
+			"               FROM course_set_skills, jobs_lacking_qualified) ) ) ) " + 
+			"SELECT *  " + 
+			"FROM satisfying_sets",
+			ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSet.CONCUR_UPDATABLE
+		);
+		ResultSet rset = stmt.executeQuery();
+		return rset;
+	}
+	
 }

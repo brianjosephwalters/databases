@@ -74,7 +74,7 @@ public class QueryApp extends JFrame {
 		menuBar.add(mnConnection);
 		mnConnection.setText(userName);
 		// Add Panels
-		setSize(900, 900);
+		setSize(900, 700);
 		contentPane.add(new QueriesMainPanel(connection));
 	}
 	

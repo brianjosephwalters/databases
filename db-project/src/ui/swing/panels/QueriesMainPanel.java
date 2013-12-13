@@ -295,12 +295,10 @@ public class QueriesMainPanel extends JPanel {
 		btnCheapestCoursesForMissingSkills = new JButton("12. Cheapest Courses For Missing Skill");
 		panel_7.add(btnCheapestCoursesForMissingSkills);
 		btnCheapestCoursesForMissingSkills.addActionListener(buttonController);
-		btnCheapestCoursesForMissingSkills.setEnabled(false);
 		
 		btnQuickestCoursesForMissingSkill = new JButton("13. Quickest Courses For Missing Skills");
 		panel_7.add(btnQuickestCoursesForMissingSkill);
 		btnQuickestCoursesForMissingSkill.addActionListener(buttonController);
-		btnQuickestCoursesForMissingSkill.setEnabled(false);
 		
 		jobprofileTab = new JPanel();
 		tabbedPane.addTab("Job Profile Queries", null, jobprofileTab, null);
@@ -371,11 +369,11 @@ public class QueriesMainPanel extends JPanel {
 		panel_10.setLayout(new GridLayout(2, 1, 0, 0));
 		
 		btnJobProfilesWithMostOpeningsPerQualifiedPerson = new JButton("22. Job Profiles With Most Openings Per Qualified People");
-		btnJobProfilesWithMostOpeningsPerQualifiedPerson.setEnabled(false);
+		btnJobProfilesWithMostOpeningsPerQualifiedPerson.addActionListener(buttonController);
 		panel_10.add(btnJobProfilesWithMostOpeningsPerQualifiedPerson);
 		
 		btnCoursesTrainingUnqualified = new JButton("23. Courses Training Unqualified People For Job Profiles \r\nWith The Most Openings");
-		btnCoursesTrainingUnqualified.setEnabled(false);
+		btnCoursesTrainingUnqualified.addActionListener(buttonController);
 		panel_10.add(btnCoursesTrainingUnqualified);
 		
 		tablePanel = new JPanel();
@@ -743,6 +741,18 @@ public class QueriesMainPanel extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+			}
+			// 10.
+			else if (event.getSource() == btnMinimumCoursesForSkillSet) {
+				Job job = (Job)cbJob.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getLeastCoursesToCoverJobSkills(job.getJobProfileCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Least Courses for Person to get Job");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			} 
 			// 11.
 			else if (event.getSource() == btnCoursesForMissingSkills) {
@@ -757,25 +767,29 @@ public class QueriesMainPanel extends JPanel {
 					e.printStackTrace();
 				}
 			} 
-			// 10.
-			else if (event.getSource() == btnMinimumCoursesForSkillSet) {
+			//12.
+			else if (event.getSource() == btnCheapestCoursesForMissingSkills) {
 				Job job = (Job)cbJob.getSelectedItem();
 				try {
 					ResultSet results = 
-						requiredQueries.getLeastCoursesToCoverJobSkills(job.getJobProfileCode());
+						requiredQueries.getCheapestCourseSetForGap(job.getJobProfileCode());
 					queryResultsPanel.setResultsSet(results);
-					queryResultsPanel.setLabel("Least Courses for Person to get Job");
+					queryResultsPanel.setLabel("Cheapest course set to get skills for a job.");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			} 
-			//12. Not finished
-			else if (event.getSource() == btnCheapestCoursesForMissingSkills) {
-				
-			} 
-			//13. Not finished
+			//13. 
 			else if (event.getSource() == btnQuickestCoursesForMissingSkill) {
-				
+				Job job = (Job)cbJob.getSelectedItem();
+				try {
+					ResultSet results = 
+						requiredQueries.getShortestCourseSetForGap(job.getJobProfileCode());
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Shortest course set to get skills for a job.");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			} 
 			// 20.
 			else if (event.getSource() == btnPeopleMissingK) {
@@ -810,9 +824,23 @@ public class QueriesMainPanel extends JPanel {
 					e.printStackTrace();
 				}
 			} else if (event.getSource() == btnJobProfilesWithMostOpeningsPerQualifiedPerson) {
-				// 22.  Not Yet Implemented
+				try {
+					ResultSet results = 
+						requiredQueries.getMaxDifferenceJobOffersPeopleQualified();
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("Jobs with the largest gap between available positions and qualified workers.");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			} else if (event.getSource() == btnCoursesTrainingUnqualified) {
-				// 23.  Not Yet Implemented.
+				try {
+					ResultSet results = 
+						requiredQueries.CoursesForJobsLackingQualifiedWorkers();
+					queryResultsPanel.setResultsSet(results);
+					queryResultsPanel.setLabel("The courses that can help get more people qualified for those jobs.");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
