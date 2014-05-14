@@ -1,0 +1,1288 @@
+--Insert Scripts
+
+-- company(company_code, company_name, website)
+insert into company values ('100', 'The Times-Picayune', 'http://www.nola.com/');
+insert into company values ('200', 'The University of New Orleans', 'http://www.uno.edu');
+insert into company values ('300', 'Oschner Health System', 'http://www.oschner.org');
+insert into company values ('400', 'The LA Times','http://www.latimes.com/');
+insert into company values ('500','Louisiana State University','http://www.lsu.edu/');
+insert into company values ('600','Mercy LA Hospital','http://www.mercyla.org/');
+
+-- job_profile(job_profile_code, job_profile_title, job_profile_description)
+insert into job_profile values ('100', 'Administrative Assistant 1', 'This is an entry level secretarial position.');
+insert into job_profile values ('101', 'Administrative Assistant 2', 'This is a professional secretarial position');
+insert into job_profile values ('200', 'Editor', 'This is an editor position.');
+insert into job_profile values ('300', 'Copywriter 1', 'This is a copywriter position.');
+insert into job_profile values ('301', 'Copywriter 2', 'This is an advanced copy writing position.');
+insert into job_profile values ('302', 'Copywriter 3', 'This is a senior copywriter position.');
+insert into job_profile values ('310', 'Columnist', 'This is a columnist position.');
+insert into job_profile values ('311', 'Senior Columnist', 'This is a senior columnist position.');
+insert into job_profile values ('320', 'Photographer', 'This is a photographer position.');
+insert into job_profile values ('500', 'Driver 1', 'This is a low level driver position.');
+insert into job_profile values ('501', 'Driver 2', 'This is a mid level driver position.');
+insert into job_profile values ('600', 'Marketer 1', 'Entry level marketing position.');
+insert into job_profile values ('700', 'Sales 1', 'Entry level sales position.');
+insert into job_profile values ('701', 'Sales 2', 'Mid level sales position.');
+
+-- job(job_code, job_profile_code, company_code, job_type, pay_rate, pay_type, opening_date, closing_date)
+
+--  We will want to calculate an actual salary from pay_rate and pay_type.  
+--  i.e., if when it's salary, we'll just return the pay_rate (assuming it' yearly).  
+-- Otherwise we'll use 1920 * pay_rate (per the 3rd query in the handout).  
+
+--Be sure you are using the dates and opening and closing dates for the job search.  i.e., they are taking applications for these days.  Maybe we should include a field for kind of hiring.  For some job offerings, they'll hire as soon as they find a worthy candidate.  Others, collect applications until the close date and then decide from the pool of applicants.
+
+--available jobs now
+
+insert into job values ('400', '300', '100', 'part-time', 10, 'wage', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('401', '300', '100', 'part-time', 10, 'wage', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('402', '300', '100', 'full-time', 35000, 'salary', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('403', '300', '100', 'full-time', 35000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'),null);
+insert into job values ('404', '300', '100', 'full-time', 35000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('405', '301', '100', 'part-time', 12, 'wage',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('406', '301', '100', 'full-time', 40000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('407', '301', '100', 'full-time', 40000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('408', '301', '100', 'full-time', 40000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('409', '302', '100', 'full-time', 50000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('410', '302', '100', 'full-time', 50000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('411', '200', '100', 'part-time', 15, 'wage',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('412', '200', '100', 'full-time', 60000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('413', '200', '100', 'full-time', 60000, 'salary', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('414', '310', '100', 'part-time', 12, 'wage',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('415', '310', '100', 'full-time', 50000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('416', '311', '100', 'full-time', 60000, 'salary', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+
+insert into job values ('a01', '100', '100', 'full-time', 23000, 'salary' , 
+TO_DATE('1999-11-13', 'yyyy-mm-dd'),TO_DATE('2000-01-12','yyyy-mm-dd'));
+insert into job values ('a02', '101', '100', 'part-time', 15, 'wage' , 
+TO_DATE('2000-01-01','yyyy-mm-dd'), TO_DATE('2001-07-09','yyyy-mm-dd'));
+insert into job values ('a03', '501', '100', 'full-time', 35000, 'salary' ,
+TO_DATE(' 2001-12-21', 'yyyy-mm-dd'),TO_DATE('2003-11-24','yyyy-mm-dd'));
+insert into job values ('a22', '100', '100', 'full-time', 23500, 'salary', TO_DATE('1999-11-11','yyyy-mm-dd'),TO_DATE('2011-12-09','yyyy-mm-dd'));
+insert into job values ('a06','101', '100', 'full-time' , 32000, 'salary', TO_DATE('1991-07-07','yyyy-mm-dd'),TO_DATE('2000-03-04','yyyy-mm-dd'));
+insert into job values ('a66','200', '400', 'full-time' , 56000, 'salary' , TO_DATE('1987-11-07','yyyy-mm-dd'),TO_DATE('2010-11-02','yyyy-mm-dd'));
+insert into job values ('a12','300', '400', 'full-time' , 45000, 'salary' , TO_DATE('1991-06-07','yyyy-mm-dd'),TO_DATE('2011-01-27','yyyy-mm-dd'));
+insert into job values ('a11','320', '400', 'full-time' , 40000, 'salary' , TO_DATE('1999-01-07','yyyy-mm-dd'),TO_DATE('2004-03-09','yyyy-mm-dd'));
+insert into job values ('a05','311', '400', 'full-time' , 65000, 'salary' , TO_DATE('1993-09-04','yyyy-mm-dd'),TO_DATE('2003-05-22','yyyy-mm-dd'));
+insert into job values ('a15','320', '400', 'part-time' , 37, 'wage' , TO_DATE('1995-08-21','yyyy-mm-dd'),TO_DATE('2006-03-18','yyyy-mm-dd'));
+
+insert into job values ('100', '300', '100', 'full-time', 25000, 'salary', 
+TO_DATE('2002-04-15', 'yyyy-mm-dd'), TO_DATE('2002-07-15', 'yyyy-mm-dd') );
+insert into job values ('101', '301', '100', 'full-time', 35000, 'salary', 
+TO_DATE('2005-04-15', 'yyyy-mm-dd'), TO_DATE('2005-07-15', 'yyyy-mm-dd') );
+insert into job values ('102', '302', '100', 'full-time', 55000, 'salary', 
+TO_DATE('2008-04-15', 'yyyy-mm-dd'), TO_DATE('2008-07-15', 'yyyy-mm-dd') );
+insert into job values('103', '200', '100', 'full-time', 80000, 'salary', 
+TO_DATE('2011-04-15', 'yyyy-mm-dd'), TO_DATE('2011-07-15', 'yyyy-mm-dd') );
+
+insert into job values ('200', '100', '200',  'full-time', 10, 'wage', TO_DATE('2000-05-15', 'yyyy-mm-dd'), null);
+insert into job values ('201', '101', '200', 'full-time', 15, 'wage', 
+TO_DATE('2003-05-15', 'yyyy-mm-dd'), TO_DATE('2003-08-15', 'yyyy-mm-dd') );
+insert into job values ('202', '101', '500', 'full-time', '38000', 'salary', 
+TO_DATE('2011-05-15', 'yyyy-mm-dd'), TO_DATE('2011-08-15', 'yyyy-mm-dd') );
+
+insert into job values ('300', '300', '100', 'part-time', 10, 'wage', 
+TO_DATE('2000-05-15', 'yyyy-mm-dd'), TO_DATE('2000-08-15', 'yyyy-mm-dd') );
+insert into job values ('301', '301', '100', 'part-time', 15, 'wage', 
+TO_DATE('2005-05-15', 'yyyy-mm-dd'), TO_DATE('2005-08-15', 'yyyy-mm-dd') );
+insert into job values ('302', '302', '100', 'full-time', 48000, 'salary', 
+TO_DATE('2010-05-15', 'yyyy-mm-dd'), TO_DATE('2010-08-15', 'yyyy-mm-dd') );
+insert into job values ('303', '320', '100', 'part-time', 10, 'wage', TO_DATE('2003-05-15', 'yyyy-mm-dd'), null ); 
+
+insert into job values ('900', '300', '400', 'part-time', 10, 'wage', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('901', '300', '400', 'part-time', 10, 'wage', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('902', '300', '400', 'full-time', 35000, 'salary', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('903', '300', '400', 'full-time', 35000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('904', '300', '400', 'full-time', 35000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('905', '301', '400', 'part-time', 12, 'wage',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('906', '301', '400', 'full-time', 40000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('907', '301', '400', 'part-time', 20, 'wage',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('908', '301', '400', 'full-time', 40000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('909', '302', '400', 'full-time', 50000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('910', '302', '400', 'full-time', 50000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('911', '200', '400', 'part-time', 15, 'wage',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('912', '200', '400', 'full-time', 60000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('913', '200', '400', 'full-time', 60500, 'salary', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('914', '310', '400', 'part-time', 12, 'wage',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('915', '310', '400', 'full-time', 50000, 'salary',TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+insert into job values ('916', '311', '400', 'full-time', 60000, 'salary', TO_DATE('2013-11-13', 'yyyy-mm-dd'), null);
+
+
+--project(project_code, company_code, project_title, budget_code, start_date, end_date)
+insert into project values ('p01', '100', 'SWEAP program ', 'b11', 
+TO_DATE('1999-01-07','yyyy-mm-dd'), null);
+insert into project values ('p02', '100', 'Fundraising Initiative', 'b11', 
+TO_DATE('1992-06-17','yyyy-mm-dd'), null);
+insert into project values ('p03', '100', 'Summer/Winter Event Plan', 'b11', 
+TO_DATE('1996-04-09','yyyy-mm-dd'), null);
+insert into project values ('p12', '100', 'Mentor/Apprentice Program', 'b11', 
+TO_DATE('1997-02-24','yyyy-mm-dd'), null);
+insert into project values ('p65', '200', 'Global Hands Across America', 'b11', 
+TO_DATE('1999-05-05','yyyy-mm-dd'), null);
+insert into project values ('p34', '200', 'Wildlife Savior', 'b11', 
+TO_DATE('1991-04-11','yyyy-mm-dd'), null);
+insert into project values ('p24', '300', 'Edit or Not', 'b11', 
+TO_DATE('1997-05-12','yyyy-mm-dd'), null);
+insert into project values ('p67', '300', 'Copywriter Program ', 'b11', 
+TO_DATE('1999-08-09','yyyy-mm-dd'), null);
+insert into project values ('p11', '400', 'Run for the Cause', 'b11', 
+TO_DATE('1991-04-19','yyyy-mm-dd'), null);
+insert into project values ('p23', '400', 'Happy Trails Retreat', 'b11', 
+TO_DATE('2001-05-18','yyyy-mm-dd'), null);
+insert into project values ('p13', '400', 'HIIT Project', 'b11',
+TO_DATE( '1990-11-12','yyyy-mm-dd'), null);
+insert into project values ('p56', '500', 'ADRCT Project', 'b11',
+TO_DATE( '1989-05-06','yyyy-mm-dd'), null);
+insert into project values ('p78', '600', 'TGIF for ME Program', 'b11', 
+TO_DATE('1988-12-25','yyyy-mm-dd'), null);
+
+-- person(person_code, last_name, first_name, gender, email)
+insert into person values ('10182', 'Smith', 'Jim', 'male', 'jsmith1@uno.edu/');
+insert into person values ('10467', 'Wade', 'Jacob', 'male', 'jwade@uno.edu/');
+insert into person values ('10468', 'Jello', 'April', 'female', 'ajello@uno.edu/');
+insert into person values ('10247', 'Tolop', 'Jim', 'male', 'jtolop@uno.edu/');
+insert into person values ('10479', 'Botto', 'Adam', 'male', 'abotto@uno.edu/');
+insert into person values ('11467', 'Harris', 'Ali', 'female', 'aharris@uno.edu/');
+insert into person values ('13579', 'Eti', 'Phoung', 'male', 'peti@uno.edu/');
+insert into person values ('15365', 'Roby', 'James', 'male', 'jroby@uno.edu/');
+insert into person values ('21657', 'Smith', 'Jane', 'female', 'smith2@uno.edu/');
+insert into person values ('46767', 'Yang', 'Ying', 'female', 'yyang@uno.edu/');
+insert into person values ('37677', 'Santa', 'Bad', 'male', 'bsanta@uno.edu/');
+insert into person values ('23556', 'Coor', 'Sal', 'male', 'scoor@uno.edu/');
+insert into person values ('35568', 'Lasa', 'Sarah', 'female', 'slasa@uno.edu/');
+insert into person values ('95748', 'Carnap', 'Rudolf', 'male', 'crudolf@email.com');
+
+insert into person values ('1001', 'Coe', 'Adam', 'male', 'cadam@example.com');
+insert into person values ('1002', 'Fields', 'Jane', 'female', null);
+insert into person values ('1003', 'Smith', 'Jack', 'male', 'jsmith@example.com');
+insert into person values ('1004', 'Smith', 'Sally', 'female', 'ssmith@example.com');
+insert into person values ('1005', 'Hall', 'Kelly', 'female', 'khall@example.com');
+insert into person values ('1006', 'Whitehead', 'Billy Joe', 'male', 'bjwhitehead@example.com');
+insert into person values ('1007', 'Rorty', 'Richard', 'male', 'rrorty@gmail.com');
+insert into person values ('1008', 'Russell', 'Bertrand', 'male', 'brussell@gmail.com');
+insert into person values ('1009', 'Hume', 'David', 'male', 'dhume@email.com');
+--insert into person values ('1010', 'Carnap', 'Rudolf', 'male', 'crudolf@email.com');
+--insert into person values ('1011', 'O''neill', 'Onara', 'female', 'ooneill@gmail.com');
+--insert into person values ('1012', 'Noël', 'Carroll', 'female', 'ncarroll@yahoo.com');
+--insert into person values ('1013', 'Arendt', 'Hannah', 'femail',  'harendt@gmail.com');
+--insert into person values ('1014', 'Young', 'Iris','female',  'iyoung@yahoo.com');
+--insert into person values ('1015', 'Minow', 'Martha', 'female', 'mminow@email.com');
+--insert into person values ('1016', 'William', 'Bernard', 'male', null);
+--insert into person values ('1017', 'Phillips', 'Anne', 'female', 'aphillips@gmail.com');
+
+--specialty(specialty_code, specialty_name)
+insert into specialty values ('s11', 'Local News');
+insert into specialty values ('s567', 'National News');
+insert into specialty values ('s04', 'Websites');
+insert into specialty values ('s02', 'Advertising');
+insert into specialty values ('s345', 'Photography');
+insert into specialty values ('s213', 'Education');
+insert into specialty values ('s220', 'Research');
+insert into specialty values ('s123', 'transporting');
+insert into specialty values ('s111', 'marketing');
+insert into specialty values ('s116', 'Job Training');
+insert into specialty values ('s711', 'bursar');
+insert into specialty values ('s597', 'telemarketing');
+insert into specialty values ('s298', 'personal assistant');
+
+-- company_specialty(company_code, specialty_code)
+insert into company_specialty values ('100', 's11');
+insert into company_specialty values ('100', 's04');
+insert into company_specialty values ('100', 's02');
+insert into company_specialty values ('100', 's345');
+insert into company_specialty values ('200', 's116');
+insert into company_specialty values ('200', 's213');
+insert into company_specialty values ('200', 's220');
+insert into company_specialty values ('300', 's123');
+insert into company_specialty values ('400', 's567');
+insert into company_specialty values ('400', 's11');
+insert into company_specialty values ('400', 's04');
+insert into company_specialty values ('400', 's02');
+insert into company_specialty values ('400', 's345');
+insert into company_specialty values ('600', 's111');
+insert into company_specialty values ('500', 's213');
+insert into company_specialty values ('500', 's220');
+
+
+--address(address_code, address_type, street_1, street_2, city, zipcode)
+insert into address values ('124453', 'home', '1616 Lakeshore Drive', '', 'New Orleans', '70122');
+insert into address values ('186663', 'home', '15 Stilt Street', '', 'New Orleans', '70124');
+insert into address values ('138793', 'home', '567 Caboo Drive', '', 'New Orleans', '70122');
+insert into address values ('124988', 'apartment', '1616 Lakeshore Drive', 'apartment 504', 'New Orleans', '70122');
+insert into address values ('121233', 'home', '4567 Sabhu Street', '', 'Kenner', '70001');
+insert into address values ('132344', 'home', '2 Lakota  Drive', '', 'New Orleans', '70119');
+insert into address values ('138495', 'apartment', '123 Kati Lane', 'apartment 67', 'New Orleans', '70119');
+insert into address values ('123838', 'headquarters', '11 Elm Drive', '', 'New Orleans', '70122');
+insert into address values ('555555', 'headquarters', '2312 Maple Street', '', 'New Orleans', '70122');
+insert into address values ('294040', 'headquarters', '623 Stapleton Street', '', 'New Orleans', '70123');
+insert into address values ('188344', 'headquarters', '2243 Samto Drive', '', 'Metarie', '70122');
+insert into address values ('219292', 'headquarters', '8483 Joplin Street', '', 'New Orleans', '70124');
+insert into address values ('283939','branch', '38393 Spruce Lane', '', 'New Orleans', '70005');
+insert into address values ('998877','home','2000 Lakeshore Drive','','New Orleans','70001');
+
+--phone_number(phone_code, phone_type, phone_num)
+insert into phone_number values ('24553', 'home', '504-282-2394');
+insert into phone_number values ('83930', 'home', '504-282-2311');
+insert into phone_number values ('23939', 'home', '504-282-8393');
+insert into phone_number values ('11234', 'cell', '504-220-2223'); 
+--2 numbers for 1 person (10467) ^^^
+insert into phone_number values ('84930', 'home', '504-282-2327');
+--same number for 2 people ^^^
+insert into phone_number values ('21910', 'home', '504-283-7965');
+insert into phone_number values ('03983', 'home', '504-288-2312');
+insert into phone_number values ('93938', 'home', '504-280-9897');
+insert into phone_number values ('79292', 'home', '504-282-2467');
+insert into phone_number values ('86321', 'home', '504-281-2467');
+insert into phone_number values ('26788', 'home', '504-209-9632');
+insert into phone_number values ('47085', 'home', '504-382-9754');
+insert into phone_number values ('98653', 'home', '504-280-7419');
+insert into phone_number values ('24545', 'main office', '504-283-4384');
+insert into phone_number values ('46655', 'main office', '504-283-4384');
+insert into phone_number values ('24658', 'reception', '504-283-4384');
+insert into phone_number values ('90766', 'main office', '504-283-4384');
+insert into phone_number values ('88657', 'main office', '504-283-4384');
+insert into phone_number values ('64578', 'reception', '504-283-4384');
+insert into phone_number values ('99887', 'home', '504-283-0000');
+
+
+--job_project(job_code, project_code)
+insert into job_project values ('103' , 'p01');
+insert into job_project values ('202' , 'p02');
+insert into job_project values ('302' , 'p03');
+insert into job_project values ('903' , 'p12');
+insert into job_project values ('906' , 'p65');
+insert into job_project values ('915' , 'p34');
+insert into job_project values ('a06' , 'p34');
+insert into job_project values ('914' , 'p34');
+insert into job_project values ('a66' , 'p23');
+insert into job_project values ('916' , 'p11');
+
+--employment(person_code, job_code, start_date, end_date)
+-- We need more data for employees currently employed at a company.
+--insert into employment values ('1001', '400', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1002', '401', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1003', '402', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1004', '403', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1005', '404', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1006', '405', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1007', '406', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1008', '407', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1009', '408', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1010', '409', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1011', '410', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1012', '411', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1013', '412', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1014', '413', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1015', '414', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1016', '415', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+--insert into employment values ('1017', '416', TO_DATE('2013-11-27','yyyy-mm-dd'), null);
+
+--insert into employment values ('10182', 'a01',TO_DATE('1997-01-07','yyyy-mm-dd'), --TO_DATE('2008-02-23','yyyy-mm-dd'));
+--insert into employment values ('10467', 'a02',TO_DATE('1996-03-02','yyyy-mm-dd'), --TO_DATE('2002-12-23','yyyy-mm-dd'));
+--insert into employment values ('10468', 'a03',TO_DATE('1998-11-27','yyyy-mm-dd'), 
+--TO_DATE('2011-03-13','yyyy-mm-dd'));
+--insert into employment values ('10247', 'a05',TO_DATE('1993-09-07','yyyy-mm-dd'), --TO_DATE('2009-02-13','yyyy-mm-dd'));
+--insert into employment values ('10479', 'a06', TO_DATE('1992-01-02','yyyy-mm-dd'), --TO_DATE('2012-09-22','yyyy-mm-dd'));
+--insert into employment values ('11467', 'a11',TO_DATE('1996-06-17','yyyy-mm-dd'), --TO_DATE('2003-02-23','yyyy-mm-dd'));
+--insert into employment values ('13579', 'a12',TO_DATE('2000-01-07','yyyy-mm-dd'), --TO_DATE('2009-06-16','yyyy-mm-dd'));
+--insert into employment values ('15365', 'a15',TO_DATE('1994-11-09','yyyy-mm-dd'), --TO_DATE('2007-12-25','yyyy-mm-dd'));
+--insert into employment values ('21657', 'a22',TO_DATE('1991-11-11','yyyy-mm-dd'), --TO_DATE('2011-12-29','yyyy-mm-dd'));
+--insert into employment values ('46767', 'a66',TO_DATE('1992-01-09','yyyy-mm-dd'), --TO_DATE('2011-05-27','yyyy-mm-dd'));
+
+insert into employment values ('10182', '100', TO_DATE('2002-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2005-08-14', 'yyyy-mm-dd') );
+insert into employment values ('10182', '101', TO_DATE('2005-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2008-08-14', 'yyyy-mm-dd') );
+insert into employment values ('10182', '102', TO_DATE('2008-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2011-08-14', 'yyyy-mm-dd') );
+insert into employment values ('10182', '103', TO_DATE('2011-08-15', 'yyyy-mm-dd'), null);
+
+insert into employment values ('10467', '200', TO_DATE('2000-08-22', 'yyyy-mm-dd'), 
+TO_DATE('2003-08-21', 'yyyy-mm-dd') );
+insert into employment values ('10467', '201', TO_DATE('2003-08-22', 'yyyy-mm-dd'),
+ TO_DATE('2011-08-21', 'yyyy-mm-dd') );
+insert into employment values ('10467', '202', TO_DATE('2011-08-22', 'yyyy-mm-dd'), null);
+
+insert into employment values ('10468', '300', TO_DATE('2000-09-01', 'yyyy-mm-dd'), 
+TO_DATE('2005-08-30', 'yyyy-mm-dd') );
+insert into employment values ('10468', '301', TO_DATE('2005-09-01', 'yyyy-mm-dd'), 
+TO_DATE('2010-08-30', 'yyyy-mm-dd') );
+insert into employment values ('10468', '302', TO_DATE('2010-09-01', 'yyyy-mm-dd'), null);
+
+insert into employment values ('10247', '900', TO_DATE('2001-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2002-08-14', 'yyyy-mm-dd') );
+insert into employment values ('10247', '901', TO_DATE('2002-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2008-08-14', 'yyyy-mm-dd') );
+insert into employment values ('10247', '902', TO_DATE('2008-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2011-08-14', 'yyyy-mm-dd') );
+insert into employment values ('10247', '903', TO_DATE('2011-08-15', 'yyyy-mm-dd'), null);
+
+insert into employment values ('10479', '904', TO_DATE('2000-08-22', 'yyyy-mm-dd'), 
+TO_DATE('2003-08-21', 'yyyy-mm-dd') );
+insert into employment values ('10479', '905', TO_DATE('2003-08-22', 'yyyy-mm-dd'),
+ TO_DATE('2011-08-21', 'yyyy-mm-dd') );
+insert into employment values ('10479', '906', TO_DATE('2011-08-22', 'yyyy-mm-dd'), null);
+
+--2 jobs for this guy(currently)
+insert into employment values ('11467', '907', TO_DATE('2000-09-01', 'yyyy-mm-dd'), 
+TO_DATE('2005-08-30', 'yyyy-mm-dd') );
+insert into employment values ('11467', '908', TO_DATE('2005-09-01', 'yyyy-mm-dd'), 
+TO_DATE('2010-08-30', 'yyyy-mm-dd') );
+insert into employment values ('11467', '909', TO_DATE('2010-09-01', 'yyyy-mm-dd'), null);
+insert into employment values ('11467', '915', TO_DATE('2010-09-01', 'yyyy-mm-dd'), null);
+
+
+insert into employment values ('13579', 'a01', TO_DATE('2002-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2005-08-14', 'yyyy-mm-dd') );
+insert into employment values ('13579', 'a03', TO_DATE('2005-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2008-08-14', 'yyyy-mm-dd') );
+insert into employment values ('13579', 'a05', TO_DATE('2008-08-15', 'yyyy-mm-dd'), 
+TO_DATE('2011-08-14', 'yyyy-mm-dd') );
+insert into employment values ('13579', 'a06', TO_DATE('2011-08-15', 'yyyy-mm-dd'), null);
+
+insert into employment values ('15365', 'a11', TO_DATE('2000-08-22', 'yyyy-mm-dd'), 
+TO_DATE('2003-08-21', 'yyyy-mm-dd') );
+insert into employment values ('15365', 'a12', TO_DATE('2003-08-22', 'yyyy-mm-dd'),
+ TO_DATE('2011-08-21', 'yyyy-mm-dd') );
+insert into employment values ('15365', '914', TO_DATE('2011-08-22', 'yyyy-mm-dd'), null);
+
+insert into employment values ('21657', 'a15', TO_DATE('2003-09-01', 'yyyy-mm-dd'), 
+TO_DATE('2005-08-30', 'yyyy-mm-dd') );
+insert into employment values ('21657', 'a22', TO_DATE('2005-09-01', 'yyyy-mm-dd'), 
+TO_DATE('2010-08-30', 'yyyy-mm-dd') );
+insert into employment values ('21657', 'a66', TO_DATE('2010-09-01', 'yyyy-mm-dd'), null);
+
+--2 jobs for this guy(currently)
+insert into employment values ('46767', '913', TO_DATE('2011-08-22', 'yyyy-mm-dd'), null);
+insert into employment values ('46767', '916', TO_DATE('2011-08-22', 'yyyy-mm-dd'), null);
+
+insert into employment values ('37677', '401', TO_DATE('2011-08-22', 'yyyy-mm-dd'), null);
+
+--company_address(company_code, address_code)
+insert into company_address values ('100', '123838');
+insert into company_address values ('200', '555555');
+insert into company_address values ('300', '294040');
+insert into company_address values ('400', '188344');
+insert into company_address values ('500', '219292');
+insert into company_address values ('600', '283939');
+
+--person_address(person_code, address_code)
+insert into person_address values ('10182','124453');
+insert into person_address values ('21657','124453');
+insert into person_address values ('10467','186663');
+insert into person_address values ('10468','186663');
+insert into person_address values ('10247','138793');
+insert into person_address values ('10479','124988');
+insert into person_address values ('11467','124988');
+insert into person_address values ('13579','124988');
+insert into person_address values ('15365','121233');
+insert into person_address values ('46767','121233');
+insert into person_address values ('21657','132344');
+insert into person_address values ('37677','132344');
+insert into person_address values ('23556','138495');
+insert into person_address values ('1001','998877');
+insert into person_address values ('1002','998877');
+insert into person_address values ('1003','998877');
+insert into person_address values ('1004','998877');
+insert into person_address values ('1005','998877');
+insert into person_address values ('1006','998877');
+insert into person_address values ('1007','998877');
+insert into person_address values ('1008','998877');
+insert into person_address values ('1009','998877');
+
+--company_phone(company_code, phone_code)
+insert into company_phone values ('100','24545');
+insert into company_phone values ('200','46655');
+insert into company_phone values ('300','24658');
+insert into company_phone values ('400','90766');
+insert into company_phone values ('500','88657');
+insert into company_phone values ('600','64578');
+
+
+--person_phone(person_code, phone_code)
+insert into person_phone values ('10182','24553');
+insert into person_phone values ('21657','83930');
+insert into person_phone values ('10467','23939');
+insert into person_phone values ('10467','11234');
+insert into person_phone values ('10468','84930');
+insert into person_phone values ('10247','84930');
+insert into person_phone values ('10479','21910');
+insert into person_phone values ('11467','03983');
+insert into person_phone values ('13579','93938');
+insert into person_phone values ('15365','79292');
+insert into person_phone values ('46767','86321');
+insert into person_phone values ('21657','26788');
+insert into person_phone values ('37677','47085');
+insert into person_phone values ('23556','98653');
+insert into person_phone values ('1001','99887');
+insert into person_phone values ('1002','99887');
+insert into person_phone values ('1003','99887');
+insert into person_phone values ('1004','99887');
+insert into person_phone values ('1005','99887');
+insert into person_phone values ('1006','99887');
+insert into person_phone values ('1007','99887');
+insert into person_phone values ('1008','99887');
+insert into person_phone values ('1009','99887');
+
+
+--Training System
+--skill(skill_code, skill_name, skill_description, skill_level)
+--check (level in ('beginner', 'medium', 'advanced')) );
+insert into skill values ('100', 'Beginner Writing', 'Has basic knowledge and experience in writing.', 'beginner');
+insert into skill values ('110', 'Intermediate Writing', 'Has intermediate knowledge and experience in writing.', 'medium');
+insert into skill values ('120', 'Advanced Writing', 'Has advanced knowledge and experience in writing.', 'advanced');
+insert into skill values ('130', 'Journalism', 'Has experience as a journalist', null);
+insert into skill values ('131', 'Ad writing', 'Has experience with writing advertisements', null);
+insert into skill values ('132', 'Technical writing', 'Has experience with technical writing', null);
+
+insert into skill values ('200', 'Beginner Typing', 'Has basic knowledge and experience in typing.', 'beginner');
+insert into skill values ('210', 'Intermediate Typing', 'Has intermediate knowledge and experience in typing.', 'medium');
+insert into skill values ('220', 'Advanced Typing', 'Has advanced knowledge and experience in typing.', 'advanced');
+
+insert into skill values ('300', 'Editing I', 'Has basic experience with editing', 'beginner');
+insert into skill values ('320', 'Editing II', 'Has advanced experience with editing', 'advanced');
+insert into skill values ('330', 'Newspaper Editing', 'Has skill editing for newspapers', null);
+insert into skill values ('331', 'Magazine Editing', 'Has skill editing magazines', null);
+
+insert into skill values('410', 'Intermediate Photography', 'Has solid skills in photography', 'medium');
+insert into skill values('411', 'Intermediate Photoshop', 'Has solid skills in Photoshop', 'medium');
+insert into skill values('420', 'Advanced Photography', 'Has advanced skills in photography', 'advanced');
+insert into skill values('421', 'Advanced Photoshop', 'Has advanced skill with Photoshop', 'advanced');
+insert into skill values('430', 'Portrait Photography', 'Has experience in portrait photography', null);
+insert into skill values('431', 'Landscape Photography', 'Has experience in landscape photography', null);
+
+insert into skill values('500', 'Service Driving', 'Has experience driving clients', null);
+insert into skill values('510', 'Trucking', 'Has experience driving large vehicles', null);
+
+insert into skill values('600', 'Beginner Marketing', 'Has beginner marketing skills','beginner');
+insert into skill values('610', 'Intermediate Marketing', 'Has intermediate marketing experience', 'medium');
+insert into skill values('620', 'Senior Marketing', 'Has advanced skills in marketing', 'advanced');
+
+insert into skill values('730', 'Phone Sales', 'Has experience with phone sales', null);
+insert into skill values('731', 'Online Sales', 'Has experience with online sales', null);
+insert into skill values('732', 'Retail Sales', 'Has retail experience', null);
+
+insert into skill values ('800', 'Political Science I', 'Has studied Political Science at an introductory level.', 'beginner');
+insert into skill values ('810', 'Political Science II', 'Has studied Political Science at an intermediate level.', 'medium');
+insert into skill values ('820', 'Political Science III', 'Has studied Political Science at an advanced level.', 'advanced');
+
+insert into skill values ('900', 'Economics I', 'Has studied Economics at an introductory level.', 'beginner');
+insert into skill values ('910', 'Economics II', 'Has studied Economics at an intermediate level.', 'medium');
+insert into skill values ('920', 'Economics III', 'Has studied Economics at an advanced level.', 'advanced');
+
+insert into skill values ('1100', 'Business I', 'Has studied Business at an introductory level.', 'beginner');
+insert into skill values ('1110', 'Business II', 'Has studied Business at an intermediate level.', 'medium');
+insert into skill values ('1120', 'Business III', 'Has studied Business at an advanced level.', 'advanced');
+
+insert into skill values ('1200', 'Finance I', 'Has studied Finance at an introductory level.', 'beginner');
+insert into skill values ('1210', 'Finance II', 'Has studied Finance at an intermediate level.', 'medium');
+insert into skill values ('1220', 'Finance III', 'Has studied Finance at an advanced level.', 'advanced');
+
+--course (course_code, course_title, course_description, course_level, status, retail_price)
+--check (level in ('beginner', 'medium', 'advanced')) );
+-- check (status in ('active', 'expired')),
+
+insert into course values ('100', 'Introduction to Writing', 'An intro writing course.', 'beginner', 'active', 300);
+insert into course values ('110', 'Writing and Composition', 'A course on writing and composition.', 'medium', 'active', 350);
+insert into course values ('120', 'Advanced Writing and Composition', 'An advanced course in writing and composition.', 'advanced', 'active', 400);
+insert into course values ('130', 'Writing for Business', 'A course on business writing.', 'medium', 'active', 400);
+insert into course values ('131', 'News writing', 'A course on news writing.', 'medium', 'active', 400);
+insert into course values ('132', 'Fiction writing', 'A fiction writing course.', 'medium', 'inactive', 400);
+insert into course values ('133', 'Fiction writing revised', 'A fiction writing course.', 'medium', 'active', 400);
+
+insert into course values ('200', 'Computer Basics', 'A course on the basics of computing', 'beginner', 'active', 200);
+insert into course values ('210', 'Microsoft Office Suite', 'A course on the Microsoft Office suite', 'beginner', 'active', 300);
+insert into course values ('220', 'Advanced Office and Business Tools', 'An advanced course in Microsoft Office', 'advanced', 'active', 400);
+insert into course values ('230', 'Databases', 'A course on Database software', 'medium', 'active', 300);
+insert into course values ('201', 'Typing Skills I', 'A course on typing skills', 'beginner', 'active', 200);
+insert into course values ('202', 'Typing Skills II', 'A intermediate course on typing skills', 'medium', 'active', 200);
+
+insert into course values ('300', 'Grammar I', 'A course on basic grammar', 'beginner', 'active', 200);
+insert into course values ('310', 'Advanced Grammar', 'A course on advanced grammar', 'advanced', 'active', 300);
+insert into course values ('320', 'Editing', 'A course on editing', 'beginner', 'active', 300);
+insert into course values ('330', 'Editing for Journalists', 'A course on journalistic editing', 'advanced', 'active', 400);
+insert into course values ('331', 'Editing for Business', 'A course on business editing', 'advanced', 'inactive', 400);
+insert into course values ('331a', 'Editing for Business Revised', 'A course on business editing', 'advanced', 'active', 400);
+insert into course values ('332', 'Copy Editing', 'A course on copy editing', 'medium', 'active', 300);
+
+insert into course values ('400', 'Photography I', 'An introductory course on photography', 'beginner', 'active', 350);
+insert into course values ('410', 'Photography II', 'An intermediate course on photography', 'medium', 'active', 450);
+insert into course values ('420', 'Photography III', 'An advanced course on photography', 'advanced', 'active', 500);
+insert into course values ('401', 'Photoshop I', 'A course on Photoshop.', 'beginner', 'active', 300);
+insert into course values ('402', 'Photoshop II', ' A course on special techniques in Photoshop', 'medium', 'active', 400);
+insert into course values ('430', 'Light and color', 'A course on the fundamentals of light and color in photography', 'advanced', 'active', 500);
+insert into course values ('431', 'Portraits and Landscapes', 'A course on landscape and portrait photography', 'advanced', 'inactive', 500);
+insert into course values ('432', 'Action Photography', 'A course on action photography', 'advanced', 'active', 500);
+insert into course values ('500', 'Drivers Ed.', 'A drivers ed course', 'beginner', 'active', 300);
+insert into course values ('510', 'Operating Heavy Machinery', 'A specialized drivers course', 'medium', 'active', 400);
+insert into course values ('520', 'Truck Driver Licensing', 'A large truck driving course', 'advanced', 'active', 500);
+insert into course values ('600', 'Sales and Marketing I', 'An introductory course to sales and marketing', 'beginner', 'inactive', 300);
+insert into course values ('601', 'Sales and Marketing I (Revised)', 'An introductory course to sales and marketing', 'beginner', 'active', 300);
+insert into course values ('610', 'Sales and Marketing II', 'An intermediate course in sales and marketing', 'medium', 'active', 400);
+insert into course values ('631', 'Business Online', 'A special topics course on Online business', 'advanced', 'active', 500);
+insert into course values ('632', 'Advertising', 'A special topics course on Advertising', 'advanced', 'active', 500);
+insert into course values ('730', 'Phone Sales', 'A course on phone sales', 'advanced', 'active', 500);
+insert into course values ('731', 'Online Sales', 'A course on Online sales', 'advanced', 'active', 500);
+insert into course values ('732', 'Retail Sales', 'A course on retail sales', 'advanced', 'active', 500);
+insert into course values ('800', 'Political Science I', 'An introductory course on political science', 'beginner', 'active', 350);
+insert into course values ('810', 'Political Science II', 'An intermediate course on political science', 'medium', 'active', 450);
+insert into course values ('820', 'Political Science III', 'A course on advanced political science', 'advanced', 'active', 500);
+insert into course values ('900', 'Economics I', 'An introductory course on economics', 'beginner', 'active', 350);
+insert into course values ('910', 'Economics II', 'An intermediate course on economics', 'medium', 'active', 450);
+insert into course values ('920', 'Economics III', 'A course on advanced economics', 'advanced', 'active', 500);
+insert into course values ('1100', 'Business I', 'An introductory course on business', 'beginner', 'active', 350);
+insert into course values ('1110', 'Business II', 'An intermediate course on business', 'medium', 'active', 450);
+insert into course values ('1120', 'Business III', 'A course on advanced business', 'advanced', 'active', 500);
+insert into course values ('1200', 'Finance I', 'An introductory course on finance', 'beginner', 'active', 350);
+insert into course values ('1210', 'Finance II', 'An intermediate course on finance', 'medium', 'active', 450);
+insert into course values ('1220', 'Finance III', 'A course on advanced finance', 'advanced', 'active', 500);
+
+
+
+
+
+
+
+
+
+--course_prereq (course_code, course_prereq)
+insert into course_prereq values ('110','100');
+insert into course_prereq values ('120','110');
+insert into course_prereq values ('130','100');
+insert into course_prereq values ('131','100');
+insert into course_prereq values ('132','100');
+insert into course_prereq values ('210','200');
+insert into course_prereq values ('220','210');
+insert into course_prereq values ('230','200');
+insert into course_prereq values ('202','201');
+insert into course_prereq values ('310','300');
+insert into course_prereq values ('330','320');
+insert into course_prereq values ('331','320');
+insert into course_prereq values ('332','320');
+insert into course_prereq values ('410','400');
+insert into course_prereq values ('420','410');
+insert into course_prereq values ('402','401');
+insert into course_prereq values ('430','410');
+insert into course_prereq values ('431','410');
+insert into course_prereq values ('432','410');
+insert into course_prereq values ('510','500');
+insert into course_prereq values ('520','500');
+insert into course_prereq values ('610','600');
+insert into course_prereq values ('631','600');
+insert into course_prereq values ('632','600');
+
+
+--format(format_code, format_name, format_description, fees)
+insert into format values ('100', 'Classroom', 'This course takes place in a classroom', null);
+insert into format values ('200', 'Online', 'This is an online course', 50);
+insert into format values ('300', 'Weekend Seminar', 'This course takes place over one weekend', 75);
+insert into format values ('400', 'Intensive Training', 'This is an accelerated course', 150);
+insert into format values ('500', 'Retreat', 'This is a retreat', 100);
+insert into format values ('600', 'Independent Study', 'The student works independently and submits work to a grader', 50);
+
+
+--section(course_code, section_code, year, format_code, cost)
+insert into section values ('100','001','1990','100','500');
+insert into section values ('110','001','1990','100','500');
+insert into section values ('120','001','1990','100','500');
+insert into section values ('130','001','1990','100','500');
+insert into section values ('131','001','1990','100','500');
+insert into section values ('132','001','1990','100','500');
+insert into section values ('200','001','1990','100','500');
+insert into section values ('210','001','1990','100','500');
+insert into section values ('220','001','1990','100','500');
+insert into section values ('230','001','1990','100','500');
+insert into section values ('201','001','1990','100','500');
+insert into section values ('202','001','1990','100','500');
+insert into section values ('300','001','1990','100','500');
+insert into section values ('310','001','1990','100','500');
+insert into section values ('320','001','1990','100','500');
+insert into section values ('330','001','1990','100','500');
+insert into section values ('331','001','1990','100','500');
+insert into section values ('332','001','1990','100','500');
+insert into section values ('400','001','1990','100','500');
+insert into section values ('410','001','1990','100','500');
+insert into section values ('420','001','1990','100','500');
+insert into section values ('430','001','1990','100','500');
+insert into section values ('401','001','1990','100','500');
+insert into section values ('402','001','1990','100','500');
+insert into section values ('431','001','1990','100','500');
+insert into section values ('432','001','1990','100','500');
+insert into section values ('500','001','1990','100','500');
+insert into section values ('510','001','1990','100','500');
+insert into section values ('520','001','1990','100','500');
+insert into section values ('600','001','1990','100','500');
+insert into section values ('610','001','1990','100','500');
+insert into section values ('631','001','1990','100','500');
+insert into section values ('632','001','1990','100','500');
+
+insert into section values ('110','001','2013','100','500');
+insert into section values ('120','001','2013','100','500');
+insert into section values ('130','001','2013','100','500');
+insert into section values ('131','001','2013','100','500');
+insert into section values ('133','001','2013','100','500');
+insert into section values ('200','001','2013','100','500');
+insert into section values ('210','001','2013','100','500');
+insert into section values ('220','001','2013','100','500');
+insert into section values ('230','001','2013','100','500');
+insert into section values ('201','001','2013','100','500');
+insert into section values ('202','001','2013','100','500');
+insert into section values ('300','001','2013','100','500');
+insert into section values ('310','001','2013','100','500');
+insert into section values ('320','001','2013','100','500');
+insert into section values ('330','001','2013','100','500');
+insert into section values ('331a','001','2013','100','500');
+insert into section values ('332','001','2014','100','500');
+insert into section values ('400','001','2014','100','500');
+insert into section values ('410','001','2014','100','500');
+insert into section values ('420','001','2014','100','500');
+insert into section values ('430','001','2014','100','500');
+insert into section values ('401','001','2014','100','500');
+insert into section values ('402','001','2014','100','500');
+insert into section values ('431','001','2014','100','500');
+insert into section values ('432','001','2014','100','500');
+insert into section values ('500','001','2014','100','500');
+insert into section values ('510','001','2014','100','500');
+insert into section values ('520','001','2014','100','500');
+insert into section values ('601','001','2014','100','500');
+insert into section values ('610','001','2014','100','500');
+insert into section values ('631','001','2014','100','500');
+insert into section values ('632','001','2014','100','500');
+
+insert into section values ('210','002','2014','100','500');
+insert into section values ('220','002','2014','100','500');
+insert into section values ('230','002','2014','100','500');
+insert into section values ('201','002','2014','100','500');
+insert into section values ('202','002','2014','100','500');
+insert into section values ('300','002','2014','100','500');
+insert into section values ('310','002','2014','100','500');
+insert into section values ('320','002','2014','100','500');
+insert into section values ('330','002','2014','100','500');
+insert into section values ('331a','002','2014','100','500');
+insert into section values ('332','002','2014','100','500');
+insert into section values ('400','002','2014','100','500');
+insert into section values ('410','002','2014','100','500');
+insert into section values ('420','002','2014','100','500');
+insert into section values ('430','002','2014','100','500');
+insert into section values ('401','002','2014','100','500');
+insert into section values ('402','002','2014','100','500');
+insert into section values ('431','002','2014','100','500');
+insert into section values ('432','002','2014','100','500');
+
+insert into section values ('110','001','2015','100','500');
+insert into section values ('120','001','2015','100','500');
+insert into section values ('130','001','2015','100','500');
+insert into section values ('131','001','2015','100','500');
+insert into section values ('133','001','2015','100','500');
+insert into section values ('200','001','2015','100','500');
+insert into section values ('210','001','2015','100','500');
+insert into section values ('220','001','2015','100','500');
+insert into section values ('230','001','2015','100','500');
+insert into section values ('201','001','2015','100','500');
+insert into section values ('202','001','2015','100','500');
+insert into section values ('300','001','2015','100','500');
+
+insert into section values ('420','003','2014','100','500');
+insert into section values ('430','003','2014','100','500');
+insert into section values ('401','003','2014','100','500');
+insert into section values ('402','003','2014','100','500');
+insert into section values ('431','003','2014','100','500');
+insert into section values ('432','003','2014','100','500');
+insert into section values ('500','003','2014','100','500');
+insert into section values ('510','003','2014','100','500');
+insert into section values ('520','003','2014','100','500');
+insert into section values ('601','003','2014','100','500');
+insert into section values ('610','003','2014','100','500');
+
+
+--tool values (tool_code, tool_name, tool_description)
+insert into tool values ('100', 'Microsoft Windows', 'Uses Microsoft Windows.');
+insert into tool values ('101', 'Apple Computers', 'Uses Apple computers.');
+insert into tool values ('120', 'Microsoft Office', 'Uses Microsoft Office');
+insert into tool values ('130', 'Photoshop', 'Uses Photoshop');
+insert into tool values ('140', 'PeopleSoft', 'Uses PeopleSoft');
+insert into tool values ('150', 'Oracle Databases', 'Uses Oracle databases');
+insert into tool values ('160', 'MySQL Databases', 'Uses MySQL databases');
+insert into tool values ('170', 'Page Layout Editor', 'Uses Page Layout editor');
+insert into tool values ('300', 'Class D Vehicles', 'Standard passenger motor vehicles');
+insert into tool values ('310', 'Class E Vehicles', 'Class D Vehicles used for hire carrying 14 or less people');
+insert into tool values ('320', 'Class A Vehicles', 'Class A Vehicles tow under 10,000 lbs');
+insert into tool values ('330', 'Class B Vehicles', 'Tow above 10,000 lbs');
+insert into tool values ('340', 'Class C Vehicles', 'Tow hazardous materials');
+insert into tool values ('999', 'Misc', 'Miscellaneous');
+
+
+--job_skill (job_code, skill_code)
+insert into job_skill values ('100','100');
+insert into job_skill values ('100','300');
+insert into job_skill values ('101','110');
+insert into job_skill values ('101','320');
+insert into job_skill values ('102','120');
+insert into job_skill values ('102','320');
+insert into job_skill values ('102','130');
+insert into job_skill values ('103','330');
+insert into job_skill values ('200','110');
+insert into job_skill values ('200','200');
+insert into job_skill values ('201','110');
+insert into job_skill values ('201','200');
+insert into job_skill values ('201','120');
+insert into job_skill values ('202','220');
+
+insert into job_skill values ('202','300');
+insert into job_skill values ('202','320');
+
+insert into job_skill values ('202','132');
+insert into job_skill values ('300','100');
+insert into job_skill values ('300','300');
+insert into job_skill values ('301','110');
+insert into job_skill values ('301','410');
+insert into job_skill values ('302','130');
+insert into job_skill values ('302','411');
+insert into job_skill values ('900','110');
+insert into job_skill values ('901','120');
+insert into job_skill values ('902','210');
+insert into job_skill values ('902','300');
+insert into job_skill values ('903','320');
+insert into job_skill values ('903','331');
+insert into job_skill values ('904','110');
+insert into job_skill values ('904','120');
+insert into job_skill values ('905','210');
+insert into job_skill values ('905','300');
+insert into job_skill values ('906','320');
+insert into job_skill values ('906','330');
+insert into job_skill values ('907','100');
+insert into job_skill values ('907','300');
+insert into job_skill values ('908','110');
+insert into job_skill values ('908','120');
+insert into job_skill values ('909','130');
+insert into job_skill values ('915','320');
+insert into job_skill values ('a01','120');
+insert into job_skill values ('a03','132');
+insert into job_skill values ('a05','200');
+insert into job_skill values ('a05','210');
+insert into job_skill values ('a06','220');
+insert into job_skill values ('a11','500');
+insert into job_skill values ('a12','500');
+insert into job_skill values ('a15','510');
+insert into job_skill values ('a22','510');
+insert into job_skill values ('a66','510');
+insert into job_skill values ('913','210');
+insert into job_skill values ('913','220');
+insert into job_skill values ('913','900');
+insert into job_skill values ('916','1100');
+insert into job_skill values ('916','1200');
+insert into job_skill values ('401','732');
+insert into job_skill values ('401','210');
+insert into job_skill values ('401','220');
+
+insert into job_skill values ('402','100');
+insert into job_skill values ('402','300');
+insert into job_skill values ('403','110');
+insert into job_skill values ('403','320');
+insert into job_skill values ('404','120');
+insert into job_skill values ('404','320');
+insert into job_skill values ('404','130');
+insert into job_skill values ('405','330');
+insert into job_skill values ('406','110');
+insert into job_skill values ('406','200');
+insert into job_skill values ('407','110');
+insert into job_skill values ('407','200');
+insert into job_skill values ('408','120');
+insert into job_skill values ('408','220');
+insert into job_skill values ('408','300');
+insert into job_skill values ('409','100');
+insert into job_skill values ('409','300');
+insert into job_skill values ('410','500');
+insert into job_skill values ('411','500');
+insert into job_skill values ('412','510');
+insert into job_skill values ('413','510');
+insert into job_skill values ('414','510');
+insert into job_skill values ('415','1100');
+insert into job_skill values ('415','1200');
+insert into job_skill values ('416','210');
+
+--certificate values (certificate_code, certificate_title, certificate_description, tool_code, company_code, days_valid)
+insert into certificate values ('100', 'Computer Basics I','Certificate in Computer Basics I','100','400','365');
+insert into certificate values ('101', 'Computer Basics II','Certificate in Computer Basics II','101','400','365');
+insert into certificate values ('120', 'Microsoft Office','Certificate in Microsoft Office','120','400','365');
+insert into certificate values ('121', 'Advanced Microsoft Office','Certificate in Advanced Microsoft Office I','120','400','365');
+insert into certificate values ('130', 'Photoshop I','Certificate in Photoshop I','120','400','365');
+insert into certificate values ('131', 'Advanced Photoshop','Certificate in Advanced Photoshop','130','400','365');
+
+insert into certificate values ('200', 'Typing I','Certificate in Typing','999','400','365');
+insert into certificate values ('201', 'Typing II','Certificate in Advanced Typing','999','400','365');
+insert into certificate values ('210', 'Editing','Certificate in Editing','999','400','365');
+insert into certificate values ('220', 'Copywriting I','Certificate in Copywriting','999','400','365');
+insert into certificate values ('221', 'Copywriting II','Certificate in Intermediate Copywriting','999','400','365');
+insert into certificate values ('222', 'Copywriting III','Certificate in Advanced Copywriting','999','400','365');
+insert into certificate values ('230', 'Columnist','Certificate in Columnist','999','400','365');
+insert into certificate values ('231', 'Senior Columnist','Certificate in Advanced Columnist ','999','400','365');
+insert into certificate values ('320', 'Photography','Certificate in Photography','999','400','365');
+insert into certificate values ('500', 'Driving I','Certificate in Driving','999','400','365');
+insert into certificate values ('501', 'Driving II','Certificate in Driving II','999','400','365');
+insert into certificate values ('600', 'Marketing','Certificate in Marketing','999','400','365');
+insert into certificate values ('700', 'Sales I','Certificate in Sales I','999','400','365');
+insert into certificate values ('701', 'Sales II','Certificate in Sales II','999','400','365');
+
+--exam_type values (exam_type_code, certificate_code, exam_title)
+insert into exam_type values ('11111','100','Exam in Computer Basics I');
+insert into exam_type values ('22222','101','Exam in Computer Basics II');
+insert into exam_type values ('33333','120','Exam in Microsoft Office');
+insert into exam_type values ('44444','121','Exam in Advanced Microsoft Office I');
+insert into exam_type values ('55555','130','Exam in Photoshop I');
+insert into exam_type values ('66666','131','Exam in Advanced Photoshop I');
+
+--exam(exam_code, exam_type_code, exam_date)
+insert into exam values ('1001','11111',TO_DATE('1990-07-09','yyyy-mm-dd'));
+insert into exam values ('1002','22222',TO_DATE('1990-02-07','yyyy-mm-dd'));
+insert into exam values ('1003','33333',TO_DATE('1990-04-11','yyyy-mm-dd'));
+insert into exam values ('1004','44444',TO_DATE('1990-01-22','yyyy-mm-dd'));
+insert into exam values ('1005','55555',TO_DATE('1990-11-01','yyyy-mm-dd'));
+insert into exam values ('1006','66666',TO_DATE('1990-09-12','yyyy-mm-dd'));
+
+insert into exam values ('2001','11111',TO_DATE('2013-07-09','yyyy-mm-dd'));
+insert into exam values ('2002','22222',TO_DATE('2013-02-07','yyyy-mm-dd'));
+insert into exam values ('2003','33333',TO_DATE('2013-04-11','yyyy-mm-dd'));
+insert into exam values ('2004','44444',TO_DATE('2013-01-22','yyyy-mm-dd'));
+insert into exam values ('2005','55555',TO_DATE('2013-11-01','yyyy-mm-dd'));
+insert into exam values ('2006','66666',TO_DATE('2013-09-12','yyyy-mm-dd'));
+
+--job_profile_skill(job_profile_code, skill_code)
+-- Copy Writer 1
+insert into job_profile_skill values ('300', '100');
+insert into job_profile_skill values ('300', '300');
+-- Copy Writer II
+insert into job_profile_skill values ('301', '110');
+insert into job_profile_skill values ('301', '300');
+-- Copy Writer 3
+insert into job_profile_skill values ('302', '120');
+insert into job_profile_skill values ('302', '300');
+insert into job_profile_skill values ('302', '130');
+-- Editor
+insert into job_profile_skill values ('200', '120');
+insert into job_profile_skill values ('200', '300');
+insert into job_profile_skill values ('200', '130');
+insert into job_profile_skill values ('200', '320');
+-- Admin Asst. 1
+insert into job_profile_skill values ('100', '110');
+insert into job_profile_skill values ('100', '200');
+--Admin Asst. 2
+insert into job_profile_skill values ('101', '220');
+insert into job_profile_skill values ('101', '120');
+insert into job_profile_skill values ('101', '132');
+-- Photographer
+insert into job_profile_skill values ('320', '410');
+insert into job_profile_skill values ('320', '411');
+-- Columnist
+insert into job_profile_skill values ('310', '130');
+insert into job_profile_skill values ('310', '120');
+-- Senior Columnist                                                                 ??????????????/same as columnist
+insert into job_profile_skill values ('311', '130');
+insert into job_profile_skill values ('311', '120');
+--Service Driver 
+insert into job_profile_skill values ('500', '500');
+--Trucking Driver 
+insert into job_profile_skill values ('501', '510');
+--Marketer
+insert into job_profile_skill values ('600', '600');
+insert into job_profile_skill values ('600', '610');
+insert into job_profile_skill values ('600', '1100');
+insert into job_profile_skill values ('600', '1200');
+insert into job_profile_skill values ('600', '900');
+--Sales
+insert into job_profile_skill values ('700', '732');
+insert into job_profile_skill values ('700', '1100');
+insert into job_profile_skill values ('700', '900');
+--Sales 2
+insert into job_profile_skill values ('701', '732');
+insert into job_profile_skill values ('701', '1100');
+insert into job_profile_skill values ('701', '900');
+insert into job_profile_skill values ('701', '910');
+
+--person_skill(person_code, skill_code)
+
+-- Jim Smith (Editor) - Copywriter 1/2/3 / Columnist
+insert into person_skill values('10182', '100');
+insert into person_skill values('10182', '330');
+insert into person_skill values('10182', '110');
+insert into person_skill values('10182', '320');
+insert into person_skill values('10182','120');
+insert into person_skill values('10182', '130');
+insert into person_skill values('10182', '300');
+
+-- Jacob Wade (secretary 1/writer(
+insert into person_skill values('10467', '110');
+insert into person_skill values('10467', '100');
+insert into person_skill values('10467', '200');
+insert into person_skill values('10467', '220');
+insert into person_skill values('10467', '120');
+insert into person_skill values('10467', '132');
+insert into person_skill values('10467', '210');
+
+-- April Jello (editor I/photographer) - Copywriter 1/2/ Columnist
+insert into person_skill values ('10468', '100');
+insert into person_skill values ('10468', '300');
+insert into person_skill values ('10468', '110');
+insert into person_skill values ('10468', '120');
+insert into person_skill values ('10468', '130');
+insert into person_skill values ('10468', '410');
+insert into person_skill values ('10468', '411');
+
+-- Jim Tolop (Magazine Editor) - Copywriter 2
+insert into person_skill values('10247', '120');
+insert into person_skill values('10247', '210');
+insert into person_skill values('10247', '110');
+insert into person_skill values('10247', '320');
+insert into person_skill values('10247','300');
+insert into person_skill values('10247', '331');
+insert into person_skill values('10247', '100');
+insert into person_skill values('10247', '200');
+
+-- Adam Botto (Newspaper Editor) - Copywriter 2
+insert into person_skill values('10479', '120');
+insert into person_skill values('10479', '210');
+insert into person_skill values('10479', '110');
+insert into person_skill values('10479', '320');
+insert into person_skill values('10479','300');
+insert into person_skill values('10479', '330');
+insert into person_skill values('10479', '100');
+insert into person_skill values('10479', '200');
+insert into person_skill values('10479', '410');
+insert into person_skill values('10479', '411');
+insert into person_skill values('10479', '500');
+insert into person_skill values('10479', '510');
+insert into person_skill values('10479', '130');
+
+
+
+-- Ali Harris (Editor II) - Copywriter 1/2/3 / Columnist
+insert into person_skill values('11467', '100');
+insert into person_skill values('11467', '300');
+insert into person_skill values('11467', '110');
+insert into person_skill values('11467', '320');
+insert into person_skill values('11467','120');
+insert into person_skill values('11467', '130');
+
+-- Phoung Eti (secretary 2)
+insert into person_skill values('13579', '210');
+insert into person_skill values('13579', '220');
+insert into person_skill values('13579', '120');
+insert into person_skill values('13579', '200');
+insert into person_skill values('13579','132');
+insert into person_skill values('13579', '100');
+insert into person_skill values('13579', '110');
+
+-- James Roby  (driver I)
+insert into person_skill values('15365', '500');
+
+-- Jane Smith  (driver II)
+insert into person_skill values('21657', '510');
+
+-- Ying Yang (marketer)
+insert into person_skill values('46767', '100');
+insert into person_skill values('46767', '200');
+insert into person_skill values('46767', '600');
+insert into person_skill values('46767', '610');
+insert into person_skill values('46767', '1100');
+insert into person_skill values('46767', '1200');
+insert into person_skill values('46767', '900');
+
+-- Bad Santa (sales)
+insert into person_skill values('37677', '210');
+insert into person_skill values('37677', '220');
+insert into person_skill values('37677', '1100');
+insert into person_skill values('37677', '900');
+insert into person_skill values('37677', '732');
+insert into person_skill values('37677', '200');
+insert into person_skill values('37677', '730');
+insert into person_skill values('37677', '731');
+
+
+-- Editor (student 1001)
+insert into person_skill values ('1001', '120');
+insert into person_skill values ('1001', '320');
+insert into person_skill values ('1001', '130');
+insert into person_skill values ('1001', '330');
+insert into person_skill values ('1001', '100');
+insert into person_skill values ('1001', '110');
+insert into person_skill values ('1001', '300');
+
+
+-- Copy Writer I / II (student 1002)
+insert into person_skill values ('1002', '100');
+insert into person_skill values ('1002', '300');
+insert into person_skill values ('1002', '110');
+insert into person_skill values ('1002', '320');
+
+--Sales (student 1003)
+insert into person_skill values ('1003', '732');
+insert into person_skill values ('1003', '1100');
+insert into person_skill values ('1003', '900');
+insert into person_skill values ('1003', '730');
+insert into person_skill values ('1003', '731');
+
+
+-- Copy Writer 1 / 2 / 3 (student 1004)
+insert into person_skill values ('1004', '100');
+insert into person_skill values ('1004', '300');
+insert into person_skill values ('1004', '110');
+insert into person_skill values ('1004', '320');
+insert into person_skill values ('1004', '120');
+insert into person_skill values ('1004', '130');
+
+-- Photographer / Columnist/ Senior Columnist / Driver 1/ Driver 2 (student 1005)
+insert into person_skill values ('1005', '410');
+insert into person_skill values ('1005', '411');
+insert into person_skill values ('1005', '130');
+insert into person_skill values ('1005', '120');
+insert into person_skill values ('1005', '500');
+insert into person_skill values ('1005', '510');
+insert into person_skill values ('1005', '100');
+insert into person_skill values ('1005', '110');
+
+
+--Service Driver (student 1006) - Superstudent
+insert into person_skill values('1006', '120');
+insert into person_skill values('1006', '210');
+insert into person_skill values('1006', '110');
+insert into person_skill values('1006', '320');
+insert into person_skill values('1006','300');
+insert into person_skill values('1006', '330');
+insert into person_skill values('1006', '100');
+insert into person_skill values('1006', '200');
+insert into person_skill values('1006', '410');
+insert into person_skill values('1006', '411');
+insert into person_skill values('1006', '500');
+insert into person_skill values('1006', '510');
+insert into person_skill values('1006', '130');
+
+
+--Trucking Driver (student 1007)
+insert into person_skill values ('1007', '510');
+
+--"missing one ppl"
+--Sales - 1 (student 1009)
+insert into person_skill values ('1009', '732');
+insert into person_skill values ('1009', '1100');
+insert into person_skill values ('1009', '730');
+insert into person_skill values ('1009', '731');
+
+
+--Admin Asst. 2 - 1 (student 1008)
+insert into person_skill values ('1008', '220');
+insert into person_skill values ('1008', '120');
+insert into person_skill values ('1008', '100');
+insert into person_skill values ('1008', '110');
+insert into person_skill values ('1008', '200');
+insert into person_skill values ('1008', '210');
+
+
+
+-- Columnist -1 (student 1007)
+insert into person_skill values ('1007', '130');
+insert into person_skill values ('1007', '100');
+insert into person_skill values ('1007', '110');
+
+
+
+--course_skill(course_code, skill_code)
+insert into course_skill values ('100','100');
+insert into course_skill values ('110','110');
+insert into course_skill values ('120','120');
+insert into course_skill values ('131','131');
+insert into course_skill values ('133','132');
+insert into course_skill values ('130','130');
+insert into course_skill values ('130','120');
+insert into course_skill values ('200','200');
+insert into course_skill values ('210','210');
+insert into course_skill values ('220','220');
+insert into course_skill values ('330','330');
+insert into course_skill values ('300','300');
+insert into course_skill values ('320','320');
+insert into course_skill values ('320','300');
+insert into course_skill values ('331','331');
+insert into course_skill values ('331a','331');
+insert into course_skill values ('400','410');
+insert into course_skill values ('410','411');
+insert into course_skill values ('401','421');
+insert into course_skill values ('420','420');
+insert into course_skill values ('402','430');
+insert into course_skill values ('332','431');
+insert into course_skill values ('510','500');
+insert into course_skill values ('520','510');
+insert into course_skill values ('600','600');
+insert into course_skill values ('601','600');
+insert into course_skill values ('610','610');
+insert into course_skill values ('632','620');
+insert into course_skill values ('730','730');
+insert into course_skill values ('731','731');
+insert into course_skill values ('732','732');
+insert into course_skill values ('800','800');
+insert into course_skill values ('810','810');
+insert into course_skill values ('820','820');
+insert into course_skill values ('900','900');
+insert into course_skill values ('910','910');
+insert into course_skill values ('920','920');
+insert into course_skill values ('1100','1100');
+insert into course_skill values ('1110','1110');
+insert into course_skill values ('1120','1120');
+insert into course_skill values ('1200','1200');
+insert into course_skill values ('1210','1210');
+insert into course_skill values ('1220','1220');
+
+
+--prepares_for(course_code, certificate_code)
+insert into prepares_for values ('420','100');
+insert into prepares_for values ('200','101');
+insert into prepares_for values ('210','120');
+insert into prepares_for values ('420','121');
+insert into prepares_for values ('500','130');
+insert into prepares_for values ('631','131');
+
+--attended(course_code, section_code, year, person_code, completed_date, score)
+insert into attended values ('100','001','1990', '10182', TO_DATE('1990-02-03','yyyy-mm-dd'),'99');
+insert into attended values ('330','001','1990', '10468', TO_DATE('1990-12-01','yyyy-mm-dd'),'76');
+insert into attended values ('201','001','1990', '10467', TO_DATE('1990-04-22','yyyy-mm-dd'),'90');
+insert into attended values ('420','001','1990', '11467', TO_DATE('1990-12-23','yyyy-mm-dd'),'87');
+insert into attended values ('200','001','1990', '10467', TO_DATE('1990-11-05','yyyy-mm-dd'),'97');
+insert into attended values ('210','001','1990', '10467', TO_DATE('1990-06-16','yyyy-mm-dd'),'92');
+insert into attended values ('220','001','1990',  '10467', TO_DATE('1990-08-15','yyyy-mm-dd'),'79');
+insert into attended values ('500','001','1990', '15365', TO_DATE('1990-06-01','yyyy-mm-dd'),'82');
+insert into attended values ('131','001','1990', '11467', TO_DATE('1990-01-27','yyyy-mm-dd'),'76');
+insert into attended values ('401','001','1990', '10468', TO_DATE('1990-12-22','yyyy-mm-dd'),'66');
+insert into attended values ('631','001','1990', '37677', TO_DATE('1990-03-01','yyyy-mm-dd'),'56');
+
+insert into attended values ('420','001','2014', '1006', null, null);
+insert into attended values ('200','001','2013', '1006', null, null);
+insert into attended values ('210','001','2013', '1006', null, null);
+insert into attended values ('420','001','2014', '1007', null, null);
+insert into attended values ('500','001','2014', '1007', null, null);
+insert into attended values ('500','001','2014', '1008', null, null);
+insert into attended values ('401','001','2014', '1008', null, null);
+insert into attended values ('631','001','2014', '1009', null, null);
+
+--provides(course_code, section_code, year, company_code)
+insert into provides values ('100','001','1990','500');
+insert into provides values ('110','001','1990','500');
+insert into provides values ('120','001','1990','500');
+insert into provides values ('130','001','1990','500');
+insert into provides values ('131','001','1990','500');
+insert into provides values ('132','001','1990','500');
+insert into provides values ('200','001','1990','200');
+insert into provides values ('210','001','1990','500');
+insert into provides values ('220','001','1990','500');
+insert into provides values ('230','001','1990','500');
+insert into provides values ('201','001','1990','200');
+insert into provides values ('202','001','1990','500');
+insert into provides values ('300','001','1990','500');
+insert into provides values ('310','001','1990','500');
+insert into provides values ('320','001','1990','500');
+insert into provides values ('330','001','1990','500');
+insert into provides values ('331','001','1990','500');
+insert into provides values ('332','001','1990','500');
+insert into provides values ('400','001','1990','500');
+insert into provides values ('410','001','1990','500');
+insert into provides values ('420','001','1990','500');
+insert into provides values ('430','001','1990','500');
+insert into provides values ('401','001','1990','200');
+insert into provides values ('402','001','1990','200');
+insert into provides values ('431','001','1990','200');
+insert into provides values ('432','001','1990','500');
+insert into provides values ('500','001','1990','500');
+insert into provides values ('510','001','1990','500');
+insert into provides values ('520','001','1990','500');
+insert into provides values ('600','001','1990','200');
+insert into provides values ('610','001','1990','500');
+insert into provides values ('631','001','1990','500');
+insert into provides values ('632','001','1990','500');
+
+insert into provides values ('110','001','2013','500');
+insert into provides values ('120','001','2013','500');
+insert into provides values ('130','001','2013','500');
+insert into provides values ('131','001','2013','200');
+insert into provides values ('133','001','2013','200');
+insert into provides values ('200','001','2013','500');
+insert into provides values ('210','001','2013','500');
+insert into provides values ('220','001','2013','500');
+insert into provides values ('230','001','2013','500');
+insert into provides values ('201','001','2013','500');
+insert into provides values ('202','001','2013','200');
+insert into provides values ('300','001','2013','500');
+insert into provides values ('310','001','2013','500');
+insert into provides values ('320','001','2013','200');
+insert into provides values ('330','001','2013','500');
+insert into provides values ('331a','001','2013','500');
+insert into provides values ('332','001','2014','200');
+insert into provides values ('400','001','2014','500');
+insert into provides values ('410','001','2014','500');
+insert into provides values ('420','001','2014','500');
+insert into provides values ('430','001','2014','200');
+insert into provides values ('401','001','2014','500');
+insert into provides values ('402','001','2014','500');
+insert into provides values ('431','001','2014','500');
+insert into provides values ('432','001','2014','200');
+insert into provides values ('500','001','2014','500');
+insert into provides values ('510','001','2014','500');
+insert into provides values ('520','001','2014','500');
+insert into provides values ('601','001','2014','500');
+insert into provides values ('610','001','2014','500');
+insert into provides values ('631','001','2014','500');
+insert into provides values ('632','001','2014','500');
+
+
+--job_profile_certificate(job_profile_code, certificate_code)
+insert into job_profile_certificate values ('101','120');
+insert into job_profile_certificate values ('310','101');
+insert into job_profile_certificate values ('311','121');
+insert into job_profile_certificate values ('311','131');
+insert into job_profile_certificate values ('320','130');
+insert into job_profile_certificate values ('320', '100');
+
+insert into job_profile_certificate values ('101','201');
+insert into job_profile_certificate values ('200','210');
+insert into job_profile_certificate values ('300','220');
+insert into job_profile_certificate values ('302','222');
+insert into job_profile_certificate values ('310','230');
+insert into job_profile_certificate values ('311','231');
+insert into job_profile_certificate values ('320','320');
+insert into job_profile_certificate values ('500','500');
+insert into job_profile_certificate values ('501','501');
+insert into job_profile_certificate values ('600','600');
+insert into job_profile_certificate values ('700','700');
+insert into job_profile_certificate values ('701','701');
+
+
+--job_certificate(job_code, certificate_code)
+insert into job_certificate values ('102','100');
+insert into job_certificate values ('201','101');
+insert into job_certificate values ('301','121');
+insert into job_certificate values ('901','120');
+insert into job_certificate values ('904','130');
+insert into job_certificate values ('101','131');
+
+
+--tool_used(company_code, tool_code)
+insert into tool_used values ('100','100');
+insert into tool_used values ('100','300');
+insert into tool_used values ('100','340');
+insert into tool_used values ('200','150');
+insert into tool_used values ('200','101');
+insert into tool_used values ('300','340');
+insert into tool_used values ('300','140');
+insert into tool_used values ('300','120');
+insert into tool_used values ('400','170');
+insert into tool_used values ('500','101');
+insert into tool_used values ('600','150');
+
+
+--exam_taken(person_code, exam_code, exam_type_code, score)
+insert into exam_taken values ('1006','2001','11111','77');
+insert into exam_taken values ('1006','2002','22222','99');
+insert into exam_taken values ('1006','2003','33333','76');
+insert into exam_taken values ('1007','2001','11111','100');
+insert into exam_taken values ('1007','2004','44444','70');
+insert into exam_taken values ('1008','2005','55555','87');
+insert into exam_taken values ('1008','2004','44444','80');
+insert into exam_taken values ('1009','2006','66666','73');
+
+

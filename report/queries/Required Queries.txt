@@ -1,0 +1,1180 @@
+-- Required SQL scripts
+
+-- #########################################################################
+-- 1. List a company’s workers by names.
+-- #########################################################################
+
+SELECT last_name, first_name
+FROM person NATURAL JOIN employment NATURAL JOIN job
+WHERE company_code = '400' AND
+      start_date < CURRENT_DATE AND
+      (end_date > CURRENT_DATE OR end_date is NULL)
+ORDER BY last_name 
+
+//1.a) No duplicates
+SELECT DISTINCT last_name, first_name
+FROM person NATURAL JOIN employment NATURAL JOIN job
+WHERE company_code = '400' AND
+      start_date < CURRENT_DATE AND
+      (end_date > CURRENT_DATE OR end_date is NULL)
+ORDER BY last_name
+
+//1.b) Display Job code for position held (makes more sense if 
+//     a person has more than one job at the same company.)
+SELECT DISTINCT last_name, first_name, job_code
+FROM person NATURAL JOIN employment NATURAL JOIN job
+WHERE company_code = '400' AND
+      start_date < CURRENT_DATE AND
+      (end_date > CURRENT_DATE OR end_date is NULL)
+ORDER BY last_name
+
+-- #########################################################################
+-- 2. List a company’s staff by salary in descending order.
+-- #########################################################################
+
+//2a) All salaried workers
+SELECT person_code, last_name, first_name, pay_rate
+FROM person NATURAL JOIN employment NATURAL JOIN
+     job NATURAL JOIN company
+WHERE company_code = '400' AND 
+      pay_type = 'salary' AND
+      start_date < CURRENT_DATE AND
+      (end_date > CURRENT_DATE OR end_date IS NULL)
+ORDER BY pay_rate DESC
+
+//2b) All fulltime workers
+SELECT person_code, last_name, first_name, 
+    CASE 
+      WHEN pay_type = 'salary' THEN pay_rate 
+      WHEN pay_type = 'wage' THEN pay_rate * 1920 
+      ELSE NULL 
+    END as calc_wage 
+FROM person NATURAL JOIN employment NATURAL JOIN
+     job NATURAL JOIN company
+WHERE company_code = '400' AND 
+      job_type = 'full-time' AND
+      start_date < CURRENT_DATE AND
+      (end_date > CURRENT_DATE OR end_date IS NULL)
+ORDER BY calc_wage DESC
+
+-- #########################################################################
+-- 3. List companies’ labor cost (total salaries and wage rates by 1920 hours) 
+--    in descending order.
+-- #########################################################################
+
+//3a: List all employee's calculated wages for a company, regardless of when 
+//    they worked their. Since this is over all time, there is no aggregation 
+//    for people holding more than one position.
+WITH  
+company_employees as ( 
+    SELECT * 
+    FROM person NATURAL JOIN employment NATURAL JOIN job
+    WHERE company_code = '400' )
+SELECT person_code, last_name, first_name,
+    CASE 
+      WHEN pay_type = 'salary' THEN pay_rate 
+      WHEN pay_type = 'wage' THEN pay_rate * 1920 
+      ELSE NULL 
+    END as calc_wage 
+FROM company_employees 
+ORDER BY calc_wage DESC
+
+//3b: List all employee's calculated wages for a company, 
+//    current employees only, and no aggregation for people with more 
+//    than one position.
+WITH  
+company_employees as ( 
+  SELECT * 
+  FROM person NATURAL JOIN employment NATURAL JOIN job
+  WHERE company_code = '400' AND 
+        start_date < current_date AND
+        (end_date > current_date OR end_date is NULL) )
+
+SELECT person_code, last_name, first_name,
+    CASE 
+      WHEN pay_type = 'salary' THEN pay_rate 
+      WHEN pay_type = 'wage' THEN pay_rate * 1920 
+      ELSE NULL 
+    END as calc_wage 
+FROM company_employees
+ORDER BY calc_wage DESC
+
+//3c: List all employee's calculated wages for a company, 
+//    current employees only, and aggregated for people with more 
+//    than one position.
+WITH  
+company_employees as ( 
+    SELECT * 
+    FROM person NATURAL JOIN employment NATURAL JOIN job
+    WHERE company_code = '400' AND 
+        start_date < current_date AND
+        (end_date > current_date OR end_date is NULL) ),
+person_wages as (
+    SELECT person_code, last_name, first_name, 
+        CASE 
+          WHEN pay_type = 'salary' THEN pay_rate 
+          WHEN pay_type = 'wage' THEN pay_rate * 1920 
+          ELSE NULL 
+        END as calc_wage 
+    FROM company_employees
+    ORDER BY calc_wage DESC )
+    
+SELECT person_code, last_name, first_name, sum(calc_wage)
+FROM person_wages
+GROUP BY person_code, last_name, first_name
+ORDER BY sum(calc_wage) DESC
+
+//3d: List the total current labor cost for each company.
+WITH  
+company_employees as ( 
+    SELECT * 
+    FROM person NATURAL JOIN employment NATURAL JOIN job
+    WHERE start_date < current_date AND
+        (end_date > current_date OR end_date is NULL) ),
+person_wages as (
+    SELECT company_code, person_code,
+        CASE 
+          WHEN pay_type = 'salary' THEN pay_rate 
+          WHEN pay_type = 'wage' THEN pay_rate * 1920 
+          ELSE NULL 
+        END as calc_wage 
+    FROM company_employees
+    ORDER BY calc_wage DESC )
+
+SELECT company_code, company_name, sum(calc_wage) as total_wages
+FROM person_wages NATURAL JOIN company
+GROUP BY company_code, company_name
+ORDER BY sum(calc_wage) DESC
+
+-- #########################################################################
+-- 4. Find all the jobs a person is currently holding.
+-- #########################################################################
+
+SELECT job_code, job_profile_title
+FROM employment NATURAL JOIN job NATURAL JOIN job_profile
+WHERE person_code = '46767' AND
+      start_date < CURRENT_DATE AND
+      (end_date > CURRENT_DATE OR end_date IS NULL)
+
+-- #########################################################################      
+-- 5. List all the workers who are working for a specific project.
+-- #########################################################################
+
+//5a: Currently at the project
+SELECT person_code, last_name, first_name
+FROM person NATURAL JOIN employment NATURAL JOIN
+     job NATURAL JOIN job_project
+WHERE project_code = 'p34' AND
+      start_date < CURRENT_DATE AND
+      (end_date > CURRENT_DATE OR end_date IS NULL)
+
+//5b: At any time
+SELECT person_code, last_name, first_name
+FROM person NATURAL JOIN employment NATURAL JOIN
+     job NATURAL JOIN job_project
+WHERE project_code = 'p34'
+
+-- #########################################################################
+-- 6. List a person’s knowledge/skills in a readable format.
+-- #########################################################################
+
+SELECT skill_name
+FROM skill NATURAL JOIN person_skill
+WHERE person_code = '10467'
+
+-- #########################################################################
+-- 7. List the skill gap of a worker between his/her job(s) and his/her skills. 
+-- #########################################################################
+
+WITH 
+person_current_jobs as (
+    SELECT job_code, job_profile_code
+    FROM employment NATURAL JOIN job
+    WHERE person_code = '10467' and
+          start_date < current_date and
+         (end_date > current_date or end_date is null) )
+( SELECT skill_code
+  FROM person_current_jobs NATURAL JOIN job_skill
+ UNION
+  SELECT skill_code
+  FROM person_current_jobs NATURAL JOIN job_profile_skill)
+MINUS
+ SELECT skill_code
+ FROM person_skill
+ WHERE person_code = '10467'
+
+-- #########################################################################
+-- 8. List the required knowledge/skills of a job profile in a readable format. 
+-- #########################################################################
+
+SELECT skill_name
+FROM job_profile_skill NATURAL JOIN skill
+WHERE job_profile_code = '300'
+
+-- #########################################################################
+-- 9. List a person’s missing knowledge/skills for a specific job in a 
+--    readable format
+-- #########################################################################
+
+SELECT skill_name
+FROM skill NATURAL JOIN
+    ( ( SELECT skill_code
+        FROM job_skill
+        WHERE job_code = '202'
+       UNION
+        SELECT skill_code
+        FROM job_profile_skill NATURAL JOIN job
+        WHERE job_code = '202' )
+     MINUS
+      SELECT skill_code
+      FROM person_skill
+      WHERE person_code = '10467' )
+
+-- #########################################################################
+-- 10. Find the course set(s) with the minimum number of courses 
+--     that can cover a given skill set.  
+--     (i.e., a skills set is a set of skills required by a job profile) 
+-- #########################################################################
+
+WITH 
+-- Skills required for the job profile.
+required_skills as (
+    SELECT skill_code from job_profile_skill WHERE job_profile_code = '100'), 
+-- Every unique combination of 3 courses
+course_sets as (
+    (SELECT course_code as A, null as B, null as C
+     FROM course_skill)
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, null as C
+     FROM course_skill A, course_skill B
+     WHERE a.course_code < b.course_code)
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, C.course_code as C
+     FROM course_skill A, course_skill B, course_skill C
+     WHERE a.course_code < b.course_code AND
+           b.course_code < c.course_code ) ),
+-- joined with course_skill such that the course_skill's course_code
+-- matches one of the course_set's course_codes.
+course_set_skills as (
+    SELECT A, B, C, skill_code
+    FROM course_sets, course_skill
+    WHERE course_sets.A = course_skill.course_code OR
+        course_sets.B = course_skill.course_code OR
+        course_sets.C = course_skill.course_code),
+-- course_sets that satisfy the required skills.
+satisfying_sets as (
+    SELECT * 
+    FROM (
+        (SELECT A, B, C from course_set_skills)
+        MINUS
+        (SELECT A, B, C
+        FROM ( SELECT A, B, C, skill_code
+               FROM (SELECT A, B, C
+                     FROM course_set_skills), (SELECT * FROM required_skills)
+               MINUS
+               SELECT A, B, C, skill_code
+               FROM course_set_skills) ) ) ),
+-- course sets with their count of courses to satisfy the required skills.
+sets_count as (
+    SELECT A, B, C, CASE
+                        WHEN B is null THEN 1
+                        WHEN C is null THEN 2
+                        ELSE 3
+                    END as num_courses
+    FROM satisfying_sets )
+
+SELECT *
+FROM sets_count WHERE num_courses = (SELECT min(num_courses) FROM sets_count)
+
+-- #########################################################################
+-- 11. List the minumum courses that can make up the missing knowledge/skills 
+--     for a person to pursue a specific job. 
+-- #########################################################################
+
+WITH 
+-- Skills required for a job.
+required_skills as (
+   (SELECT skill_code FROM job_skill WHERE job_code = '300'
+    UNION
+    SELECT skill_code FROM job_profile_skill NATURAL JOIN job
+    WHERE job_code='300')
+   MINUS
+    SELECT skill_code
+    FROM person_skill
+    WHERE person_code = '10467'
+   ), 
+-- Every unique combination of 3 courses
+course_sets as (
+    (SELECT course_code as A, null as B, null as C
+     FROM course_skill)
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, null as C
+     FROM course_skill A, course_skill B
+     WHERE a.course_code < b.course_code)
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, C.course_code as C
+     FROM course_skill A, course_skill B, course_skill C
+     WHERE a.course_code < b.course_code AND
+           b.course_code < c.course_code ) ),
+-- joined with course_skill such that the course_skill's course_code
+-- matches one of the course_set's course_codes.
+course_set_skills as (
+    SELECT A, B, C, skill_code
+    FROM course_sets, course_skill
+    WHERE course_sets.A = course_skill.course_code OR
+        course_sets.B = course_skill.course_code OR
+        course_sets.C = course_skill.course_code),
+-- course_sets that satisfy the required skills.
+satisfying_sets as (
+    SELECT * 
+    FROM (
+        (SELECT A, B, C from course_set_skills)
+        MINUS
+        (SELECT A, B, C
+        FROM ( SELECT A, B, C, skill_code
+               FROM (SELECT A, B, C
+                     FROM course_set_skills), (SELECT * FROM required_skills)
+              MINUS
+               SELECT A, B, C, skill_code
+               FROM course_set_skills) ) ) ),
+-- course sets with their count of courses to satisfy the required skills.
+sets_count as (
+    SELECT A, B, C, CASE
+      WHEN B is null THEN 1
+      WHEN C is null THEN 2
+      ELSE 3
+    END as num_courses
+FROM satisfying_sets )
+
+SELECT A, B, C, num_courses
+FROM sets_count WHERE num_courses = (SELECT min(num_courses) FROM sets_count)
+
+
+-- #########################################################################
+-- 12. Find the cheapest way to make up one’s skill gap by showing the 
+--     courses to take.
+-- #########################################################################
+
+//12a. Cheapest way to make up missing skills from all 
+//     courses (even inactive ones).
+WITH 
+-- Skills required by job profile
+required_skills as (
+    SELECT skill_code from job_profile_skill WHERE job_profile_code = '310'), 
+-- Every unique combination of 3 courses
+course_sets as (
+    (SELECT course_code as A, null as B, null as C
+     FROM course_skill)
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, null as C
+     FROM course_skill A, course_skill B
+     WHERE A.course_code < B.course_code )
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, C.course_code as C
+     FROM course_skill A, course_skill B, course_skill C
+     WHERE A.course_code < B.course_code AND
+           B.course_code < C.course_code ) ),
+-- joined with course_skill such that the course_skill's course_code
+-- matches one of the course_set's course_codes.
+course_set_skills as (
+    SELECT A, B, C, skill_code
+    FROM course_sets, course_skill
+    WHERE course_sets.A = course_skill.course_code OR
+        course_sets.B = course_skill.course_code OR
+        course_sets.C = course_skill.course_code),
+-- course_sets that satisfy the required skills.
+satisfying_sets as (
+    SELECT * 
+    FROM (
+        (SELECT A, B, C from course_set_skills)
+        MINUS
+        (SELECT A, B, C
+         FROM (SELECT A, B, C, skill_code
+               FROM (SELECT A, B, C
+                     FROM course_set_skills), (SELECT * FROM required_skills)
+               MINUS
+               SELECT A, B, C, skill_code
+               FROM course_set_skills) ) )
+    WHERE EXISTS (SELECT * FROM required_skills) ), 
+-- Creates a table of courses required for course_sets
+satisfying_sets_course as (
+    SELECT A, B, C, A as course_code
+    FROM satisfying_sets 
+   UNION
+    SELECT A, B, C, B as course_code
+    FROM satisfying_sets 
+   UNION
+    SELECT A, B, C, C as course_code
+    FROM satisfying_sets ),
+-- Calculates the cost of completing the courses for a course_set.
+satisfying_sets_cost as (
+    SELECT A, B, C, SUM(retail_price) as cost
+    FROM satisfying_sets_course NATURAL JOIN course
+    GROUP BY A, B, C )
+    
+SELECT A, B, C, cost
+FROM satisfying_sets_cost
+WHERE cost = (SELECT min(cost)
+              FROM satisfying_sets_cost )
+
+//12b.  Cheapest way given courses whose sections are posted and in the future
+WITH 
+-- Skills required by job profile
+required_skills as (
+    SELECT skill_code FROM job_profile_skill WHERE job_profile_code = '310' ), 
+-- All courses that provide skills and are available.
+available_courses as ( 
+    SELECT UNIQUE course_code
+    FROM course_skill NATURAL JOIN course NATURAL JOIN section
+    WHERE status = 'active' AND
+          to_date(year, 'yyyy') >= current_date ),
+-- Every unique combination of 3 courses
+course_sets as (
+    (SELECT course_code as A, null as B, null as C
+     FROM available_courses)
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, null as C
+     FROM available_courses A, available_courses B
+     WHERE a.course_code < b.course_code )
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, C.course_code as C
+     FROM available_courses A, available_courses B, available_courses C
+     WHERE A.course_code < B.course_code AND
+           B.course_code < C.course_code ) ),
+-- joined with course_skill such that the course_skill's course_code
+-- matches one of the course_set's course_codes.
+course_set_skills as (
+    SELECT A, B, C, skill_code
+    FROM course_sets, course_skill
+    WHERE course_sets.A = course_skill.course_code OR
+        course_sets.B = course_skill.course_code OR
+        course_sets.C = course_skill.course_code),
+-- course_sets that satisfy the required skills.
+satisfying_sets as (
+    SELECT * 
+    FROM (
+        (SELECT A, B, C from course_set_skills)
+        MINUS
+        (SELECT A, B, C
+         FROM (SELECT A, B, C, skill_code
+               FROM (SELECT A, B, C
+                     FROM course_set_skills), (SELECT * FROM required_skills)
+               MINUS
+               SELECT A, B, C, skill_code
+               FROM course_set_skills) ) )
+    WHERE EXISTS (SELECT * FROM required_skills) ),
+-- Creates a table of courses required for course_sets
+satisfying_sets_course as (
+    SELECT A, B, C, A as course_code
+    FROM satisfying_sets 
+   UNION
+    SELECT A, B, C, B as course_code
+    FROM satisfying_sets 
+   UNION
+    SELECT A, B, C, C as course_code
+    FROM satisfying_sets ),
+-- Calculates the cost of completing the courses for a course_set.
+satisfying_sets_cost as (
+    SELECT A, B, C, SUM(retail_price) as cost
+    FROM satisfying_sets_course NATURAL JOIN course
+    GROUP BY A, B, C )
+    
+SELECT A, B, C, cost
+FROM satisfying_sets_cost
+WHERE cost = (SELECT min(cost)
+              FROM satisfying_sets_cost)
+
+-- #########################################################################
+-- 13. Find the "shortest" way to make up one’s skill gap by 
+--     taking minimum number of courses. (Show the courses to take.)
+-- ######################################################################### 
+
+WITH 
+-- Skills required by job profile
+required_skills as (
+    SELECT skill_code from job_profile_skill WHERE job_profile_code = '310'), 
+-- All courses that provide skills and are available.
+available_courses as ( 
+    SELECT UNIQUE course_code
+    FROM course_skill NATURAL JOIN course NATURAL JOIN section
+    WHERE status = 'active' AND
+        to_date(year, 'yyyy') >= current_date
+),
+-- Every unique combination of 3 courses
+course_sets as (
+    (SELECT course_code as A, null as B, null as C
+     FROM available_courses)
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, null as C
+     FROM available_courses A, available_courses B
+     WHERE a.course_code < b.course_code )
+    UNION
+    (SELECT A.course_code as A, B.course_code as B, C.course_code as C
+     FROM available_courses A, available_courses B, available_courses C
+     WHERE A.course_code < B.course_code AND
+           B.course_code < C.course_code ) ),
+-- joined with course_skill such that the course_skill's course_code
+-- matches one of the course_set's course_codes.
+course_set_skills as (
+    SELECT A, B, C, skill_code
+    FROM course_sets, course_skill
+    WHERE course_sets.A = course_skill.course_code OR
+        course_sets.B = course_skill.course_code OR
+        course_sets.C = course_skill.course_code),
+-- course_sets that satisfy the required skills.
+satisfying_sets as (
+    SELECT * 
+    FROM (
+        (SELECT A, B, C from course_set_skills)
+        MINUS
+        (SELECT A, B, C
+         FROM (SELECT A, B, C, skill_code
+               FROM (SELECT A, B, C
+                     FROM course_set_skills), (SELECT * FROM required_skills)
+              MINUS
+               SELECT A, B, C, skill_code
+               FROM course_set_skills) ) )
+    WHERE EXISTS (SELECT * FROM required_skills) ), -- fixes divide-by-empty problem.
+-- course sets with their count of courses to satisfy the required skills.
+sets_count as (
+    SELECT A, B, C, CASE
+      WHEN B is null THEN 1
+      WHEN C is null THEN 2
+      ELSE 3
+    END as num_courses
+FROM satisfying_sets ),
+-- course sets with least amount of courses to satisfy missing skills.
+min_sets as (
+    SELECT A, B, C, num_courses
+    FROM sets_count 
+    WHERE num_courses = (SELECT min(num_courses) FROM sets_count)),
+
+-- Creates a table of courses required for course_sets
+satisfying_sets_course as (
+    SELECT A, B, C, A as course_code
+    FROM min_sets 
+   UNION
+    SELECT A, B, C, B as course_code
+    FROM min_sets 
+   UNION
+    SELECT A, B, C, C as course_code
+    FROM min_sets ),
+-- Creates a table of courses and section that are available now or in the future.
+satisfying_sets_sections as (
+    SELECT A, B, C, course_code, section_code, year
+    FROM (satisfying_sets_course NATURAL JOIN course) NATURAL JOIN section
+    WHERE status = 'active' AND
+          to_date(year, 'yyyy') >= current_date
+),
+-- Course sets including the soonest section for the course
+satisfying_sets_soonest as ( 
+    SELECT A, B, C, course_code, min(year) as soonest
+    FROM satisfying_sets_sections
+    GROUP BY A, B, C, course_code ),
+-- Given a course set, includes the latest course that needs to be complete.
+satisfying_set_last_complete as (
+    SELECT A, B, C, max(soonest) as last_complete
+    FROM satisfying_sets_soonest
+    GROUP BY A, B, C )
+
+SELECT A, B, C, last_complete
+FROM satisfying_set_last_complete
+WHERE last_complete = ( 
+        SELECT min(last_complete)
+        FROM satisfying_set_last_complete)
+
+-- #########################################################################
+-- 14. List all the possible job profiles for which a person is qualified. 
+-- #########################################################################
+
+WITH 
+-- Skills possessed by a person
+person_skills as (
+    SELECT skill_code
+    FROM person NATURAL JOIN person_skill
+    WHERE person_code='10479'),
+-- Certificates possessed by a person
+person_certificates as (
+    SELECT certificate_code
+    FROM earns
+    WHERE person_code = '10479')
+
+SELECT job_profile_code, job_profile_title
+FROM job_profile JP
+WHERE NOT EXISTS ( -- The skills a person lacks for a job profile.
+    	SELECT skill_code
+     	FROM job_profile_skill
+     	WHERE JP.job_profile_code = job_profile_skill.job_profile_code
+       MINUS
+    	SELECT *
+     	FROM person_skills )
+  	AND
+  	NOT EXISTS ( -- The certificates a person lacks for a job profile
+        SELECT certificate_code
+     	FROM job_profile_certificate
+     	WHERE JP.job_profile_code = job_profile_code
+       MINUS
+    	SELECT *
+     	FROM person_certificates )
+
+//14a: List all of the jobs (not just job profiles) for which a person is qualified.
+WITH
+-- The skills a person possesses.
+person_skills as (
+    SELECT skill_code
+    FROM person NATURAL JOIN person_skill
+    WHERE person_code='10467'),
+-- The certificates a person possesses.
+person_certificates as (
+    SELECT certificate_code
+    FROM earns
+    WHERE person_code = '10467'),
+-- The job profiles a person qualifies for.
+job_profiles_qualified as (
+    SELECT job_profile_code, job_profile_title
+    FROM job_profile JP
+    WHERE NOT EXISTS ( -- The skills a person lacks for a job profile.
+            SELECT skill_code
+            FROM job_profile_skill
+            WHERE JP.job_profile_code = job_profile_code
+           MINUS
+            SELECT *
+            FROM person_skills )
+    AND
+    NOT EXISTS ( -- The certificates a person lacks for a job profile.
+            SELECT certificate_code
+            FROM job_profile_certificate
+            WHERE JP.job_profile_code = job_profile_code
+           MINUS
+            SELECT *
+            FROM person_certificates ) )
+SELECT job_code , job_profile_title
+FROM job_profiles_qualified NATURAL JOIN job J
+WHERE NOT EXISTS ( -- The skills a person lacks for a job.
+        SELECT skill_code
+        FROM job_skill
+        WHERE J.job_code = job_code
+       MINUS
+        SELECT *
+        FROM person_skills )
+    AND
+    NOT EXISTS ( -- The certificates a person lacks for a job.
+        SELECT certificate_code
+        FROM job_certificate
+        WHERE J.job_code = job_code
+       MINUS
+        SELECT *
+        FROM person_certificates )
+
+-- #########################################################################
+-- 15. Find the job with the highest pay rate for a person according to 
+--     his/her skills. 
+-- #########################################################################
+
+//15A: Ignores actual availability of job
+WITH
+-- The skills a person possesses
+person_skills as (
+    SELECT skill_code
+    FROM person NATURAL JOIN person_skill
+    WHERE person_code='10467'),
+-- The certificates a person possesses
+person_certificates as (
+    SELECT certificate_code
+    FROM earns
+    WHERE person_code = '10467'),
+-- The job profiles a person is qualified for.
+job_profiles_qualified as (
+    SELECT job_profile_code
+    FROM job_profile JP
+    WHERE NOT EXISTS ( -- The skills a person lacks for a job profile.
+            SELECT skill_code
+            FROM job_profile_skill
+            WHERE JP.job_profile_code = job_profile_code
+           MINUS
+            SELECT *
+            FROM person_skills )
+    AND
+    NOT EXISTS ( -- The certificates a person lacks for a job profile.
+            SELECT certificate_code
+            FROM job_profile_certificate
+            WHERE JP.job_profile_code = job_profile_code
+           MINUS
+            SELECT *
+            FROM person_certificates ) ),
+-- The jobs a person is qualified for.
+jobs_qualified as (
+    SELECT job_code
+    FROM job_profiles_qualified NATURAL JOIN job J
+    WHERE NOT EXISTS ( -- The skills a person lacks for a job.
+            SELECT skill_code
+            FROM job_skill
+            WHERE J.job_code = job_code
+           MINUS
+            SELECT *
+            FROM person_skills )
+    AND
+    NOT EXISTS ( -- The certificates a person lacks for a job.
+            SELECT certificate_code
+            FROM job_certificate
+            WHERE J.job_code = job_code
+           MINUS
+            SELECT *
+            FROM person_certificates ) ),
+-- The best paying job for each qualified job profile
+best_paying_job as (
+    SELECT job_code, MAX(CASE
+                           WHEN pay_type = 'salary' THEN pay_rate
+                           WHEN pay_type = 'wage' THEN pay_rate * 1920
+                           ELSE NULL
+                         END) as max_pay
+    FROM job NATURAL JOIN jobs_qualified
+    GROUP BY job_code )
+
+SELECT job_code, max_pay
+FROM best_paying_job
+WHERE max_pay = (SELECT max(max_pay) 
+                 FROM best_paying_job)
+
+//15B: Includes actual availability of job
+WITH
+-- The skills a person possesses.
+person_skills as (
+    SELECT skill_code
+    FROM person NATURAL JOIN person_skill
+    WHERE person_code='10479'),
+-- The certificates a person possesses.
+person_certificates as (
+    SELECT certificate_code
+    FROM earns
+    WHERE person_code = '10479'),
+-- The job profiles a person is qualified for.
+job_profiles_qualified as (
+    SELECT job_profile_code
+    FROM job_profile JP
+    WHERE NOT EXISTS ( -- The skills a person lacks for a job profile.
+            SELECT skill_code
+            FROM job_profile_skill
+            WHERE JP.job_profile_code = job_profile_code
+           MINUS
+            SELECT *
+            FROM person_skills )
+      AND
+      NOT EXISTS ( -- The certificates a person lacks for a job profile.
+            SELECT certificate_code
+            FROM job_profile_certificate
+            WHERE JP.job_profile_code = job_profile_code
+           MINUS
+            SELECT *
+            FROM person_certificates ) ),
+-- The jobs a person is qualified for.
+jobs_qualified as (
+    SELECT job_code
+    FROM job_profiles_qualified NATURAL JOIN job J
+    WHERE NOT EXISTS ( -- The skills a person lacks for a job.
+            SELECT skill_code
+            FROM job_skill
+            WHERE J.job_code = job_code
+           MINUS
+            SELECT *
+            FROM person_skills )
+        AND
+        NOT EXISTS ( -- The certificates a person lacks for a job.
+            SELECT certificate_code
+            FROM job_certificate
+            WHERE J.job_code = job_code
+           MINUS
+            SELECT *
+            FROM person_certificates ) ),
+-- The jobs currently available.
+available_jobs as (
+    SELECT job_code, job_profile_code, company_code,
+           job_type, pay_rate, pay_type,
+           opening_date, closing_date
+    FROM job
+    WHERE opening_date < current_date AND
+          (closing_date > current_date OR closing_date is null)
+   MINUS
+    SELECT job_code, job_profile_code, company_code,
+           job_type, pay_rate, pay_type,
+           opening_date, closing_date
+    FROM employment NATURAL JOIN job
+    WHERE end_date is null OR end_date > current_date),
+-- The best paying job for each qualified job profile
+best_paying_job as (
+    SELECT job_code, MAX(CASE
+                           WHEN pay_type = 'salary' THEN pay_rate
+                           WHEN pay_type = 'wage' THEN pay_rate * 1920
+                           ELSE NULL
+                         END) as max_pay
+    FROM available_jobs NATURAL JOIN jobs_qualified
+    GROUP BY job_code )
+    
+SELECT job_code, max_pay
+FROM best_paying_job
+WHERE max_pay = (SELECT max(max_pay) 
+                 FROM best_paying_job)
+
+
+-- #########################################################################
+-- 16. List all the names along with the emails of the persons who are 
+--     qualified for a job profile. 
+-- #########################################################################
+
+WITH 
+-- Skills required by a job profile.
+required_skills as (
+    SELECT skill_code
+    FROM job_profile_skill
+    WHERE job_profile_code = '510'),
+-- Certificates required by a job porfile.
+required_certificates as (
+    SELECT certificate_code
+    FROM job_profile_certificate
+    WHERE job_profile_code = '510')
+SELECT last_name, first_name, email
+FROM person P
+WHERE NOT EXISTS ( -- The skills not possessed by a person.
+         SELECT * FROM required_skills
+        MINUS
+         SELECT skill_code
+         FROM person_skill
+         WHERE P.person_code = person_code)
+      AND
+      NOT EXISTS ( -- The certificates not possessed by a person.
+         SELECT * FROM required_certificates
+        MINUS
+         SELECT certificate_code
+         FROM earns
+         WHERE P.person_code = person_code )
+
+-- #########################################################################
+-- 17. Suppose there is a new job profile that has nobody qualified. 
+--     List the persons who miss the least number of skills and report the 
+--     "least number".
+-- #########################################################################
+
+WITH
+-- The skills required by a job_profile
+required_skills as (
+    SELECT skill_code
+    FROM job_profile_skill
+    WHERE job_profile_code = '100'),
+-- The number of skills each person lacks for a job profile
+missing_skills (person_code, num_missing) as (
+    SELECT person_code, COUNT(skill_code)
+    FROM person P, required_skills J
+    WHERE J.skill_code IN ( -- The skills a person lacks for a job profile.
+            SELECT *
+            FROM required_skills
+           MINUS
+            SELECT skill_code
+            FROM person_skill
+            WHERE person_code = P.person_code )
+    GROUP BY person_code ),
+-- The smallest number of skills a person missing.
+min_num_missing (min_missing) as (
+    SELECT min(num_missing)
+    FROM missing_skills )
+  
+SELECT person_code, num_missing
+FROM missing_skills, min_num_missing
+WHERE num_missing = min_num_missing.min_missing
+
+-- #########################################################################
+-- 18.  Make a 'missing-one' list that lists people who miss only one skill  
+--      for a specified job profile
+-- #########################################################################
+WITH
+--The skills required by a job profile.
+required_skills as (
+    SELECT skill_code
+    FROM job_profile_skill
+    WHERE job_profile_code = '701'),
+-- The number of skills each person lacks for a job profile
+missing_skills (person_code, num_missing) as (
+	SELECT person_code, COUNT(skill_code)
+	FROM person P, required_skills J
+	WHERE J.skill_code IN ( -- The skills each person lacks for a job profile.
+            SELECT *
+            FROM required_skills
+           MINUS
+            SELECT skill_code
+            FROM person_skill
+            WHERE person_code = P.person_code )
+	GROUP BY person_code )
+SELECT person_code, num_missing
+FROM missing_skills
+WHERE num_missing = 1
+
+-- #########################################################################
+-- 19.  List the skill_code and the number of people in the missing-one list for 
+--      a given job_profile in the descending order of the people counts.  IE, 
+--      sort by skill_code, where we count the number of people missing that 
+--      skill.
+-- #########################################################################
+
+WITH
+-- The skills required by a job profile.
+required_skills as (
+    SELECT skill_code
+    FROM job_profile_skill
+    WHERE job_profile_code = '100'),
+-- The number of skills each person lacks for a job profile
+missing_skills (person_code, num_missing) as (
+	SELECT person_code, COUNT(skill_code)
+	FROM person P, required_skills J
+	WHERE J.skill_code IN ( -- The skills a person lacks for a job profile.
+            SELECT *
+            FROM required_skills
+           MINUS
+            SELECT skill_code
+            FROM person_skill
+            WHERE person_code = P.person_code )
+	GROUP BY person_code ),
+-- The people who are lacking one skill for a job profile.
+people_lacking_one (person_code) as (
+    SELECT person_code
+    FROM missing_skills
+    WHERE num_missing = 1 )
+    
+SELECT skill_code, COUNT(person_code) as num_people_lacking
+FROM people_lacking_one P , required_skills J
+WHERE J.skill_code IN ( -- The skills each person is missing for a job profile
+        SELECT *
+        FROM required_skills
+       MINUS
+        SELECT skill_code
+        FROM person_skill
+        WHERE person_code = P.person_code )
+GROUP BY skill_code
+
+-- #########################################################################
+-- 20.  For a specified job profile and a given small number k, make a 
+--      'missing-k' list that lists the people's IDS and the number of missing 
+--      skills for the people who miss only up to k skills in teh descending 
+--      order of missing skills.
+-- #########################################################################
+
+WITH
+-- The skills required by a job profile.
+required_skills as (
+    SELECT skill_code
+    FROM job_profile_skill
+    WHERE job_profile_code = '200'),
+-- The number of skills a person lacks for a job profile.
+missing_skills (person_code, num_missing) as (
+    SELECT person_code, COUNT(skill_code)
+    FROM person P, required_skills J
+    WHERE J.skill_code IN ( -- The skills each person lacks for the job profile.
+            SELECT *
+            FROM required_skills
+           MINUS
+            SELECT skill_code
+            FROM person_skill
+            WHERE person_code = P.person_code )
+    GROUP BY person_code )
+    
+SELECT person_code, num_missing
+FROM missing_skills
+WHERE num_missing <= 3
+ORDER BY num_missing DESC
+
+-- #########################################################################
+-- 21. Given a job profile and its corresponding missing-k list specified in 
+--     20, find every skill that is needed by at least one person in the given 
+--     missing-k list.  List each skill_code and the number of people who need 
+--     it in the descending order of the people counts.
+-- #########################################################################
+
+WITH
+-- The skills required by a job profile.
+required_skills as (
+    SELECT skill_code
+    FROM job_profile_skill
+    WHERE job_profile_code = '200'),
+-- The number of skills a perso lacks for a job profile.
+missing_skills (person_code, num_missing) as (
+    SELECT person_code, COUNT(skill_code)
+    FROM person P, required_skills J
+    WHERE J.skill_code IN (
+            SELECT *
+            FROM required_skills
+           MINUS
+            SELECT skill_code
+            FROM person_skill
+            WHERE person_code = P.person_code )
+    GROUP BY person_code ),
+-- The people who are lacking a particular number of skills for a job profile.
+people_lacking_at_most_x (person_code, num_missing) as (
+    SELECT person_code, num_missing
+    FROM missing_skills
+    WHERE num_missing <= 3 )
+
+SELECT skill_code, COUNT(person_code) as num_people_lacking
+FROM people_lacking_at_most_x P , required_skills J
+WHERE J.skill_code IN ( -- The skills a person lacks for a job profile.
+        SELECT *
+        FROM required_skills
+       MINUS
+        SELECT skill_code
+        FROM person_skill
+        WHERE person_code = P.person_code )
+GROUP BY skill_code
+
+-- #########################################################################
+--  22.  Find the job profiles that have the most openings due to lack of
+--       qualified workers.  If there are many open jobs of a job profile but 
+--       at the same time there are many jobless people, then this is not a job 
+--       profile that training can help fill up. What we want to find is such a 
+--       job profile that has the largest difference between the unfilled jobs 
+--       of this profile and the number of jobless people who are qualified for 
+--       this job profile.
+-- #########################################################################
+
+WITH 
+-- Workers who are not currently employed.
+unemployed_people as (
+    SELECT person_code FROM person
+   MINUS
+    SELECT DISTINCT person_code
+    FROM employment
+    WHERE start_date < CURRENT_DATE AND
+         (end_date > CURRENT_DATE OR end_date is NULL) ),
+-- Job profiles with their corresponding number of open positions
+-- which there are not enough qualified people to fill.
+lacking_qualified as (
+    SELECT job_profile_code, num_unfilled, num_qualified, 
+           (num_unfilled - num_qualified) as lack_qualified
+    FROM 
+        -- Job profiles and the number of vacant positions.
+        (SELECT job_profile_code, count(*) as num_unfilled
+         FROM job NATURAL LEFT OUTER JOIN employment
+         WHERE (closing_date > current_date or closing_date is null) AND
+               (start_date > current_date or start_date is null) AND
+               (end_date < current_date OR end_date is null)
+         GROUP BY job_profile_code )
+    NATURAL JOIN
+        -- Job profiles and the number of people qualified to fill them.
+        (SELECT job_profile_code, count(*) as num_qualified
+         FROM job_profile JP, person P
+         WHERE NOT EXISTS (
+               SELECT skill_code
+               FROM job_profile_skill
+               WHERE job_profile_code = JP.job_profile_code
+              MINUS
+               SELECT skill_code
+               FROM unemployed_people NATURAL JOIN person_skill
+               WHERE person_code = P.person_code )
+        GROUP BY job_profile_code ) ),
+-- The largest number of positions that, for one job profile,  are open 
+-- but no one qualified to fill it.
+max_lacking_qualified as (
+    SELECT max(lack_qualified) as max_lack_qualified
+    FROM lacking_qualified )
+
+SELECT *
+FROM lacking_qualified, max_lacking_qualified
+WHERE lack_qualified = max_lacking_qualified.max_lack_qualified
+                     
+-- #########################################################################
+-- 23.  Find the courses that can help people find a job by training people 
+--      toward the job profiles that have the most openings due to lack of 
+--      qualified workers.  
+-- #########################################################################
+
+WITH 
+-- Workers who are not currently employed.
+umemployed_people as (
+    SELECT person_code FROM person
+   MINUS
+    SELECT DISTINCT person_code
+    FROM employment
+    WHERE start_date < CURRENT_DATE AND
+         (end_date > CURRENT_DATE OR end_date is NULL) ),
+-- Job profiles with their corresponding number of open positions
+-- which there are not enough qualified people to fill.
+lacking_qualified as (
+    SELECT job_profile_code, num_unfilled, num_qualified, 
+           (num_unfilled - num_qualified) as lack_qualified
+    FROM 
+        -- Job profiles and the number of vacant positions.
+        (SELECT job_profile_code, count(*) as num_unfilled
+         FROM job NATURAL LEFT OUTER JOIN employment
+         WHERE (closing_date > current_date or closing_date is null) AND
+               (start_date > current_date or start_date is null) AND
+               (end_date < current_date OR end_date is null)
+         GROUP BY job_profile_code )
+    NATURAL JOIN
+        -- Job profiles and the number of people qualified to fill them.
+        (SELECT job_profile_code, count(*) as num_qualified
+         FROM job_profile JP, person P
+         WHERE NOT EXISTS (
+               SELECT skill_code
+               FROM job_profile_skill
+               WHERE job_profile_code = JP.job_profile_code
+              MINUS
+               SELECT skill_code
+               FROM umemployed_people NATURAL JOIN person_skill
+               WHERE person_code = P.person_code )
+        GROUP BY job_profile_code ) ),
+-- The largest number of positions that, for one job profile,  are open 
+-- but no one qualified to fill it.
+max_lacking_qualified as (
+    SELECT max(lack_qualified) as max_lack_qualified
+    FROM lacking_qualified ),
+-- The jobs that have the most open positions without someone
+-- qualified to fill them.
+jobs_lacking_qualified as (
+    SELECT job_profile_code
+    FROM lacking_qualified, max_lacking_qualified
+    WHERE lack_qualified = max_lacking_qualified.max_lack_qualified ),
+-- Every unique combination of 3 courses
+course_sets as (
+    (SELECT course_code as A, null as B, null as C
+     FROM course_skill)
+   UNION
+    (SELECT A.course_code as A, B.course_code as B, null as C
+     FROM course_skill A, course_skill B
+     WHERE a.course_code < b.course_code)
+   UNION
+    (SELECT A.course_code as A, B.course_code as B, C.course_code as C
+     FROM course_skill A, course_skill B, course_skill C
+     WHERE a.course_code < b.course_code AND
+           b.course_code < c.course_code ) ),
+-- joined with course_skill such that the course_skill's course_code
+-- matches one of the course_set's course_codes.
+course_set_skills as (
+    SELECT A, B, C, skill_code
+    FROM course_sets, course_skill
+    WHERE course_sets.A = course_skill.course_code OR
+          course_sets.B = course_skill.course_code OR
+          course_sets.C = course_skill.course_code),
+-- The course combinations that can satisfy the skills required
+-- by a job profile.
+satisfying_sets as (
+  SELECT * 
+  FROM (
+      (SELECT A, B, C, job_profile_code
+       FROM course_set_skills, jobs_lacking_qualified)
+      MINUS
+      -- 3. What is left are the course sets that won't help us 
+      -- meet the required skills.  Remove them from the complete set.
+      -- what is left are those that will help us.
+      (SELECT A, B, C, job_profile_code
+       FROM (  
+               -- 1. Create a fake table with all possible combinations
+               -- using the skills required for the job profile.
+               SELECT A, B, C, job_profile_code, skill_code
+               FROM (SELECT A, B, C
+                     FROM course_set_skills),
+                    (SELECT job_profile_code, skill_code 
+                     FROM jobs_lacking_qualified NATURAL JOIN job_profile_skill)
+               MINUS
+               -- 2. Remove those sets that are the real skills
+               -- provided by the course sets.
+               SELECT A, B, C, job_profile_code, skill_code
+               FROM course_set_skills, jobs_lacking_qualified) ) ) )
+
+SELECT * 
+FROM satisfying_sets

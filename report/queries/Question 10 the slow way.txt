@@ -1,0 +1,50 @@
+Number 10:
+WITH 
+required_skills as (
+  SELECT skill_code from job_profile_skill WHERE job_profile_code = '100'), 
+  
+-- Every unique combination of 3 courses
+course_sets as (
+  (SELECT course_code as A, null as B, null as C
+   FROM course_skill)
+  UNION
+  (SELECT A.course_code as A, B.course_code as B, null as C
+   FROM course_skill A, course_skill B
+   WHERE to_number(a.course_code) < to_number(b.course_code) )
+  UNION
+  (SELECT A.course_code as A, B.course_code as B, C.course_code as C
+   FROM course_skill A, course_skill B, course_skill C
+   WHERE to_number(A.course_code) < to_number(B.course_code) AND
+         to_number(B.course_code) < to_number(C.course_code) ) ),
+-- joined with course_skill such that the course_skill's course_code
+-- matches one of the course_set's course_codes.
+course_set_skills as (
+  SELECT A, B, C, skill_code
+  FROM course_sets, course_skill
+  WHERE course_sets.A = course_skill.course_code OR
+        course_sets.B = course_skill.course_code OR
+        course_sets.C = course_skill.course_code),
+satisfying_sets as (
+    SELECT A, B, C
+    FROM course_set_skills S
+    WHERE 
+       EXISTS (SELECT * FROM required_skills) 
+       AND 
+       NOT EXISTS (
+        SELECT skill_code
+        FROM required_skills
+       MINUS
+        SELECT skill_code
+        FROM course_set_skills
+        WHERE S.A = A AND (S.B = B or B is null) and (S.C = C or C is null) ) ),
+sets_count as (
+    SELECT A, B, C, 
+                CASE
+                  WHEN B is null THEN 1
+                  WHEN C is null THEN 2
+                  ELSE 3
+                END as num_courses
+    FROM satisfying_sets )
+
+SELECT *
+FROM sets_count WHERE num_courses = (SELECT min(num_courses) FROM sets_count)

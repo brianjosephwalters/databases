@@ -1,0 +1,291 @@
+--Relational Schema Script
+
+-- Personelle System
+create table job_profile (
+	job_profile_code		varchar(10),
+	job_profile_title		varchar(30) not null,
+	job_profile_description	clob,
+	primary key (job_profile_code));
+
+create table company (
+	company_code		varchar(10),
+	company_name		varchar(30) not null,
+	website			varchar(100),
+	primary key (company_code) );
+
+create table person (
+	person_code			varchar(10),
+	last_name			varchar(30) not null,
+	first_name			varchar(30),
+	gender			varchar(10),
+	email				varchar(30),
+	primary key (person_code) );
+
+create table job (
+	job_code			varchar(10),
+	job_profile_code		varchar(10) not null,
+	company_code		varchar(10) not null,
+	job_type			varchar(10),
+	pay_rate			numeric(8,2),
+	pay_type			varchar(6),
+	opening_date		date,
+	closing_date		date,
+	primary key (job_code),
+	foreign key (job_profile_code) references job_profile,
+	foreign key(company_code) references company );
+--check (job_type in ('full-time', 'part-time')),
+--check (pay_type in ('wage', 'salary')) );
+
+create table project (
+	project_code		varchar(10),
+	company_code		varchar(10) not null,
+	project_title		varchar(30) not null,
+	budget_code			varchar(10),
+	start_date			date,
+	end_date			date,
+	primary key (project_code),
+	foreign key (company_code) references company);
+
+create table specialty (
+	specialty_code		varchar(10),
+	specialty_name		varchar(30) not null,
+	primary key (specialty_code) );
+
+create table address (
+	address_code		varchar(10),
+	address_type		varchar(20),
+	street_1			varchar(30) not null,
+	street_2			varchar(30),
+	city				varchar(30),
+	zipcode			varchar(5) not null,
+	primary key (address_code) );
+
+create table phone_number (
+	phone_code			varchar(10),
+	phone_type			varchar(20),
+	phone_num			varchar(14) not null,
+	primary key (phone_code) );
+
+create table job_project (
+	job_code			varchar(10),
+	project_code		varchar(10),
+	primary key (job_code, project_code),
+	foreign key (job_code) references job,
+	foreign key (project_code) references project );
+
+create table company_specialty (
+	company_code		varchar(10),
+	specialty_code		varchar(10),
+	primary key (company_code, specialty_code),
+	foreign key (company_code) references company,
+	foreign key (specialty_code) references specialty );
+
+create table employment (
+	person_code			varchar(10),
+	job_code			varchar(10),
+	start_date			date not null,
+	end_date			date,
+	primary key (person_code, job_code),
+	foreign key (person_code) references person,
+	foreign key (job_code) references job );
+
+create table company_address (
+	company_code		varchar(10),
+	address_code		varchar(10),
+	primary key (company_code, address_code),
+	foreign key (company_code) references company,
+	foreign key (address_code) references address );
+
+create table person_address (
+	person_code			varchar(10),
+	address_code		varchar(10),
+	primary key (person_code, address_code),
+	foreign key (person_code) references person,
+	foreign key (address_code) references address );
+
+create table company_phone (
+	company_code		varchar(10),
+	phone_code			varchar(10),
+	primary key (company_code, phone_code),
+	foreign key (company_code) references company,
+	foreign key (phone_code) references phone_number );
+
+create table person_phone (
+	person_code			varchar(10),
+	phone_code			varchar(10),
+	primary key (person_code, phone_code),
+	foreign key (person_code) references person,
+	foreign key (phone_code) references phone_number );
+
+-- Course System
+
+create table skill (
+	skill_code			varchar(10),
+	skill_name			varchar(30) not null,
+	skill_description		clob,
+	skill_level			varchar(8),
+	primary key (skill_code) );
+--check (level in ('beginner', 'medium', 'advanced')) );
+
+create table course (
+	course_code			varchar(10),
+	course_title		varchar(50) not null,
+	course_description	clob,
+	course_level		varchar(8),
+	status			varchar(8),
+	retail_price		numeric(6,2),
+	primary key (course_code) );
+-- check (status in ('active', 'expired')),
+-- check (level in ('beginner', 'medium', 'advanced')) );
+
+create table course_prereq (
+	course_code			varchar(10),
+	course_prereq		varchar(10),
+	primary key (course_code, course_prereq),
+	foreign key (course_code) references course(course_code),
+	foreign key (course_prereq) references course(course_code) );
+
+create table format (
+	format_code			varchar(10),
+	format_name			varchar(20) not null,
+	format_description	clob,
+	fees				numeric(5,2),
+	primary key (format_code) );
+
+create table section (
+	course_code			varchar(10),
+	section_code		varchar(10),
+	year				numeric(4,0),
+	format_code			varchar(10),
+	cost				numeric(6,2),
+	primary key (course_code, section_code, year),
+	foreign key (course_code) references course,
+	foreign key (format_code) references format );
+
+create table tool (
+	tool_code			varchar(10),
+	tool_name			varchar(30) not null,
+	tool_description		clob,
+	primary key (tool_code) );
+
+create table job_skill (
+	job_code			varchar(10),
+	skill_code			varchar(10),
+	primary key (job_code, skill_code),
+	foreign key (job_code) references job,
+	foreign key (skill_code) references skill );
+
+create table job_profile_skill (
+	job_profile_code		varchar(10),
+	skill_code			varchar(10),
+	primary key (job_profile_code, skill_code),
+	foreign key (job_profile_code) references job_profile,
+	foreign key (skill_code) references skill );
+
+create table person_skill (
+	person_code			varchar(10),
+	skill_code			varchar(10),
+	primary key (person_code, skill_code),
+	foreign key (person_code) references person,
+	foreign key (skill_code) references skill );
+
+create table course_skill (
+	course_code			varchar(10),
+	skill_code			varchar(10),
+	primary key (course_code, skill_code),
+	foreign key (course_code) references course,
+	foreign key (skill_code) references skill );
+
+create table attended (
+	course_code			varchar(10),
+	section_code		varchar(10),
+	year				numeric(4,0),
+	person_code			varchar(10),
+	completed_date		date,
+	score				numeric(3,0),
+	primary key (course_code, section_code, year, person_code),
+	foreign key (course_code, section_code, year) references section,
+	foreign key (person_code) references person );
+
+create table provides (
+	course_code			varchar(10),
+	section_code		varchar(10),
+	year				number(4,0),
+	company_code		varchar(10),
+	primary key (course_code, section_code, year, company_code),
+	foreign key (course_code, section_code, year) references section,
+	foreign key (company_code) references company );
+
+-- Certificate System
+
+create table certificate (
+	certificate_code		varchar(10),
+	certificate_title		varchar(30) not null,
+	certificate_description	clob,
+	tool_code			varchar(10),
+	company_code		varchar(10),
+	days_valid			numeric(5,0),
+	primary key (certificate_code),
+	foreign key (tool_code) references tool,
+	foreign key (company_code) references company );
+
+create table prepares_for (
+	course_code			varchar(10),
+	certificate_code		varchar(10),
+	primary key (course_code, certificate_code),
+	foreign key (course_code) references course,
+	foreign key (certificate_code) references certificate );
+
+
+create table exam_type (
+	exam_type_code		varchar(10),
+	certificate_code		varchar(10) not null,
+	exam_title			varchar(50) not null,
+	primary key (exam_type_code),
+	foreign key (certificate_code) references certificate );
+
+create table exam (
+	exam_code			varchar(10),
+	exam_type_code		varchar(10),
+	exam_date			date,
+	primary key (exam_code, exam_type_code),
+	foreign key (exam_type_code) references exam_type );
+
+create table job_profile_certificate (
+	job_profile_code		varchar(10),
+	certificate_code		varchar(10),
+	primary key (job_profile_code, certificate_code),
+	foreign key (job_profile_code) references job_profile,
+	foreign key (certificate_code) references certificate );
+
+create table job_certificate (
+	job_code			varchar(10),
+	certificate_code		varchar(10),
+	primary key (job_code, certificate_code),
+	foreign key (job_code) references job,
+	foreign key (certificate_code) references certificate );
+
+create table tool_used(
+	company_code		varchar(10),
+	tool_code			varchar(10),
+	primary key (company_code, tool_code),
+	foreign key (company_code) references company,
+	foreign key (tool_code) references tool );
+
+create table exam_taken(
+	person_code			varchar(10),
+	exam_code			varchar(10),
+	exam_type_code		varchar(10),
+	score				numeric(3,0),
+	primary key (person_code, exam_code, exam_type_code),
+	foreign key (person_code) references person,
+	foreign key (exam_code, exam_type_code) references exam );
+
+create table earns(
+	person_code			varchar(10),
+	certificate_code		varchar(10),
+	primary key (person_code, certificate_code),
+	foreign key (person_code) references person,
+	foreign key (certificate_code) references certificate );
+
+
